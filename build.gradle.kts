@@ -4,6 +4,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 
 	checkstyle
+	jacoco
 	pmd
 }
 
@@ -50,14 +51,8 @@ pmd {
     // Hiển thị rule bị vi phạm trên console
     isConsoleOutput = true
 
-    // Dùng rule mặc định của PMD
-    ruleSets = listOf(
-        "category/java/bestpractices.xml",
-        "category/java/codestyle.xml",
-        "category/java/design.xml",
-        "category/java/errorprone.xml",
-        "category/java/performance.xml"
-    )
+    ruleSetFiles = files("$rootDir/config/pmd/ruleset.xml")
+    ruleSets = emptyList()
 }
 
 tasks.withType<Pmd>().configureEach {
@@ -74,8 +69,8 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.boot:spring-boot-starter-security-oauth2-client")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
@@ -85,15 +80,41 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-actuator-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
-	testImplementation("org.springframework.boot:spring-boot-starter-security-oauth2-client-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-security-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 	testCompileOnly("org.projectlombok:lombok")
+	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testAnnotationProcessor("org.projectlombok:lombok")
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+jacoco {
+	toolVersion = "0.8.13"
+}
+
+tasks.jacocoTestReport {
+	dependsOn(tasks.test)
+	reports {
+		xml.required.set(true)
+		html.required.set(true)
+		csv.required.set(false)
+	}
+}
+
+val testHtmlReport by tasks.registering(JavaExec::class) {
+	group = "verification"
+	description = "Generate an HTML report from JUnit XML results and JaCoCo coverage."
+	dependsOn(tasks.test, tasks.jacocoTestReport)
+	classpath = sourceSets["test"].runtimeClasspath
+	mainClass.set("net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.report.TestHtmlReportGenerator")
+	args(
+		layout.buildDirectory.dir("test-results/test").get().asFile.absolutePath,
+		layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml").get().asFile.absolutePath,
+		layout.buildDirectory.file("reports/tests/auth-unit-test-report.html").get().asFile.absolutePath
+	)
 }

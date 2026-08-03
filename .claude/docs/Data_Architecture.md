@@ -21,6 +21,10 @@ Lưu trữ thông tin định danh người dùng.
 | `email`         | String | Unique, Not Null   | Email đăng nhập                  |
 | `hash_password` | String | Not Null           | Mật khẩu đã băm                  |
 | `refresh_token` | String | Nullable           | Token để làm mới phiên đăng nhập |
+| `created_at`    | Instant | Not Null          | Thời điểm tạo dữ liệu            |
+| `updated_at`    | Instant | Nullable          | Thời điểm cập nhật dữ liệu       |
+| `created_by`    | String | Nullable           | Tác nhân tạo dữ liệu             |
+| `updated_by`    | String | Nullable           | Tác nhân cập nhật dữ liệu        |
 
 ### 2.2. Organization Module (Inheritance & Tree)
 Sử dụng mô hình kế thừa để quản lý cấu trúc cây.
