@@ -29,6 +29,7 @@ Mỗi khi thêm Developer Plan mới, cần cập nhật file này với:
 | ---------------------------------------------------------------------------------------- | --------------------------------------------- | -------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | [`auth_authz/Auth_Authz_DeveloperPlan.md`](auth_authz/Auth_Authz_DeveloperPlan.md)       | Authentication và authorization tối giản      | Đã phê duyệt         | Đã triển khai         | Cấu hình Spring Boot, User, JWT, BCrypt, register/login/refresh/account/logout; không có Roles và Permissions     |
 | [`auth_authz/Auth_UnitTest_DeveloperPlan.md`](auth_authz/Auth_UnitTest_DeveloperPlan.md) | Unit Test cho Authentication và Authorization | Đã phê duyệt         | Đã triển khai         | JUnit test cho `UserService` và HTML report có test case, module và coverage; không test app/repo/`SecurityUtil` |
+| [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md) | Vocabulary Management | Chờ phê duyệt | Chưa triển khai | Manual vocabulary API, `Vocab` entity, IPA/audio automation boundary; chưa làm bulk `.xlsx`/Organization |
 
 ## 4. Tóm tắt từng Developer Plan
 
@@ -91,11 +92,47 @@ POST /api/v1/auth/logout
 - Boilerplate có cấu hình `.anyRequest().permitAll()` cần thay bằng `.anyRequest().authenticated()`.
 - Phải loại bỏ toàn bộ tham chiếu Roles/Permissions.
 
+### 4.2. Vocabulary Management
+
+**File:** [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md)
+
+**Mục tiêu:**
+
+- Triển khai quản lý từ vựng thủ công theo docs.
+- Tạo entity `Vocab` map bảng `vocabs`.
+- Tạo API thêm từ, lấy danh sách/lấy chi tiết và cập nhật nghĩa.
+- Chuẩn bị boundary cho automation IPA/audio.
+
+**Bao gồm:**
+
+- `Vocab` entity.
+- `VocabRepository`.
+- DTO request/response.
+- `VocabService`.
+- `VocabAutomationService`.
+- `VocabController`.
+- Unit test service layer.
+- Cập nhật HTML test report module mapping nếu cần.
+
+**Không bao gồm:**
+
+- Bulk import `.xlsx`.
+- Partial Failure implementation cho `.xlsx`.
+- Organization `Item`/`Folder`/`VocabSet`.
+- Quan hệ `vocab_vocab_set`.
+- Flashcard hoặc Testing/Learning.
+- External IPA/audio provider thật.
+
+**Rủi ro chính:**
+
+- Docs chưa chỉ định provider IPA/audio.
+- Docs chưa yêu cầu unique `word`, nên không tự thêm unique.
+- Bulk `.xlsx` và quan hệ VocabSet phụ thuộc plan/module khác.
+
 ## 5. Developer Plan trong tương lai
 
 Chưa có Developer Plan cho các module sau:
 
-- Vocabulary Management.
 - Organization.
 - Testing & Learning.
 - Flashcard.
@@ -118,3 +155,4 @@ Khi tạo plan mới, cần thêm vào bảng ở mục 3 và phần tóm tắt 
 | 2026-08-03 | Điều chỉnh Unit Test Auth/Authz: thay PDF report bằng HTML report có danh sách test, module và coverage     | Codex               |
 | 2026-08-03 | Điều chỉnh HTML Unit Test report: coverage chỉ filter theo module cần test                                  | Codex               |
 | 2026-08-03 | Cập nhật plan Auth/Authz cho refactor Lombok theo convention boilerplate                                    | Codex               |
+| 2026-08-03 | Tạo Developer Plan Vocabulary Management theo yêu cầu triển khai module                                     | Codex               |
