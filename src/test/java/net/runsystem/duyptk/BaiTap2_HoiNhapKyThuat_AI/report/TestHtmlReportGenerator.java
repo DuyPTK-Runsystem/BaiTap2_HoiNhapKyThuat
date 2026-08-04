@@ -24,7 +24,8 @@ import org.xml.sax.InputSource;
 public final class TestHtmlReportGenerator {
     private static final int EXPECTED_ARGUMENT_COUNT = 3;
     private static final String AUTH_MODULE = "auth_authz";
-    private static final String AUTH_PACKAGE_PREFIX = "net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI";
+    private static final String VOCAB_MODULE = "vocabulary_management";
+    private static final String BASE_PACKAGE_PREFIX = "net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI";
     private static final String EXPECTED_ARGUMENTS_MESSAGE =
             "Expected arguments: <junitXmlDirectory> <jacocoXmlFile> <htmlOutputFile>";
 
@@ -39,7 +40,8 @@ public final class TestHtmlReportGenerator {
         Path xmlDirectory = Path.of(args[0]);
         Path jacocoXml = Path.of(args[1]);
         Path htmlOutput = Path.of(args[2]);
-        ReportData reportData = new ReportData(readTestCases(xmlDirectory), readCoverage(jacocoXml));
+        List<TestCaseResult> testCases = readTestCases(xmlDirectory);
+        ReportData reportData = new ReportData(testCases, readCoverage(jacocoXml, testCases));
         String html = buildHtml(reportData);
 
         Files.createDirectories(htmlOutput.getParent());
@@ -87,20 +89,20 @@ public final class TestHtmlReportGenerator {
     }
 
     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-    private static CoverageSummary readCoverage(Path jacocoXml) throws Exception {
+    private static CoverageSummary readCoverage(Path jacocoXml, List<TestCaseResult> testCases) throws Exception {
         if (!Files.isRegularFile(jacocoXml)) {
             return CoverageSummary.empty();
         }
 
         Document document = newDocument(jacocoXml);
         Element report = document.getDocumentElement();
-        List<Element> modulePackages = modulePackages(report);
+        List<Element> moduleClasses = moduleClasses(report, testCases);
         Map<String, CoverageCounter> coverageCounters = new LinkedHashMap<>();
 
-        for (Element modulePackage : modulePackages) {
-            NodeList packageCounters = modulePackage.getChildNodes();
-            for (int index = 0; index < packageCounters.getLength(); index++) {
-                if (packageCounters.item(index) instanceof Element counter
+        for (Element moduleClass : moduleClasses) {
+            NodeList classCounters = moduleClass.getChildNodes();
+            for (int index = 0; index < classCounters.getLength(); index++) {
+                if (classCounters.item(index) instanceof Element counter
                         && "counter".equals(counter.getTagName())) {
                     String type = counter.getAttribute("type");
                     coverageCounters.merge(
@@ -117,17 +119,44 @@ public final class TestHtmlReportGenerator {
         return new CoverageSummary(coverageCounters);
     }
 
-    private static List<Element> modulePackages(Element report) {
-        NodeList packages = report.getElementsByTagName("package");
-        List<Element> modulePackages = new ArrayList<>();
+    private static List<Element> moduleClasses(Element report, List<TestCaseResult> testCases) {
+        List<String> classPrefixes = testCases.stream()
+                .map(TestCaseResult::module)
+                .distinct()
+                .flatMap(module -> coverageClassPrefixes(module).stream())
+                .toList();
+        NodeList classes = report.getElementsByTagName("class");
+        List<Element> moduleClasses = new ArrayList<>();
 
-        for (int index = 0; index < packages.getLength(); index++) {
-            Element modulePackage = (Element) packages.item(index);
-            if (modulePackage.getAttribute("name").startsWith(AUTH_PACKAGE_PREFIX)) {
-                modulePackages.add(modulePackage);
+        for (int index = 0; index < classes.getLength(); index++) {
+            Element moduleClass = (Element) classes.item(index);
+            String className = moduleClass.getAttribute("name");
+            if (classPrefixes.stream().anyMatch(className::startsWith)) {
+                moduleClasses.add(moduleClass);
             }
         }
-        return modulePackages;
+        return moduleClasses;
+    }
+
+    private static List<String> coverageClassPrefixes(String module) {
+        if (AUTH_MODULE.equals(module)) {
+            return List.of(BASE_PACKAGE_PREFIX + "/service/auth/UserService");
+        }
+        if (VOCAB_MODULE.equals(module)) {
+            return List.of(
+                    BASE_PACKAGE_PREFIX + "/controller/VocabController",
+                    BASE_PACKAGE_PREFIX + "/domain/requestDTO/ReqCreateVocabDTO",
+                    BASE_PACKAGE_PREFIX + "/domain/requestDTO/ReqUpdateVocabDTO",
+                    BASE_PACKAGE_PREFIX + "/domain/responseDTO/ResVocabDTO",
+                    BASE_PACKAGE_PREFIX + "/domain/externalDTO/VocabAutomationResult",
+                    BASE_PACKAGE_PREFIX + "/domain/table/Vocab",
+                    BASE_PACKAGE_PREFIX + "/service/vocab/VocabAudioService",
+                    BASE_PACKAGE_PREFIX + "/service/vocab/FreeDictionaryVocabAutomationService",
+                    BASE_PACKAGE_PREFIX + "/service/vocab/VocabLookupService",
+                    BASE_PACKAGE_PREFIX + "/service/vocab/VocabValidationService",
+                    BASE_PACKAGE_PREFIX + "/service/vocab/Vocab");
+        }
+        return List.of();
     }
 
     private static Document newDocument(Path xmlFile) throws Exception {
@@ -156,7 +185,7 @@ public final class TestHtmlReportGenerator {
                 <html lang="en">
                 <head>
                     <meta charset="UTF-8">
-                    <title>Auth/Authz Unit Test Report</title>
+                    <title>Unit Test Report</title>
                     <style>
                         body{font-family:Arial,sans-serif;color:#172033;margin:32px;background:#f8fafc;}
                         main{max-width:1120px;margin:0 auto;}
@@ -176,14 +205,14 @@ public final class TestHtmlReportGenerator {
                 </head>
                 <body>
                 <main>
-                    <h1>Auth/Authz Unit Test Report</h1>
+                    <h1>Unit Test Report</h1>
                     <p>Generated from JUnit XML and JaCoCo coverage results.</p>
 
                     <section class="summary">
                         <div class="metric"><span>Total tests</span><strong>%d</strong></div>
                         <div class="metric"><span>Passed</span><strong>%d</strong></div>
                         <div class="metric"><span>Failed/Error</span><strong>%d</strong></div>
-                        <div class="metric"><span>auth_authz line coverage</span><strong>%s</strong></div>
+                        <div class="metric"><span>module line coverage</span><strong>%s</strong></div>
                     </section>
 
                     <h2>Modules Covered By Tests</h2>
@@ -202,7 +231,7 @@ public final class TestHtmlReportGenerator {
                         <tbody>%s</tbody>
                     </table>
 
-                    <h2>auth_authz Coverage</h2>
+                    <h2>Module Coverage</h2>
                     <table>
                         <thead><tr><th>Counter</th><th>Covered</th><th>Missed</th><th>Coverage</th></tr></thead>
                         <tbody>%s</tbody>
@@ -291,6 +320,9 @@ public final class TestHtmlReportGenerator {
     private static String inferModule(String className) {
         if (className.contains(".service.UserServiceTests")) {
             return AUTH_MODULE;
+        }
+        if (className.contains(".service.VocabServiceTests")) {
+            return VOCAB_MODULE;
         }
         return "unknown";
     }

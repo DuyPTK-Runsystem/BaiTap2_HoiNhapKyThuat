@@ -1,0 +1,55 @@
+package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqCreateVocabDTO;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqUpdateVocabDTO;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabDTO;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.vocab.VocabService;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.annotation.ApiMessage;
+
+@RestController
+@RequestMapping("/api/v1/vocabs")
+@RequiredArgsConstructor
+public class VocabController {
+    private final VocabService vocabService;
+
+    @PostMapping
+    @ApiMessage("Tạo từ vựng")
+    public ResponseEntity<ResVocabDTO> create(@RequestBody ReqCreateVocabDTO request) {
+        return ResponseEntity.ok(vocabService.create(request));
+    }
+
+    @GetMapping("/lookup")
+    @ApiMessage("Lấy chi tiết từ vựng")
+    public ResponseEntity<ResVocabDTO> get(@RequestParam(required = false) Long id,
+            @RequestParam(required = false) String word) {
+        return ResponseEntity.ok(vocabService.get(id, word));
+    }
+
+    @PatchMapping("/lookup")
+    @ApiMessage("Cập nhật nghĩa từ vựng")
+    public ResponseEntity<ResVocabDTO> update(
+            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) String word,
+            @RequestBody ReqUpdateVocabDTO request) {
+        return ResponseEntity.ok(vocabService.update(id, word, request));
+    }
+
+    @GetMapping(value = "/audio/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<byte[]> getAudio(@PathVariable String fileName) {
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf("audio/mpeg"))
+                .body(vocabService.readAudioFile(fileName));
+    }
+}

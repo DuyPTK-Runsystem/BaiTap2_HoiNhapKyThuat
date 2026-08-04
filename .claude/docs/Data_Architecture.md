@@ -56,7 +56,7 @@ Bảng gốc chứa các thuộc tính chung của cả Folder và VocabSet.
 | Column      | Type   | Constraints        | Description        |
 | :---------- | :----- | :----------------- | :----------------- |
 | `vocab_id`  | Long   | PK, Auto-increment | Định danh duy nhất |
-| `word`      | String | Not Null           | Từ vựng            |
+| `word`      | String | Not Null, Unique   | Từ vựng            |
 | `meaning`   | String | Nullable           | Nghĩa của từ       |
 | `ipa`       | String | Nullable           | Phiên âm quốc tế   |
 | `audio_url` | String | Nullable           | Link file âm thanh |

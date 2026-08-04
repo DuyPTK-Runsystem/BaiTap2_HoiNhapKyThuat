@@ -1,0 +1,401 @@
+{
+  "info": {
+    "_postman_id": "1f988245-8f28-451d-a535-2b1e9091816f",
+    "name": "BaiTap2 HoiNhapKyThuat AI",
+    "description": "Auth and Vocabulary quick test collection. The vocabulary request uses Free Dictionary API through the backend to return IPA, then Google TTS to generate an audio URL.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "email",
+      "value": "demo@example.com"
+    },
+    {
+      "key": "password",
+      "value": "secret123"
+    },
+    {
+      "key": "word",
+      "value": "hello"
+    },
+    {
+      "key": "meaning",
+      "value": "xin chao"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "audioUrl",
+      "value": ""
+    },
+    {
+      "key": "vocabId",
+      "value": ""
+    },
+    {
+      "key": "updatedMeaning",
+      "value": "xin chao moi"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('accessToken', json.access_token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vocabulary",
+      "item": [
+        {
+          "name": "Create Vocab - Free Dictionary IPA",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('vocabId', json.id);",
+                  "pm.collectionVariables.set('audioUrl', json.audio_url);",
+                  "pm.test('response has ipa', function () {",
+                  "  pm.expect(json.ipa).to.be.a('string').and.not.empty;",
+                  "});",
+                  "pm.test('response has audio_url', function () {",
+                  "  pm.expect(json.audio_url).to.be.a('string').and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"{{word}}\",\n  \"meaning\": \"{{meaning}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocabs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocabs"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Vocab - By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocabs/lookup?id={{vocabId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocabs",
+                "lookup"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "{{vocabId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Vocab - By Word",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocabs/lookup?word={{word}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocabs",
+                "lookup"
+              ],
+              "query": [
+                {
+                  "key": "word",
+                  "value": "{{word}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Vocab Meaning - By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"meaning\": \"{{updatedMeaning}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocabs/lookup?id={{vocabId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocabs",
+                "lookup"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "{{vocabId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Vocab Meaning - By Word",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"meaning\": \"{{updatedMeaning}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocabs/lookup?word={{word}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocabs",
+                "lookup"
+              ],
+              "query": [
+                {
+                  "key": "word",
+                  "value": "{{word}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Free Dictionary Direct Lookup",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://freedictionaryapi.com/api/v1/entries/en/{{word}}",
+              "protocol": "https",
+              "host": [
+                "freedictionaryapi",
+                "com"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "entries",
+                "en",
+                "{{word}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Vocab Audio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('audio request succeeds', function () {",
+                  "  pm.expect(pm.response.code).to.eql(200);",
+                  "});",
+                  "pm.test('response is audio', function () {",
+                  "  pm.expect(pm.response.headers.get('Content-Type')).to.include('audio/mpeg');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{audioUrl}}",
+              "host": [
+                "{{baseUrl}}{{audioUrl}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -66,6 +66,10 @@ repositories {
 	mavenCentral()
 }
 
+configurations.configureEach {
+	exclude(group = "org.slf4j", module = "slf4j-simple")
+}
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -87,6 +91,10 @@ dependencies {
 	testRuntimeOnly("com.h2database:h2")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testAnnotationProcessor("org.projectlombok:lombok")
+
+	// Google TTS
+	implementation(platform("com.google.cloud:libraries-bom:26.83.0"))
+	implementation("com.google.cloud:google-cloud-texttospeech")
 }
 
 tasks.withType<Test> {

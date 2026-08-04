@@ -1,4 +1,4 @@
-package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service;
+package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.auth;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

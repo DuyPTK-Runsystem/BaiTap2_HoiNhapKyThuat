@@ -29,7 +29,7 @@ Mỗi khi thêm Developer Plan mới, cần cập nhật file này với:
 | ---------------------------------------------------------------------------------------- | --------------------------------------------- | -------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | [`auth_authz/Auth_Authz_DeveloperPlan.md`](auth_authz/Auth_Authz_DeveloperPlan.md)       | Authentication và authorization tối giản      | Đã phê duyệt         | Đã triển khai         | Cấu hình Spring Boot, User, JWT, BCrypt, register/login/refresh/account/logout; không có Roles và Permissions     |
 | [`auth_authz/Auth_UnitTest_DeveloperPlan.md`](auth_authz/Auth_UnitTest_DeveloperPlan.md) | Unit Test cho Authentication và Authorization | Đã phê duyệt         | Đã triển khai         | JUnit test cho `UserService` và HTML report có test case, module và coverage; không test app/repo/`SecurityUtil` |
-| [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md) | Vocabulary Management | Chờ phê duyệt | Chưa triển khai | Manual vocabulary API, `Vocab` entity, IPA/audio automation boundary; chưa làm bulk `.xlsx`/Organization |
+| [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md) | Vocabulary Management | Đã phê duyệt | Đã triển khai create request DTO, get/update lookup và unique word | `POST /api/v1/vocabs` dùng JSON request DTO; `GET/PATCH /api/v1/vocabs/lookup` theo `id` hoặc `word`, update chỉ sửa `meaning`, `word` unique |
 
 ## 4. Tóm tắt từng Developer Plan
 
@@ -100,16 +100,17 @@ POST /api/v1/auth/logout
 
 - Triển khai quản lý từ vựng thủ công theo docs.
 - Tạo entity `Vocab` map bảng `vocabs`.
-- Tạo API thêm từ, lấy danh sách/lấy chi tiết và cập nhật nghĩa.
-- Chuẩn bị boundary cho automation IPA/audio.
+- Tạo quick API thêm từ `POST /api/v1/vocabs` bằng request params.
+- Chuẩn bị boundary cho automation IPA/audio với dumb provider trước khi tích hợp `hcoles/voices`.
 
 **Bao gồm:**
 
 - `Vocab` entity.
 - `VocabRepository`.
-- DTO request/response.
+- Response DTO.
 - `VocabService`.
 - `VocabAutomationService`.
+- `FreeDictionaryVocabAutomationService`.
 - `VocabController`.
 - Unit test service layer.
 - Cập nhật HTML test report module mapping nếu cần.
@@ -120,12 +121,14 @@ POST /api/v1/auth/logout
 - Partial Failure implementation cho `.xlsx`.
 - Organization `Item`/`Folder`/`VocabSet`.
 - Quan hệ `vocab_vocab_set`.
+- API lấy danh sách/lấy chi tiết/cập nhật nghĩa trong phase đầu.
 - Flashcard hoặc Testing/Learning.
-- External IPA/audio provider thật.
+- `hcoles/voices` và Oxford không còn là provider chính; Free Dictionary là provider IPA hiện tại.
 
 **Rủi ro chính:**
 
-- Docs chưa chỉ định provider IPA/audio.
+- Provider chính chuyển sang Free Dictionary API, không cần credentials.
+- Response cần trả `ipa`; không dùng `phoneme` trong Vocabulary process; khi cần audio thì gọi `GoogleTtsService.synthesizeIpa(...)` và trả `audio_url` tới MP3 thật.
 - Docs chưa yêu cầu unique `word`, nên không tự thêm unique.
 - Bulk `.xlsx` và quan hệ VocabSet phụ thuộc plan/module khác.
 
@@ -156,3 +159,26 @@ Khi tạo plan mới, cần thêm vào bảng ở mục 3 và phần tóm tắt 
 | 2026-08-03 | Điều chỉnh HTML Unit Test report: coverage chỉ filter theo module cần test                                  | Codex               |
 | 2026-08-03 | Cập nhật plan Auth/Authz cho refactor Lombok theo convention boilerplate                                    | Codex               |
 | 2026-08-03 | Tạo Developer Plan Vocabulary Management theo yêu cầu triển khai module                                     | Codex               |
+| 2026-08-04 | Cập nhật docs/plan Vocabulary: dùng hướng provider `hcoles/voices`, triển khai dumb provider/API trước      | Codex               |
+| 2026-08-04 | Thu hẹp quick dumb test Vocabulary còn `POST /api/v1/vocabs` với request params                            | Codex               |
+| 2026-08-04 | Người dùng phê duyệt quick dumb test Vocabulary và cho phép bắt đầu triển khai                              | Người dùng          |
+| 2026-08-04 | Triển khai quick dumb test Vocabulary với `POST /api/v1/vocabs`, dumb IPA/audio provider và unit test       | Codex               |
+| 2026-08-04 | Thêm plan chờ phê duyệt cho real `hcoles/voices`: audio file thật, audio URL thật và phoneme trong response | Codex               |
+| 2026-08-04 | Người dùng phê duyệt tiếp tục test real audio file và phoneme provider sử dụng cho Vocabulary               | Người dùng          |
+| 2026-08-04 | Triển khai real `hcoles/voices` provider cho Vocabulary, trả phoneme và audio URL tới WAV thật              | Codex               |
+| 2026-08-04 | Người dùng yêu cầu chuyển pipeline Vocabulary sang Oxford Dictionaries API                                  | Người dùng          |
+| 2026-08-04 | Cập nhật docs/plan Vocabulary cho Oxford provider, dùng env vars thay vì hard-code credentials              | Codex               |
+| 2026-08-04 | Triển khai Oxford API provider cho Vocabulary và cập nhật Postman collection                                | Codex               |
+| 2026-08-04 | Người dùng yêu cầu chuyển provider Vocabulary sang Free Dictionary API                                      | Người dùng          |
+| 2026-08-04 | Cập nhật docs/plan Vocabulary cho Free Dictionary provider, audio để phase IPA -> voice sau                 | Codex               |
+| 2026-08-04 | Triển khai Free Dictionary API provider cho Vocabulary và cập nhật Postman collection                       | Codex               |
+| 2026-08-04 | Dọn implementation dummy provider dư sau khi Free Dictionary là provider hiện tại                           | Codex               |
+| 2026-08-04 | Cập nhật docs/plan chờ phê duyệt để loại bỏ `phoneme` khỏi toàn bộ Vocabulary process                       | Codex               |
+| 2026-08-04 | Cập nhật docs/plan chờ phê duyệt để sinh audio bằng `GoogleTtsService.synthesizeIpa(...)`                   | Codex               |
+| 2026-08-04 | Triển khai Vocabulary POST: bỏ `phoneme`, sinh audio qua `GoogleTtsService.synthesizeIpa(...)`              | Codex               |
+| 2026-08-04 | Tạo plan chờ phê duyệt để refactor service package thành `auth`, `vocab`, `tts`                             | Codex               |
+| 2026-08-04 | Triển khai refactor service package thành `auth`, `vocab`, `tts`                                            | Codex               |
+| 2026-08-04 | Tạo plan chờ phê duyệt để đổi `POST /api/v1/vocabs` sang JSON request DTO và bỏ `audioUrl` request          | Codex               |
+| 2026-08-04 | Triển khai đổi `POST /api/v1/vocabs` sang JSON request DTO và bỏ `audioUrl` request                         | Codex               |
+| 2026-08-04 | Tạo plan chờ phê duyệt cho get/update vocab theo `id` hoặc `word` và unique constraint cho `word`           | Codex               |
+| 2026-08-04 | Triển khai get/update vocab theo `id` hoặc `word` và unique constraint cho `word`                           | Codex               |

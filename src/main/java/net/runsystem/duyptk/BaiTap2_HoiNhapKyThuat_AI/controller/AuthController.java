@@ -20,7 +20,7 @@ import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqRegis
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResLoginDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResUserDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.User;
-import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.UserService;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.auth.UserService;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.SecurityUtil;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.annotation.ApiMessage;
 
