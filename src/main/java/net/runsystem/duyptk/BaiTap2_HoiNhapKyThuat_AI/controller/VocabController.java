@@ -11,10 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqCreateVocabDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqUpdateVocabDTO;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabBulkImportDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabDTO;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.vocab.VocabBulkImportService;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.vocab.VocabService;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.annotation.ApiMessage;
 
@@ -23,11 +26,18 @@ import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.annotation.ApiMessage
 @RequiredArgsConstructor
 public class VocabController {
     private final VocabService vocabService;
+    private final VocabBulkImportService vocabBulkImportService;
 
     @PostMapping
     @ApiMessage("Tạo từ vựng")
     public ResponseEntity<ResVocabDTO> create(@RequestBody ReqCreateVocabDTO request) {
         return ResponseEntity.ok(vocabService.create(request));
+    }
+
+    @PostMapping(value = "/bulk", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiMessage("Import từ vựng từ file .xlsx")
+    public ResponseEntity<ResVocabBulkImportDTO> bulkImport(@RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(vocabBulkImportService.importFile(file));
     }
 
     @GetMapping("/lookup")

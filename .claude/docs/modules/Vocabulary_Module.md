@@ -17,6 +17,15 @@
 ### BM2: Bulk Import (.xlsx)
 - Nhập hàng loạt từ file.
 - **Rule (Critical)**: Áp dụng cơ chế **Partial Failure**. Nếu 1 dòng lỗi, bỏ qua dòng đó và tiếp tục dòng tiếp theo.
+- Template import chính thức: `src/main/resources/VocabImportTemplate.xlsx`.
+- Sheet đầu tiên dùng header ở row 2, data bắt đầu từ row 3.
+- Cột template:
+  - `A`: `STT`, chỉ dùng để hiển thị thứ tự, không lưu DB.
+  - `B`: `Từ vựng (word)`, bắt buộc.
+  - `C`: `Phiên âm (có thể bỏ trống)`, optional `ipa`.
+  - `D`: `Dịch nghĩa`, bắt buộc theo rule BM1 khi provider không resolve được IPA.
+- Bulk import phải áp dụng cùng rule tạo vocab lẻ: `word` unique, tự resolve IPA nếu thiếu, tự sinh `audio_url` bằng Google TTS sau khi có IPA.
+- Bulk import response phải thể hiện tổng số dòng xử lý, số dòng thành công, số dòng thất bại và lỗi theo từng dòng.
 
 ## 3. Automation
 - Tự động chuyển hóa từ vựng sang phiên âm IPA.
@@ -53,3 +62,4 @@
 | 2026-08-04 | Triển khai API tạo vocab theo hướng Free Dictionary IPA và Google TTS audio, không trả field `phoneme` | Codex |
 | 2026-08-04 | Cập nhật contract tạo vocab: dùng JSON request DTO và không nhận `audioUrl` từ client | Codex |
 | 2026-08-04 | Bổ sung yêu cầu `word` unique, get/update vocab theo `id` hoặc `word`, update chỉ sửa `meaning` | Codex |
+| 2026-08-04 | Bổ sung yêu cầu bulk import `.xlsx` theo `VocabImportTemplate.xlsx` và Partial Failure theo từng dòng | Codex |

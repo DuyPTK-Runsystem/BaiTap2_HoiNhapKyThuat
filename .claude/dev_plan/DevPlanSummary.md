@@ -29,7 +29,7 @@ Mỗi khi thêm Developer Plan mới, cần cập nhật file này với:
 | ---------------------------------------------------------------------------------------- | --------------------------------------------- | -------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | [`auth_authz/Auth_Authz_DeveloperPlan.md`](auth_authz/Auth_Authz_DeveloperPlan.md)       | Authentication và authorization tối giản      | Đã phê duyệt         | Đã triển khai         | Cấu hình Spring Boot, User, JWT, BCrypt, register/login/refresh/account/logout; không có Roles và Permissions     |
 | [`auth_authz/Auth_UnitTest_DeveloperPlan.md`](auth_authz/Auth_UnitTest_DeveloperPlan.md) | Unit Test cho Authentication và Authorization | Đã phê duyệt         | Đã triển khai         | JUnit test cho `UserService` và HTML report có test case, module và coverage; không test app/repo/`SecurityUtil` |
-| [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md) | Vocabulary Management | Đã phê duyệt | Đã triển khai create request DTO, get/update lookup và unique word | `POST /api/v1/vocabs` dùng JSON request DTO; `GET/PATCH /api/v1/vocabs/lookup` theo `id` hoặc `word`, update chỉ sửa `meaning`, `word` unique |
+| [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md) | Vocabulary Management | Đã phê duyệt | Đã triển khai create/get/update/bulk import `.xlsx` | `POST /api/v1/vocabs` dùng JSON request DTO; `GET/PATCH /lookup`; `POST /bulk` import theo `VocabImportTemplate.xlsx`, Partial Failure từng dòng |
 
 ## 4. Tóm tắt từng Developer Plan
 
@@ -182,3 +182,5 @@ Khi tạo plan mới, cần thêm vào bảng ở mục 3 và phần tóm tắt 
 | 2026-08-04 | Triển khai đổi `POST /api/v1/vocabs` sang JSON request DTO và bỏ `audioUrl` request                         | Codex               |
 | 2026-08-04 | Tạo plan chờ phê duyệt cho get/update vocab theo `id` hoặc `word` và unique constraint cho `word`           | Codex               |
 | 2026-08-04 | Triển khai get/update vocab theo `id` hoặc `word` và unique constraint cho `word`                           | Codex               |
+| 2026-08-04 | Tạo plan chờ phê duyệt cho bulk import `.xlsx` theo `VocabImportTemplate.xlsx`                              | Codex               |
+| 2026-08-04 | Triển khai bulk import `.xlsx` theo `VocabImportTemplate.xlsx` với Partial Failure từng dòng                 | Codex               |

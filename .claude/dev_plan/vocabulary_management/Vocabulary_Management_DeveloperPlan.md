@@ -941,3 +941,142 @@ Sau khi được phê duyệt và triển khai, chạy:
 |---|---|---|
 | 2026-08-04 | Tạo plan chờ phê duyệt cho get/update vocab theo `id` hoặc `word` và unique constraint cho `word` | Codex |
 | 2026-08-04 | Triển khai get/update vocab theo `id` hoặc `word`, unique `word`, tests và Postman collection | Codex |
+
+## 23. Developer Plan cập nhật: Bulk Import Vocab `.xlsx`
+
+### 23.1. Trạng thái
+
+- Trạng thái: Đã triển khai.
+- Agent tạo cập nhật plan: Codex.
+- Lý do cập nhật: Người dùng yêu cầu implement bulk add vocab feature theo template `src/main/resources/VocabImportTemplate.xlsx`.
+
+### 23.2. Căn cứ tài liệu/source
+
+- `.claude/docs/modules/Vocabulary_Module.md`
+  - BM2: Bulk Import `.xlsx`.
+  - Rule Critical: Partial Failure, một dòng lỗi thì bỏ qua dòng đó và tiếp tục dòng tiếp theo.
+  - Template chính thức: `src/main/resources/VocabImportTemplate.xlsx`.
+- Template `src/main/resources/VocabImportTemplate.xlsx`
+  - Header row: row 2.
+  - Data start row: row 3.
+  - Cột `A`: `STT`.
+  - Cột `B`: `Từ vựng (word)`.
+  - Cột `C`: `Phiên âm (có thể bỏ trống)`.
+  - Cột `D`: `Dịch nghĩa`.
+
+### 23.3. Mục tiêu
+
+- Thêm API bulk import vocab từ file `.xlsx`.
+- Parse file theo template chính thức.
+- Với mỗi dòng hợp lệ:
+  - lấy `word`, `ipa` optional, `meaning`.
+  - áp dụng cùng create flow hiện tại: unique `word`, resolve IPA nếu thiếu, sinh audio URL bằng Google TTS.
+  - lưu vocab nếu thành công.
+- Với mỗi dòng lỗi:
+  - không rollback toàn bộ batch.
+  - ghi nhận row number, word nếu có, message lỗi.
+  - tiếp tục xử lý dòng tiếp theo.
+- Response trả summary import.
+
+### 23.4. API contract dự kiến
+
+```http
+POST /api/v1/vocabs/bulk
+Content-Type: multipart/form-data
+Authorization: Bearer <token>
+```
+
+Form-data:
+
+```text
+file=<VocabImportTemplate.xlsx>
+```
+
+Response:
+
+```json
+{
+  "total_rows": 5,
+  "success_count": 4,
+  "failure_count": 1,
+  "items": [
+    {
+      "row_number": 3,
+      "word": "option",
+      "success": true,
+      "vocab": {
+        "id": 1,
+        "word": "option",
+        "meaning": "lựa chọn",
+        "ipa": "/...",
+        "audio_url": "/api/v1/vocabs/audio/option-<hash>.mp3"
+      },
+      "error": null
+    },
+    {
+      "row_number": 4,
+      "word": "word",
+      "success": false,
+      "vocab": null,
+      "error": "Từ vựng đã tồn tại"
+    }
+  ]
+}
+```
+
+### 23.5. Phạm vi thực hiện
+
+- Thêm dependency đọc `.xlsx`:
+  - `org.apache.poi:poi-ooxml`.
+- Tạo response DTO cho bulk import:
+  - `ResVocabBulkImportDTO`.
+  - `ResVocabBulkImportItemDTO`.
+- Tạo parser/import service trong `service.vocab`, ví dụ:
+  - `VocabBulkImportService`.
+  - đọc sheet đầu tiên.
+  - header row 2, data từ row 3.
+  - bỏ qua dòng trống hoàn toàn.
+  - map cột B/C/D sang create request.
+- Cập nhật `VocabController`:
+  - `POST /api/v1/vocabs/bulk` nhận `@RequestPart` hoặc `@RequestParam MultipartFile file`.
+- Reuse `VocabService.create(ReqCreateVocabDTO)` để đảm bảo cùng rule single create.
+- Cập nhật unit test:
+  - parse/process một file `.xlsx` test hoặc template fixture.
+  - partial failure khi có duplicate/invalid row.
+  - không dùng application context/repository integration test.
+- Cập nhật HTML report mapping cho DTO/service mới.
+- Cập nhật Postman collection:
+  - thêm request multipart upload file.
+
+### 23.6. Phạm vi không thực hiện
+
+- Không import quan hệ VocabSet/Organization.
+- Không list/detail/delete mới ngoài API bulk.
+- Không thay đổi template file trong scope này nếu không cần.
+- Không rollback toàn batch khi một dòng lỗi.
+- Không tạo migration tool mới.
+
+### 23.7. Validation/error dự kiến
+
+- Nếu file null/empty: trả lỗi bad request.
+- Nếu file không phải `.xlsx`: trả lỗi bad request.
+- Nếu sheet không có dữ liệu: summary `total_rows = 0`.
+- Nếu dòng thiếu `word`: dòng đó failure.
+- Nếu thiếu `ipa` và provider không resolve được IPA: dòng đó failure theo BM1.
+- Nếu duplicate `word` trong DB hoặc trong chính file: dòng đó failure; dòng đầu tiên thành công nếu hợp lệ.
+- Lỗi Google TTS/provider/audio của một dòng chỉ fail dòng đó.
+
+### 23.8. Verification dự kiến
+
+Sau khi được phê duyệt và triển khai, chạy:
+
+```text
+./gradlew test jacocoTestReport testHtmlReport checkstyleMain checkstyleTest pmdMain pmdTest
+```
+
+### 23.9. Lịch sử cập nhật
+
+| Ngày | Nội dung | Người cập nhật |
+|---|---|---|
+| 2026-08-04 | Tạo plan chờ phê duyệt cho bulk import `.xlsx` theo `VocabImportTemplate.xlsx` với Partial Failure | Codex |
+| 2026-08-04 | Triển khai API bulk import `.xlsx`, unit test Partial Failure và cập nhật Postman collection | Codex |

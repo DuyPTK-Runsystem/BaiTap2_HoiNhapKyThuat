@@ -212,6 +212,45 @@
           }
         },
         {
+          "name": "Bulk Import Vocab",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "src/main/resources/VocabImportTemplate.xlsx"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocabs/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocabs",
+                "bulk"
+              ]
+            }
+          }
+        },
+        {
           "name": "Get Vocab - By Word",
           "request": {
             "auth": {
