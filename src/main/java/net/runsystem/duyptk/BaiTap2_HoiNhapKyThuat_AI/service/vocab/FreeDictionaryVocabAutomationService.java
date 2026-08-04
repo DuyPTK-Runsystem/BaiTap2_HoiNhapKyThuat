@@ -12,7 +12,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.externalDTO.VocabAutomationResult;
-import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.error.IdInvalidException;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.error.ExternalServerException;
 
 @Service
 @RequiredArgsConstructor
@@ -53,9 +53,9 @@ public class FreeDictionaryVocabAutomationService implements VocabAutomationServ
                     .body(String.class);
             return objectMapper.readTree(responseBody);
         } catch (RestClientException exception) {
-            throw new IdInvalidException("Không thể gọi Free Dictionary API: " + exception.getMessage(), exception);
+            throw new RestClientException("Không thể gọi Free Dictionary API: " + exception.getMessage(), exception);
         } catch (JsonProcessingException exception) {
-            throw new IdInvalidException("Free Dictionary API trả JSON không hợp lệ", exception);
+            throw new ExternalServerException("Free Dictionary API trả JSON không hợp lệ", exception);
         }
     }
 

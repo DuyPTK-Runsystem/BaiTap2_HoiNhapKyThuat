@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.tts.GoogleTtsService;
-import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.error.IdInvalidException;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.error.ExternalServerException;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +37,7 @@ public class VocabAudioService {
         try {
             byte[] audioBytes = googleTtsService.synthesizeIpa(word, ipa, resolvedTtsLanguageCode());
             if (audioBytes == null || audioBytes.length == 0) {
-                throw new IdInvalidException("Google TTS không trả dữ liệu audio");
+                throw new ExternalServerException("Google TTS không trả dữ liệu audio");
             }
 
             String fileName = audioFileName(word);
@@ -45,24 +45,24 @@ public class VocabAudioService {
             Files.write(audioStoragePath().resolve(fileName), audioBytes);
             return resolvedAudioBaseUrl() + "/" + fileName;
         } catch (IOException exception) {
-            throw new IdInvalidException("Không thể sinh file audio từ IPA", exception);
+            throw new ExternalServerException("Không thể lưu file audio", exception);
         }
     }
 
     public byte[] readAudioFile(String fileName) {
         if (fileName == null || !fileName.matches(SAFE_AUDIO_FILE_PATTERN)) {
-            throw new IdInvalidException("Tên file audio không hợp lệ");
+            throw new IllegalArgumentException("Tên file audio không hợp lệ");
         }
 
         Path audioFile = audioStoragePath().resolve(fileName).normalize();
         if (!audioFile.startsWith(audioStoragePath())) {
-            throw new IdInvalidException("Tên file audio không hợp lệ");
+            throw new IllegalArgumentException("Tên file audio không hợp lệ");
         }
 
         try {
             return Files.readAllBytes(audioFile);
         } catch (IOException exception) {
-            throw new IdInvalidException("Không thể đọc file audio", exception);
+            throw new ExternalServerException("Không thể đọc file audio", exception);
         }
     }
 

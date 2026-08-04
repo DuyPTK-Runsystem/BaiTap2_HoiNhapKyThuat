@@ -14,7 +14,6 @@ import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqLogin
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqRegisterDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.User;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.UserRepository;
-import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.error.IdInvalidException;
 
 class UserServiceTests {
     private static final String LOGIN_EMAIL = "login@example.com";
@@ -44,7 +43,7 @@ class UserServiceTests {
         ReqRegisterDTO request = new ReqRegisterDTO("exists@example.com", RAW_PASSWORD);
 
         Assertions.assertThatThrownBy(() -> userService.register(request))
-                .isInstanceOf(IdInvalidException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Email đã tồn tại trong hệ thống");
     }
 

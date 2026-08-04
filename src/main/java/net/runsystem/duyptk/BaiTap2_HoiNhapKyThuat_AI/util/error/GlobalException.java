@@ -12,22 +12,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.RestResponse;
 
 @RestControllerAdvice
+@SuppressWarnings("PMD.TooManyMethods")
 public class GlobalException {
 
     // handle all other exceptions
-    @ExceptionHandler(value = Exception.class)
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<RestResponse<Object>> handleAllExceptions(Exception ex) {
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -36,19 +37,19 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(restResponse);
     }
 
-    @ExceptionHandler(value = {
+    @ExceptionHandler({
             UsernameNotFoundException.class,
             BadCredentialsException.class
     })
     public ResponseEntity<Object> handleSecurityException(Exception ex) {
-        RestResponse<Object> res = new RestResponse<Object>();
+        RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError("Exception about login function occurs...");
-        res.setMessage(ex.getMessage());
+        res.setMessage(ex.getMessage()); // Email hoac mat khau khong dung
         return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(res);
     }
 
-    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<RestResponse<Object>> handleValidationError(
             MethodArgumentNotValidException ex) {
         RestResponse<Object> restResponse = new RestResponse<>();
@@ -66,7 +67,7 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(restResponse);
     }
 
-    @ExceptionHandler(value = IllegalArgumentException.class)
+    @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<RestResponse<Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
@@ -75,7 +76,7 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(restResponse);
     }
 
-    @ExceptionHandler(value = NoSuchElementException.class)
+    @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<RestResponse<Object>> handleNoSuchElementException(NoSuchElementException ex) {
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
@@ -84,7 +85,7 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(restResponse);
     }
 
-    @ExceptionHandler(value = NoResourceFoundException.class)
+    @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<RestResponse<Object>> handleNoResourceFoundException(NoResourceFoundException ex) {
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
@@ -93,16 +94,16 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(restResponse);
     }
 
-    @ExceptionHandler(value = BadRequestException.class)
+    @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<RestResponse<Object>> handleBadRequestException(BadRequestException ex) {
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        if (ex.getMessage().equals("No refresh token provided")) {
+        if ("No refresh token provided".equals(ex.getMessage())) {
             restResponse.setError("401 Unauthorized Exception occurs: Invalid refresh token");
             restResponse.setMessage(ex.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(restResponse);
         }
-        if (ex.getMessage().equals("Invalid refresh token")) {
+        if ("Invalid refresh token".equals(ex.getMessage())) {
             restResponse.setError("401 Unauthorized Exception occurs: Invalid refresh token");
             restResponse.setMessage(ex.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(restResponse);
@@ -123,7 +124,7 @@ public class GlobalException {
     // ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(restResponse);
     // }
 
-    @ExceptionHandler(value = AccessDeniedException.class)
+    @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<RestResponse<Object>> handleAccessDeniedException(AccessDeniedException ex) {
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(HttpStatus.FORBIDDEN.value());
@@ -132,7 +133,7 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(restResponse);
     }
 
-    @ExceptionHandler(value = InsufficientAuthenticationException.class)
+    @ExceptionHandler(InsufficientAuthenticationException.class)
     public ResponseEntity<RestResponse<Object>> handleInsufficientAuthenticationException(
             InsufficientAuthenticationException ex) {
         RestResponse<Object> restResponse = new RestResponse<>();
@@ -142,7 +143,7 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(restResponse);
     }
 
-    @ExceptionHandler(value = IdInvalidException.class)
+    @ExceptionHandler(IdInvalidException.class)
     public ResponseEntity<RestResponse<Object>> handleIdInvalidException(IdInvalidException ex) {
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
@@ -151,7 +152,7 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(restResponse);
     }
 
-    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<RestResponse<Object>> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException ex) {
         RestResponse<Object> restResponse = new RestResponse<>();
@@ -164,7 +165,8 @@ public class GlobalException {
             // Extract the specific error for enum or type mismatch
             if (message.contains("DayOfWeekEnum")) {
                 restResponse.setMessage(
-                        "Invalid day of week. Allowed values: MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY");
+                        "Invalid day of week. Allowed values: MONDAY, TUESDAY, WEDNESDAY, "
+                                + "THURSDAY, FRIDAY, SATURDAY, SUNDAY");
             } else {
                 restResponse.setMessage("Invalid data format in request body");
             }
@@ -175,7 +177,7 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(restResponse);
     }
 
-    @ExceptionHandler(value = URISyntaxException.class)
+    @ExceptionHandler(URISyntaxException.class)
     public ResponseEntity<RestResponse<Object>> handleURISyntaxException(URISyntaxException ex) {
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
@@ -184,12 +186,30 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(restResponse);
     }
 
-    @ExceptionHandler(value = IOException.class)
+    @ExceptionHandler(IOException.class)
     public ResponseEntity<RestResponse<Object>> handleIOException(IOException ex) {
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         restResponse.setError("I/O Exception occurred");
         restResponse.setMessage(ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(restResponse);
+    }
+
+    @ExceptionHandler(RestClientException.class)
+    public ResponseEntity<RestResponse<Object>> handleRestClientException(RestClientException ex) {
+        RestResponse<Object> restResponse = new RestResponse<>();
+        restResponse.setStatusCode(HttpStatus.BAD_GATEWAY.value());
+        restResponse.setError("502 Bad Gateway Exception occurs: Error occurred while calling external service");
+        restResponse.setMessage(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(restResponse);
+    }
+
+    @ExceptionHandler(ExternalServerException.class)
+    public ResponseEntity<RestResponse<Object>> handleExternalServerException(ExternalServerException ex) {
+        RestResponse<Object> restResponse = new RestResponse<>();
+        restResponse.setStatusCode(HttpStatus.BAD_GATEWAY.value());
+        restResponse.setError("502 Bad Gateway Exception occurs: Error occurred while processing external service");
+        restResponse.setMessage(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(restResponse);
     }
 }

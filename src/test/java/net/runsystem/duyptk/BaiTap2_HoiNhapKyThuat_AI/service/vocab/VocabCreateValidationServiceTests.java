@@ -8,7 +8,6 @@ import org.mockito.Mockito;
 
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqCreateVocabDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.VocabRepository;
-import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.error.IdInvalidException;
 
 class VocabCreateValidationServiceTests {
     private static final String HELLO = "hello";
@@ -22,7 +21,7 @@ class VocabCreateValidationServiceTests {
         VocabService vocabService = vocabService(Mockito.mock(VocabAutomationService.class));
 
         Assertions.assertThatThrownBy(() -> vocabService.create(ReqCreateVocabDTO.builder().word(" ").build()))
-                .isInstanceOf(IdInvalidException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Word không được để trống");
     }
 
@@ -33,7 +32,7 @@ class VocabCreateValidationServiceTests {
         VocabService vocabService = vocabService(automationService);
 
         Assertions.assertThatThrownBy(() -> vocabService.create(ReqCreateVocabDTO.builder().word(HELLO).build()))
-                .isInstanceOf(IdInvalidException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Nếu không tìm thấy IPA, Word, Meaning và IPA là bắt buộc");
     }
 
@@ -43,7 +42,7 @@ class VocabCreateValidationServiceTests {
         VocabService vocabService = vocabService(Mockito.mock(VocabAutomationService.class));
 
         Assertions.assertThatThrownBy(() -> vocabService.create(createRequest()))
-                .isInstanceOf(IdInvalidException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Từ vựng đã tồn tại");
     }
 

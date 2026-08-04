@@ -10,7 +10,6 @@ import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqUpdat
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.Vocab;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.VocabRepository;
-import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.error.IdInvalidException;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +23,7 @@ public class VocabService {
     @Transactional
     public ResVocabDTO create(ReqCreateVocabDTO request) {
         if (request == null) {
-            throw new IdInvalidException("Request tạo từ vựng không được để trống");
+            throw new IllegalArgumentException("Request tạo từ vựng không được để trống");
         }
 
         String word = request.getWord();
@@ -55,7 +54,7 @@ public class VocabService {
     @Transactional
     public ResVocabDTO update(Long id, String word, ReqUpdateVocabDTO request) {
         if (request == null) {
-            throw new IdInvalidException("Request cập nhật từ vựng không được để trống");
+            throw new IllegalArgumentException("Request cập nhật từ vựng không được để trống");
         }
 
         String meaning = vocabValidationService.requireMeaning(request.getMeaning());
