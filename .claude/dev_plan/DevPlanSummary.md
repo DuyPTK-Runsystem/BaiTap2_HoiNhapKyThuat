@@ -30,6 +30,7 @@ Mỗi khi thêm Developer Plan mới, cần cập nhật file này với:
 | [`auth_authz/Auth_Authz_DeveloperPlan.md`](auth_authz/Auth_Authz_DeveloperPlan.md)       | Authentication và authorization tối giản      | Đã phê duyệt         | Đã triển khai         | Cấu hình Spring Boot, User, JWT, BCrypt, register/login/refresh/account/logout; không có Roles và Permissions     |
 | [`auth_authz/Auth_UnitTest_DeveloperPlan.md`](auth_authz/Auth_UnitTest_DeveloperPlan.md) | Unit Test cho Authentication và Authorization | Đã phê duyệt         | Đã triển khai         | JUnit test cho `UserService` và HTML report có test case, module và coverage; không test app/repo/`SecurityUtil` |
 | [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md) | Vocabulary Management | Đã phê duyệt | Đã triển khai create/get/update/bulk import `.xlsx` | `POST /api/v1/vocabs` dùng JSON request DTO; `GET/PATCH /lookup`; `POST /bulk` import theo `VocabImportTemplate.xlsx`, Partial Failure từng dòng |
+| [`organization/Organization_DeveloperPlan.md`](organization/Organization_DeveloperPlan.md) | Organization | Đã phê duyệt một phần | Đã triển khai phase đầu | Phase đầu: `POST /api/v1/folders`, `POST /api/v1/vocab-sets`; entity `Item`/`Folder`/`VocabSet`, cây `parent_id`, owner theo user hiện tại |
 
 ## 4. Tóm tắt từng Developer Plan
 
@@ -132,11 +133,43 @@ POST /api/v1/auth/logout
 - Docs chưa yêu cầu unique `word`, nên không tự thêm unique.
 - Bulk `.xlsx` và quan hệ VocabSet phụ thuộc plan/module khác.
 
+### 4.3. Organization
+
+**File:** [`organization/Organization_DeveloperPlan.md`](organization/Organization_DeveloperPlan.md)
+
+**Mục tiêu:**
+
+- Triển khai nền tảng Organization theo mô hình `Item` base và `Folder`/`VocabSet` kế thừa.
+- Hỗ trợ cấu trúc cây qua `parent_id`.
+- Hỗ trợ quan hệ n-n giữa `VocabSet` và `Vocab`.
+
+**Bao gồm:**
+
+- Entity `Item`, `Folder`, `VocabSet`.
+- Enum `ItemType`.
+- Repository cho item/folder/vocab set.
+- API phase đầu để tạo folder, tạo vocab set, lấy children, gắn/gỡ vocab vào vocab set.
+- Ownership theo authenticated user hiện tại.
+- Unit test service layer cho Organization.
+
+**Không bao gồm:**
+
+- Move/rename/delete item.
+- Recursive tree API hoặc recursive CTE lấy vocab từ folder.
+- Bulk import trực tiếp vào vocab set.
+- Flashcard, Multiple Choice hoặc Testing/Learning.
+- Role, Permission hoặc JWT claims quyền.
+
+**Rủi ro chính:**
+
+- Docs Organization chưa đặc tả endpoint chính thức, nên API trong plan là đề xuất phase đầu cần người dùng phê duyệt.
+- Mapping discriminator `type` trong Class Table Inheritance cần triển khai cẩn thận để không trùng column.
+- Recursive CTE chưa nằm trong scope phase đầu nhưng có thể cần cho Testing/Learning sau này.
+
 ## 5. Developer Plan trong tương lai
 
 Chưa có Developer Plan cho các module sau:
 
-- Organization.
 - Testing & Learning.
 - Flashcard.
 - Import `.xlsx`.
@@ -184,3 +217,6 @@ Khi tạo plan mới, cần thêm vào bảng ở mục 3 và phần tóm tắt 
 | 2026-08-04 | Triển khai get/update vocab theo `id` hoặc `word` và unique constraint cho `word`                           | Codex               |
 | 2026-08-04 | Tạo plan chờ phê duyệt cho bulk import `.xlsx` theo `VocabImportTemplate.xlsx`                              | Codex               |
 | 2026-08-04 | Triển khai bulk import `.xlsx` theo `VocabImportTemplate.xlsx` với Partial Failure từng dòng                 | Codex               |
+| 2026-08-04 | Tạo Developer Plan Organization chờ phê duyệt                                                               | Codex               |
+| 2026-08-04 | Người dùng phê duyệt phase đầu Organization: `POST folder` và `POST vocab set`                              | Người dùng          |
+| 2026-08-04 | Triển khai phase đầu Organization: `POST /api/v1/folders` và `POST /api/v1/vocab-sets`                      | Codex               |

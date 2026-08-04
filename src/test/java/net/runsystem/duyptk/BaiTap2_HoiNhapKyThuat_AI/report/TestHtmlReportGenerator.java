@@ -24,6 +24,7 @@ import org.xml.sax.InputSource;
 public final class TestHtmlReportGenerator {
     private static final int EXPECTED_ARGUMENT_COUNT = 3;
     private static final String AUTH_MODULE = "auth_authz";
+    private static final String ORGANIZATION_MODULE = "organization";
     private static final String VOCAB_MODULE = "vocabulary_management";
     private static final String BASE_PACKAGE_PREFIX = "net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI";
     private static final String EXPECTED_ARGUMENTS_MESSAGE =
@@ -158,6 +159,18 @@ public final class TestHtmlReportGenerator {
                     BASE_PACKAGE_PREFIX + "/service/vocab/VocabLookupService",
                     BASE_PACKAGE_PREFIX + "/service/vocab/VocabValidationService",
                     BASE_PACKAGE_PREFIX + "/service/vocab/Vocab");
+        }
+        if (ORGANIZATION_MODULE.equals(module)) {
+            return List.of(
+                    BASE_PACKAGE_PREFIX + "/controller/OrganizationController",
+                    BASE_PACKAGE_PREFIX + "/domain/requestDTO/ReqCreateFolderDTO",
+                    BASE_PACKAGE_PREFIX + "/domain/requestDTO/ReqCreateVocabSetDTO",
+                    BASE_PACKAGE_PREFIX + "/domain/responseDTO/ResItemDTO",
+                    BASE_PACKAGE_PREFIX + "/domain/table/Folder",
+                    BASE_PACKAGE_PREFIX + "/domain/table/Item",
+                    BASE_PACKAGE_PREFIX + "/domain/table/ItemType",
+                    BASE_PACKAGE_PREFIX + "/domain/table/VocabSet",
+                    BASE_PACKAGE_PREFIX + "/service/organization/OrganizationService");
         }
         return List.of();
     }
@@ -326,6 +339,9 @@ public final class TestHtmlReportGenerator {
         }
         if (className.contains(".service.VocabServiceTests")) {
             return VOCAB_MODULE;
+        }
+        if (className.contains(".service.organization.")) {
+            return ORGANIZATION_MODULE;
         }
         return "unknown";
     }
