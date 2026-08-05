@@ -2,13 +2,13 @@
 
 ## 1. Trạng thái
 
-- Trạng thái phê duyệt: Đã phê duyệt.
-- Trạng thái triển khai: Đã triển khai quick dumb test.
+- Trạng thái phê duyệt: Đã phê duyệt phase tạo vocab kèm `vocabSetId`.
+- Trạng thái triển khai: Đã triển khai create/get/update/bulk import và tạo/bulk import kèm `vocabSetId`.
 - Ngày tạo plan: 2026-08-03.
 - Agent tạo plan: Codex.
-- Ngày cập nhật gần nhất: 2026-08-04.
+- Ngày cập nhật gần nhất: 2026-08-05.
 - Agent cập nhật gần nhất: Codex.
-- Lý do tạo/cập nhật plan: Người dùng yêu cầu triển khai Vocabulary Management và bổ sung hướng provider IPA/audio `hcoles/voices`, nhưng module này chưa có Developer Plan được phê duyệt.
+- Lý do tạo/cập nhật plan: Đã triển khai API tạo/bulk import từ mới kèm query param `vocabSetId`.
 
 ## 2. Mục tiêu
 
@@ -50,6 +50,26 @@ Triển khai quick dumb test cho quản lý từ vựng theo tài liệu source-
   - Bước 1, 2, 3 quy định đọc docs, kiểm tra plan, báo cáo trước khi code.
 
 ## 4. Phạm vi thực hiện
+
+### 4.0. Scope đã được phê duyệt: tạo vocab kèm `vocabSetId`
+
+Triển khai:
+
+- `POST /api/v1/vocabs?vocabSetId={id}`.
+- `POST /api/v1/vocabs/bulk?vocabSetId={id}`.
+
+Contract:
+
+- `vocabSetId` là query param optional.
+- Nếu không có `vocabSetId`, giữ behavior hiện tại:
+  - `POST /api/v1/vocabs` trả `ResVocabDTO`.
+  - `POST /api/v1/vocabs/bulk` trả `ResVocabBulkImportDTO`.
+- Nếu có `vocabSetId`, backend tạo vocab theo rule hiện có rồi gắn vocab vừa tạo vào vocab set.
+- `vocabSetId` phải thuộc authenticated user hiện tại.
+- Single create kèm `vocabSetId` trả response giàu thông tin gồm `vocabSet`, `vocab`, `added`.
+- Bulk import kèm `vocabSetId` chỉ gắn các dòng tạo vocab thành công; các dòng lỗi vẫn theo Partial Failure hiện có.
+- Không tạo `VocabSet` mới trong Vocabulary module.
+- Không cho client gửi `audioUrl`; backend vẫn tự sinh audio URL.
 
 ### 4.1. Quick Dumb Vocabulary Creation
 
@@ -201,6 +221,67 @@ Response:
 }
 ```
 
+### 8.1.1. `POST /api/v1/vocabs?vocabSetId={id}`
+
+Request:
+
+```text
+POST /api/v1/vocabs?vocabSetId=12
+```
+
+Body:
+
+```json
+{
+  "word": "go",
+  "meaning": "di chuyen",
+  "ipa": "gəʊ"
+}
+```
+
+Behavior:
+
+- Tạo vocab mới theo toàn bộ rule của `POST /api/v1/vocabs`.
+- Sau khi tạo thành công, gắn vocab mới vào vocab set `12`.
+- Nếu `vocabSetId` không thuộc current user, trả lỗi và không gắn.
+
+Response:
+
+```json
+{
+  "vocabSet": {
+    "id": 12,
+    "name": "Common verbs",
+    "description": "Basic daily verbs",
+    "parentId": 11,
+    "vocabCount": 3
+  },
+  "vocab": {
+    "id": 5,
+    "word": "go",
+    "meaning": "di chuyen",
+    "ipa": "gəʊ",
+    "audio_url": "/api/v1/vocabs/audio/go.mp3"
+  },
+  "added": true
+}
+```
+
+### 8.1.2. `POST /api/v1/vocabs/bulk?vocabSetId={id}`
+
+Request:
+
+```text
+POST /api/v1/vocabs/bulk?vocabSetId=12
+```
+
+Behavior:
+
+- Import `.xlsx` theo rule hiện có.
+- Với mỗi dòng tạo vocab thành công, gắn vocab đó vào vocab set `12`.
+- Dòng lỗi không được gắn và vẫn xuất hiện trong response lỗi từng dòng.
+- Nếu `vocabSetId` không thuộc current user, trả lỗi trước khi xử lý file.
+
 ## 9. Danh sách file dự kiến tạo/chỉnh sửa
 
 | File | Loại thay đổi | Mục đích |
@@ -212,6 +293,8 @@ Response:
 | `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/service/DumbVocabAutomationService.java` | Tạo mới | Dumb provider để kiểm thử pipeline IPA/audio trước provider thật |
 | `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/service/VocabService.java` | Tạo mới | Business logic Vocabulary |
 | `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/controller/VocabController.java` | Tạo mới | API `/api/v1/vocabs` |
+| `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/service/organization/VocabSetMembershipService.java` | Chỉnh sửa nếu cần | Tái sử dụng/bổ sung method gắn vocab mới vào vocab set |
+| `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/domain/responseDTO/ResVocabSetVocabDTO.java` | Tái sử dụng | Response tạo vocab kèm vocab set |
 | `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/util/error/GlobalExceptionHandler.java` | Chỉnh sửa nếu cần | Bổ sung mapping lỗi business nếu exception hiện tại chưa đủ |
 | `src/test/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/service/VocabServiceTests.java` | Tạo mới | Unit test service layer |
 | `src/test/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/report/TestHtmlReportGenerator.java` | Chỉnh sửa nếu cần | Map test/coverage report cho module `vocabulary_management` |
@@ -227,6 +310,9 @@ Response:
 | `DumbVocabAutomationService.java` | `DumbVocabAutomationService` | Resolve methods | Trả IPA/audio URL giả có format ổn định để kiểm thử pipeline |
 | `VocabService.java` | `VocabService` | `create`, `convertToDTO` | Business rule tạo vocab qua request params và dumb automation |
 | `VocabController.java` | `VocabController` | API methods | `POST /api/v1/vocabs` với `@RequestParam` |
+| `VocabService.java` | `VocabService` | `createWithVocabSet` hoặc tương đương | Tạo vocab rồi gắn vào vocab set khi có `vocabSetId` |
+| `VocabBulkImportService.java` | `VocabBulkImportService` | `importFile` overload hoặc tương đương | Bulk import và gắn các dòng thành công vào vocab set khi có `vocabSetId` |
+| `VocabController.java` | `VocabController` | `create`, `bulkImport` | Nhận optional query param `vocabSetId` |
 | `GlobalExceptionHandler.java` | Exception handler | Handler methods | Dùng `IdInvalidException` nếu đủ; chỉ thêm exception mới nếu cần |
 | `VocabServiceTests.java` | Unit tests | Test methods | Tạo vocab, resolve IPA/audio boundary, reject invalid manual import |
 | `TestHtmlReportGenerator.java` | Report generator | Module mapping/filter | Thêm module `vocabulary_management` vào HTML report nếu có test mới |
@@ -241,6 +327,8 @@ Unit test bằng JUnit cho `VocabService`:
 - Create tự động gán `audioUrl` khi automation resolve được audio và request chưa gửi `audioUrl`.
 - Dumb provider trả IPA/audio URL giả đúng format dự kiến cho một English word.
 - Controller/service nhận dữ liệu tạo vocab từ request params.
+- Create vocab kèm `vocabSetId` trả thông tin vocab set/vocab/added.
+- Bulk import kèm `vocabSetId` chỉ gắn các dòng thành công vào vocab set và vẫn giữ Partial Failure.
 
 Không thêm application context test/repository test nếu người dùng không yêu cầu riêng.
 
@@ -277,6 +365,9 @@ Sau khi được phê duyệt và triển khai, chạy:
 | 2026-08-04 | Thu hẹp quick dumb test còn `POST /api/v1/vocabs` với request params; chuyển GET/list/PATCH sang ngoài scope phase đầu | Codex |
 | 2026-08-04 | Người dùng phê duyệt quick dumb test và cho phép bắt đầu triển khai | Người dùng |
 | 2026-08-04 | Triển khai quick dumb test `POST /api/v1/vocabs` với dumb IPA/audio provider và unit test | Codex |
+| 2026-08-05 | Cập nhật plan chờ phê duyệt cho `vocabSetId` query param khi tạo vocab hoặc bulk import | Codex |
+| 2026-08-05 | Người dùng phê duyệt triển khai `vocabSetId` query param khi tạo vocab hoặc bulk import | Người dùng |
+| 2026-08-05 | Triển khai `vocabSetId` query param khi tạo vocab hoặc bulk import | Codex |
 
 ## 16. Developer Plan cập nhật: Real `hcoles/voices` Provider
 

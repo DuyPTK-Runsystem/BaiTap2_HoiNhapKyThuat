@@ -23,7 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqCreateVocabDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabBulkImportDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabBulkImportItemDTO;
-import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabDTO;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.Vocab;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.organization.VocabSetMembershipService;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.error.ExternalServerException;
 
 @Service
@@ -36,20 +37,28 @@ public class VocabBulkImportService {
     private static final String XLSX_EXTENSION = ".xlsx";
 
     private final VocabService vocabService;
+    private final VocabSetMembershipService vocabSetMembershipService;
     private final DataFormatter dataFormatter = new DataFormatter();
 
     public ResVocabBulkImportDTO importFile(MultipartFile file) {
+        return importFile(file, null);
+    }
+
+    public ResVocabBulkImportDTO importFile(MultipartFile file, Long vocabSetId) {
         validateFile(file);
+        if (vocabSetId != null) {
+            vocabSetMembershipService.validateVocabSetAccess(vocabSetId);
+        }
 
         try (InputStream inputStream = file.getInputStream();
                 Workbook workbook = new XSSFWorkbook(inputStream)) {
-            return importSheet(workbook.getSheetAt(0));
+            return importSheet(workbook.getSheetAt(0), vocabSetId);
         } catch (IOException exception) {
             throw new IllegalArgumentException("Không thể đọc file import vocab", exception);
         }
     }
 
-    private ResVocabBulkImportDTO importSheet(Sheet sheet) {
+    private ResVocabBulkImportDTO importSheet(Sheet sheet, Long vocabSetId) {
         List<ResVocabBulkImportItemDTO> items = new ArrayList<>();
         Set<String> importedWords = new HashSet<>();
 
@@ -59,30 +68,37 @@ public class VocabBulkImportService {
                 continue;
             }
 
-            items.add(importRow(row, rowIndex + 1, importedWords));
+            items.add(importRow(row, rowIndex + 1, importedWords, vocabSetId));
         }
 
         return toImportResult(items);
     }
 
-    private ResVocabBulkImportItemDTO importRow(Row row, int rowNumber, Set<String> importedWords) {
+    private ResVocabBulkImportItemDTO importRow(
+            Row row,
+            int rowNumber,
+            Set<String> importedWords,
+            Long vocabSetId) {
         String word = cellValue(row, WORD_COLUMN_INDEX);
         try {
             String normalizedWord = normalizedWordKey(word);
             if (normalizedWord != null && importedWords.contains(normalizedWord)) {
                 return failureItem(rowNumber, word, "Từ vựng bị trùng trong file import");
             }
-            ResVocabDTO vocab = vocabService.create(ReqCreateVocabDTO.builder()
+            Vocab vocab = vocabService.createEntity(ReqCreateVocabDTO.builder()
                     .word(word)
                     .ipa(cellValue(row, IPA_COLUMN_INDEX))
                     .meaning(cellValue(row, MEANING_COLUMN_INDEX))
                     .build());
+            if (vocabSetId != null) {
+                vocabSetMembershipService.addVocabToSet(vocabSetId, vocab);
+            }
             importedWords.add(normalizedWord);
             return ResVocabBulkImportItemDTO.builder()
                     .rowNumber(rowNumber)
                     .word(word)
                     .success(true)
-                    .vocab(vocab)
+                    .vocab(vocabService.convertToDTO(vocab))
                     .build();
         } catch (DataAccessException | ExternalServerException
                 | IllegalArgumentException | RestClientException exception) {

@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqCreateVocabDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.VocabRepository;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.organization.VocabSetMembershipService;
 
 class VocabCreateValidationServiceTests {
     private static final String HELLO = "hello";
@@ -54,7 +55,8 @@ class VocabCreateValidationServiceTests {
                 automationService,
                 Mockito.mock(VocabAudioService.class),
                 lookupService,
-                validationService);
+                validationService,
+                Mockito.mock(VocabSetMembershipService.class));
     }
 
     private ReqCreateVocabDTO createRequest() {

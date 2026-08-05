@@ -30,14 +30,21 @@ public class VocabController {
 
     @PostMapping
     @ApiMessage("Tạo từ vựng")
-    public ResponseEntity<ResVocabDTO> create(@RequestBody ReqCreateVocabDTO request) {
+    public ResponseEntity<Object> create(
+            @RequestBody ReqCreateVocabDTO request,
+            @RequestParam(required = false) Long vocabSetId) {
+        if (vocabSetId != null) {
+            return ResponseEntity.ok(vocabService.create(request, vocabSetId));
+        }
         return ResponseEntity.ok(vocabService.create(request));
     }
 
     @PostMapping(value = "/bulk", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiMessage("Import từ vựng từ file .xlsx")
-    public ResponseEntity<ResVocabBulkImportDTO> bulkImport(@RequestParam("file") MultipartFile file) {
-        return ResponseEntity.ok(vocabBulkImportService.importFile(file));
+    public ResponseEntity<ResVocabBulkImportDTO> bulkImport(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(required = false) Long vocabSetId) {
+        return ResponseEntity.ok(vocabBulkImportService.importFile(file, vocabSetId));
     }
 
     @GetMapping("/lookup")

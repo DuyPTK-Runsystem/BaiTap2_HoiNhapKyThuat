@@ -10,6 +10,9 @@
 - **Rule Update**: Khi update, chỉ cho phép sửa `Meaning`.
 - `word` phải unique trong bảng `vocabs`; không cho tạo trùng từ vựng đã có.
 - `POST /api/v1/vocabs` dùng JSON request body DTO với `word`, `meaning`, optional `ipa`.
+- `POST /api/v1/vocabs` có thể nhận optional query param `vocabSetId` để tạo từ mới và gắn ngay vào một `VocabSet`.
+- Khi `vocabSetId` được truyền, `vocabSetId` phải thuộc authenticated user hiện tại.
+- Khi tạo từ mới kèm `vocabSetId`, response phải trả thông tin vocab vừa tạo, thông tin vocab set và cờ `added`.
 - Request tạo vocab không nhận `audioUrl`; audio URL phải do backend sinh từ `word` và `ipa`.
 - Cho phép lấy chi tiết vocab bằng `id` hoặc `word`.
 - Cho phép update vocab bằng `id` hoặc `word`; request update chỉ được sửa `meaning`.
@@ -25,6 +28,8 @@
   - `C`: `Phiên âm (có thể bỏ trống)`, optional `ipa`.
   - `D`: `Dịch nghĩa`, bắt buộc theo rule BM1 khi provider không resolve được IPA.
 - Bulk import phải áp dụng cùng rule tạo vocab lẻ: `word` unique, tự resolve IPA nếu thiếu, tự sinh `audio_url` bằng Google TTS sau khi có IPA.
+- `POST /api/v1/vocabs/bulk` có thể nhận optional query param `vocabSetId` để gắn từng từ import thành công vào `VocabSet`.
+- Khi bulk import có `vocabSetId`, chỉ các dòng tạo vocab thành công mới được gắn vào vocab set; dòng lỗi vẫn theo Partial Failure của bulk import.
 - Bulk import response phải thể hiện tổng số dòng xử lý, số dòng thành công, số dòng thất bại và lỗi theo từng dòng.
 
 ## 3. Automation
@@ -63,3 +68,4 @@
 | 2026-08-04 | Cập nhật contract tạo vocab: dùng JSON request DTO và không nhận `audioUrl` từ client | Codex |
 | 2026-08-04 | Bổ sung yêu cầu `word` unique, get/update vocab theo `id` hoặc `word`, update chỉ sửa `meaning` | Codex |
 | 2026-08-04 | Bổ sung yêu cầu bulk import `.xlsx` theo `VocabImportTemplate.xlsx` và Partial Failure theo từng dòng | Codex |
+| 2026-08-05 | Bổ sung yêu cầu `vocabSetId` query param khi tạo vocab hoặc bulk import để gắn từ mới vào vocab set | Codex |

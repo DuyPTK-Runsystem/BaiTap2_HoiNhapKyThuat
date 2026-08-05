@@ -8,8 +8,10 @@ import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.externalDTO.VocabAu
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqCreateVocabDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqUpdateVocabDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabDTO;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabSetVocabDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.Vocab;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.VocabRepository;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.organization.VocabSetMembershipService;
 
 @Service
 @RequiredArgsConstructor
@@ -19,9 +21,22 @@ public class VocabService {
     private final VocabAudioService vocabAudioService;
     private final VocabLookupService vocabLookupService;
     private final VocabValidationService vocabValidationService;
+    private final VocabSetMembershipService vocabSetMembershipService;
 
     @Transactional
     public ResVocabDTO create(ReqCreateVocabDTO request) {
+        return convertToDTO(createEntity(request));
+    }
+
+    @Transactional
+    public ResVocabSetVocabDTO create(ReqCreateVocabDTO request, Long vocabSetId) {
+        vocabSetMembershipService.validateVocabSetAccess(vocabSetId);
+        Vocab vocab = createEntity(request);
+        return vocabSetMembershipService.addVocabToSet(vocabSetId, vocab);
+    }
+
+    @Transactional
+    public Vocab createEntity(ReqCreateVocabDTO request) {
         if (request == null) {
             throw new IllegalArgumentException("Request tạo từ vựng không được để trống");
         }
@@ -43,7 +58,7 @@ public class VocabService {
                 .audioUrl(resolvedAudioUrl)
                 .build();
 
-        return convertToDTO(vocabRepository.save(vocab));
+        return vocabRepository.save(vocab);
     }
 
     @Transactional(readOnly = true)

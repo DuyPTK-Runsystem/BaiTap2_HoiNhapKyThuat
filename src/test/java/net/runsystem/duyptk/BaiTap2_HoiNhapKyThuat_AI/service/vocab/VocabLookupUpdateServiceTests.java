@@ -11,6 +11,7 @@ import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqUpdat
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.Vocab;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.VocabRepository;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.organization.VocabSetMembershipService;
 
 class VocabLookupUpdateServiceTests {
     private static final String AUDIO_URL = "https://example.com/hello.mp3";
@@ -58,7 +59,8 @@ class VocabLookupUpdateServiceTests {
                 Mockito.mock(VocabAutomationService.class),
                 Mockito.mock(VocabAudioService.class),
                 lookupService,
-                validationService);
+                validationService,
+                Mockito.mock(VocabSetMembershipService.class));
     }
 
     private Vocab vocab() {

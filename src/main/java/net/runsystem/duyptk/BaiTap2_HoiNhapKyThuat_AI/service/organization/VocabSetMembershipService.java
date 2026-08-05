@@ -51,6 +51,28 @@ public class VocabSetMembershipService {
     }
 
     @Transactional
+    public ResVocabSetVocabDTO addVocabToSet(Long vocabSetId, Vocab vocab) {
+        User user = currentUser();
+        VocabSet vocabSet = resolveVocabSet(vocabSetId, user.getId());
+        boolean added = addIfMissing(vocabSet, vocab);
+        if (added) {
+            vocabSetRepository.save(vocabSet);
+        }
+
+        return ResVocabSetVocabDTO.builder()
+                .vocabSet(convertToVocabSetSummary(vocabSet))
+                .vocab(convertToVocabDTO(vocab))
+                .added(added)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public void validateVocabSetAccess(Long vocabSetId) {
+        User user = currentUser();
+        resolveVocabSet(vocabSetId, user.getId());
+    }
+
+    @Transactional
     public ResVocabSetBulkAddDTO bulkAddVocabsToSet(Long vocabSetId, ReqBulkAddVocabToSetDTO request) {
         if (request == null || request.getVocabIds() == null) {
             throw new IllegalArgumentException("Danh sách vocabIds không được để trống");

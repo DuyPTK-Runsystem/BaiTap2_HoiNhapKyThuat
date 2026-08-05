@@ -29,7 +29,7 @@ Mỗi khi thêm Developer Plan mới, cần cập nhật file này với:
 | ---------------------------------------------------------------------------------------- | --------------------------------------------- | -------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | [`auth_authz/Auth_Authz_DeveloperPlan.md`](auth_authz/Auth_Authz_DeveloperPlan.md)       | Authentication và authorization tối giản      | Đã phê duyệt         | Đã triển khai         | Cấu hình Spring Boot, User, JWT, BCrypt, register/login/refresh/account/logout; không có Roles và Permissions     |
 | [`auth_authz/Auth_UnitTest_DeveloperPlan.md`](auth_authz/Auth_UnitTest_DeveloperPlan.md) | Unit Test cho Authentication và Authorization | Đã phê duyệt         | Đã triển khai         | JUnit test cho `UserService` và HTML report có test case, module và coverage; không test app/repo/`SecurityUtil` |
-| [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md) | Vocabulary Management | Đã phê duyệt | Đã triển khai create/get/update/bulk import `.xlsx` | `POST /api/v1/vocabs` dùng JSON request DTO; `GET/PATCH /lookup`; `POST /bulk` import theo `VocabImportTemplate.xlsx`, Partial Failure từng dòng |
+| [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md) | Vocabulary Management | Đã phê duyệt `vocabSetId` query param | Đã triển khai `vocabSetId` query param | `POST /api/v1/vocabs?vocabSetId=...` và `POST /api/v1/vocabs/bulk?vocabSetId=...` tạo từ mới rồi gắn vào vocab set |
 | [`organization/Organization_DeveloperPlan.md`](organization/Organization_DeveloperPlan.md) | Organization | Đã phê duyệt add/bulk add | Đã triển khai add/bulk add | `POST /vocab-sets/{id}/vocabs/{vocabId}` trả vocab set/vocab/added; `POST /vocab-sets/{id}/vocabs/bulk` Partial Failure |
 
 ## 4. Tóm tắt từng Developer Plan
@@ -225,3 +225,6 @@ Khi tạo plan mới, cần thêm vào bảng ở mục 3 và phần tóm tắt 
 | 2026-08-05 | Cập nhật docs/plan chờ phê duyệt cho add vocab response giàu thông tin và bulk add vocab vào vocab set      | Codex               |
 | 2026-08-05 | Người dùng phê duyệt triển khai add/bulk add vocab vào vocab set                                           | Người dùng          |
 | 2026-08-05 | Triển khai add/bulk add vocab vào vocab set với response giàu thông tin và Partial Failure                  | Codex               |
+| 2026-08-05 | Cập nhật docs/plan Vocabulary chờ phê duyệt cho `vocabSetId` query param khi tạo vocab hoặc bulk import     | Codex               |
+| 2026-08-05 | Người dùng phê duyệt triển khai `vocabSetId` query param khi tạo vocab hoặc bulk import                    | Người dùng          |
+| 2026-08-05 | Triển khai `vocabSetId` query param khi tạo vocab hoặc bulk import                                         | Codex               |
