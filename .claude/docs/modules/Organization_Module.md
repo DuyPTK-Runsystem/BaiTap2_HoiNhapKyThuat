@@ -17,6 +17,15 @@
 - Bulk add cho phép gắn nhiều `Vocab` đã tồn tại vào một `VocabSet` trong một request.
 - Bulk add phải áp dụng cơ chế Partial Failure: vocab lỗi hoặc không tồn tại thì ghi nhận lỗi item đó, các vocab hợp lệ vẫn được gắn.
 - Gắn lại vocab đã có trong vocab set phải được xử lý idempotent, không tạo duplicate trong bảng `vocab_vocab_set`.
+- Search item theo tên phải dùng contains/LIKE, không yêu cầu exact name.
+- Search item và get item by path chỉ được trả item thuộc authenticated user hiện tại.
+- Response item cho search và get by path phải có `itemPath`.
+- `itemPath` là đường dẫn tên từ virtual super root tới item, dùng `/` làm separator; virtual super root không được lưu trong database.
+- Get item by path resolve từng segment theo direct child, tương tự cách `GET /api/v1/items/children` xem root items là children của virtual super root.
+- Tên item phải unique trong cùng một parent của cùng một authenticated user.
+- Unique tên item trong cùng parent áp dụng chung giữa `Folder.folderName` và `VocabSet.vocabSetName`.
+- Root items được xem là cùng thuộc virtual super root; vì vậy tên root item cũng phải unique trong phạm vi authenticated user.
+- So sánh unique name dùng tên sau khi trim.
 
 ## 4. API Requirements
 
@@ -114,9 +123,77 @@ Response shape:
 }
 ```
 
+### 4.3. Search items by name
+
+```text
+GET /api/v1/items/search?name={keyword}
+```
+
+Behavior:
+
+- Endpoint yêu cầu authenticated user.
+- `name` là từ khóa bắt buộc sau khi trim.
+- Tìm kiếm theo contains/LIKE, không exact match.
+- Search áp dụng cho cả `Folder.folderName` và `VocabSet.vocabSetName`.
+- Chỉ trả item thuộc authenticated user hiện tại.
+- Response trả danh sách phẳng, không trả recursive tree.
+- Mỗi item trong response phải có `itemPath`.
+
+Response shape:
+
+```json
+[
+  {
+    "id": 12,
+    "type": "VOCAB_SET",
+    "name": "Common verbs",
+    "description": "Basic daily verbs",
+    "parentId": 11,
+    "vocabCount": 5,
+    "itemPath": "/IELTS/Unit 1/Common verbs"
+  }
+]
+```
+
+### 4.4. Get item by path
+
+```text
+GET /api/v1/items/by-path?path={itemPath}
+```
+
+Behavior:
+
+- Endpoint yêu cầu authenticated user.
+- `path` là đường dẫn tên item, dùng `/` làm separator.
+- Leading slash và trailing slash được phép; service normalize trước khi resolve.
+- Path được resolve từ virtual super root:
+  - Segment đầu tiên match với root item của authenticated user.
+  - Các segment tiếp theo match với direct child của item trước đó.
+- Match path segment là exact name sau khi trim, không dùng LIKE.
+- Nếu segment hiện tại là `VOCAB_SET` và path còn segment tiếp theo, request thất bại vì `VOCAB_SET` không chứa item con.
+- Chỉ trả item thuộc authenticated user hiện tại.
+- Response phải có `itemPath`.
+- Nếu có nhiều item cùng tên trong cùng một parent khiến path mơ hồ, trả lỗi conflict/validation thay vì chọn ngầm một item.
+
+Response shape:
+
+```json
+{
+  "id": 12,
+  "type": "VOCAB_SET",
+  "name": "Common verbs",
+  "description": "Basic daily verbs",
+  "parentId": 11,
+  "vocabCount": 5,
+  "itemPath": "/IELTS/Unit 1/Common verbs"
+}
+```
+
 ## 5. Lịch sử cập nhật
 
 | Ngày | Nội dung | Người cập nhật |
 |---|---|---|
 | 2026-08-05 | Bổ sung contract add vocab vào vocab set với response có thông tin vocab/vocab set và bulk add Partial Failure | Codex |
 | 2026-08-05 | Điều chỉnh ví dụ response Organization dùng `audio_url` theo `ResVocabDTO` hiện có | Codex |
+| 2026-08-05 | Bổ sung yêu cầu search item theo tên LIKE, trả `itemPath`, và get item by path theo virtual super root | Codex |
+| 2026-08-05 | Bổ sung yêu cầu tên item unique trong cùng parent của cùng user, áp dụng chung Folder và VocabSet | Codex |

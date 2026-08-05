@@ -28,6 +28,7 @@ public class OrganizationService {
     private final ItemRepository itemRepository;
     private final FolderRepository folderRepository;
     private final VocabSetRepository vocabSetRepository;
+    private final OrganizationItemNameValidationService organizationItemNameValidationService;
 
     @Transactional
     public ResItemDTO createFolder(ReqCreateFolderDTO request) {
@@ -37,8 +38,10 @@ public class OrganizationService {
 
         User user = currentUser();
         Folder parent = resolveParentFolder(request.getParentId(), user.getId());
+        String folderName = requireName(request.getFolderName(), "Tên thư mục không được để trống");
+        organizationItemNameValidationService.validateUniqueSiblingName(user.getId(), parent, folderName);
         Folder folder = Folder.builder()
-                .folderName(requireName(request.getFolderName(), "Tên thư mục không được để trống"))
+                .folderName(folderName)
                 .parent(parent)
                 .user(user)
                 .build();
@@ -54,8 +57,10 @@ public class OrganizationService {
 
         User user = currentUser();
         Folder parent = resolveParentFolder(request.getParentId(), user.getId());
+        String vocabSetName = requireName(request.getVocabSetName(), "Tên tập từ vựng không được để trống");
+        organizationItemNameValidationService.validateUniqueSiblingName(user.getId(), parent, vocabSetName);
         VocabSet vocabSet = VocabSet.builder()
-                .vocabSetName(requireName(request.getVocabSetName(), "Tên tập từ vựng không được để trống"))
+                .vocabSetName(vocabSetName)
                 .vocabSetDescription(blankToNull(request.getVocabSetDescription()))
                 .parent(parent)
                 .user(user)

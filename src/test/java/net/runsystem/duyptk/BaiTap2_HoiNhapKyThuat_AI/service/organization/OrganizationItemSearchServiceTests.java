@@ -1,7 +1,6 @@
 package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.organization;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
@@ -17,27 +16,28 @@ import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.ItemType;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.User;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.VocabSet;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.FolderRepository;
-import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.ItemRepository;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.UserRepository;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.VocabSetRepository;
 
-class OrganizationChildrenServiceTests {
-    private static final Long FOLDER_ID = 10L;
+class OrganizationItemSearchServiceTests {
+    private static final Long ROOT_ID = 10L;
+    private static final Long UNIT_ID = 11L;
+    private static final Long VOCAB_SET_ID = 12L;
     private static final Long USER_ID = 1L;
+    private static final String COMMON_VERBS = "Common verbs";
     private static final String EMAIL = "learner@example.com";
+    private static final String IELTS = "IELTS";
+    private static final String ITEM_PATH = "/IELTS/Unit 1/Common verbs";
+    private static final String KEYWORD = "verb";
+    private static final String UNIT_1 = "Unit 1";
 
     private final UserRepository userRepository = Mockito.mock(UserRepository.class);
-    private final ItemRepository itemRepository = Mockito.mock(ItemRepository.class);
     private final FolderRepository folderRepository = Mockito.mock(FolderRepository.class);
     private final VocabSetRepository vocabSetRepository = Mockito.mock(VocabSetRepository.class);
-    private final OrganizationItemNameValidationService organizationItemNameValidationService =
-            Mockito.mock(OrganizationItemNameValidationService.class);
-    private final OrganizationService organizationService = new OrganizationService(
+    private final OrganizationItemLookupService organizationItemLookupService = new OrganizationItemLookupService(
             userRepository,
-            itemRepository,
             folderRepository,
-            vocabSetRepository,
-            organizationItemNameValidationService);
+            vocabSetRepository);
 
     @AfterEach
     void tearDown() {
@@ -45,45 +45,30 @@ class OrganizationChildrenServiceTests {
     }
 
     @Test
-    void shouldReturnRootItemsWhenParentIdIsMissing() {
+    void searchItemsShouldReturnOwnedItemsWithPath() {
         mockCurrentUser();
-        Mockito.when(itemRepository.findByUserIdAndParentIsNullOrderByIdAsc(USER_ID))
-                .thenReturn(List.of(folder(11L, "IELTS", null), vocabSet(12L, "Root verbs", null)));
+        Folder root = folder(ROOT_ID, IELTS, null);
+        Folder unit = folder(UNIT_ID, UNIT_1, root);
+        VocabSet vocabSet = vocabSet(VOCAB_SET_ID, COMMON_VERBS, unit);
+        Mockito.when(folderRepository.findByUserIdAndFolderNameContainingIgnoreCaseOrderByIdAsc(USER_ID, KEYWORD))
+                .thenReturn(List.of());
+        Mockito.when(vocabSetRepository.findByUserIdAndVocabSetNameContainingIgnoreCaseOrderByIdAsc(USER_ID, KEYWORD))
+                .thenReturn(List.of(vocabSet));
 
-        List<ResItemDTO> response = organizationService.getChildren(null);
+        List<ResItemDTO> response = organizationItemLookupService.searchItems(" " + KEYWORD + " ");
 
         Assertions.assertThat(response)
-                .extracting(ResItemDTO::getId, ResItemDTO::getType, ResItemDTO::getParentId)
-                .containsExactly(
-                        Assertions.tuple(11L, ItemType.FOLDER, null),
-                        Assertions.tuple(12L, ItemType.VOCAB_SET, null));
+                .extracting(ResItemDTO::getId, ResItemDTO::getType, ResItemDTO::getName, ResItemDTO::getItemPath)
+                .containsExactly(Assertions.tuple(VOCAB_SET_ID, ItemType.VOCAB_SET, COMMON_VERBS, ITEM_PATH));
     }
 
     @Test
-    void shouldReturnDirectChildrenWhenParentFolderBelongsToCurrentUser() {
+    void searchItemsShouldRejectBlankName() {
         mockCurrentUser();
-        Folder parent = folder(FOLDER_ID, "IELTS", null);
-        Mockito.when(folderRepository.findByIdAndUserId(FOLDER_ID, USER_ID)).thenReturn(Optional.of(parent));
-        Mockito.when(itemRepository.findByUserIdAndParentIdOrderByIdAsc(USER_ID, FOLDER_ID))
-                .thenReturn(List.of(folder(13L, "Listening", parent), vocabSet(14L, "Band 7 words", parent)));
 
-        List<ResItemDTO> response = organizationService.getChildren(FOLDER_ID);
-
-        Assertions.assertThat(response)
-                .extracting(ResItemDTO::getId, ResItemDTO::getType, ResItemDTO::getParentId)
-                .containsExactly(
-                        Assertions.tuple(13L, ItemType.FOLDER, FOLDER_ID),
-                        Assertions.tuple(14L, ItemType.VOCAB_SET, FOLDER_ID));
-    }
-
-    @Test
-    void shouldRejectParentThatIsMissingOrNotOwnedByCurrentUser() {
-        mockCurrentUser();
-        Mockito.when(folderRepository.findByIdAndUserId(FOLDER_ID, USER_ID)).thenReturn(Optional.empty());
-
-        Assertions.assertThatThrownBy(() -> organizationService.getChildren(FOLDER_ID))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage("Folder cha không tồn tại hoặc không thuộc người dùng hiện tại");
+        Assertions.assertThatThrownBy(() -> organizationItemLookupService.searchItems(" "))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Từ khóa tìm kiếm không được để trống");
     }
 
     private void mockCurrentUser() {

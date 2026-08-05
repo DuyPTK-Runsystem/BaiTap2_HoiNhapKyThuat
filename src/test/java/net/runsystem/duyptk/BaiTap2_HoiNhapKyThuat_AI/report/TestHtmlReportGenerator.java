@@ -175,6 +175,8 @@ public final class TestHtmlReportGenerator {
                     BASE_PACKAGE_PREFIX + "/domain/table/Item",
                     BASE_PACKAGE_PREFIX + "/domain/table/ItemType",
                     BASE_PACKAGE_PREFIX + "/domain/table/VocabSet",
+                    BASE_PACKAGE_PREFIX + "/service/organization/OrganizationItemLookupService",
+                    BASE_PACKAGE_PREFIX + "/service/organization/OrganizationItemNameValidationService",
                     BASE_PACKAGE_PREFIX + "/service/organization/OrganizationService",
                     BASE_PACKAGE_PREFIX + "/service/organization/VocabSetMembershipService");
         }

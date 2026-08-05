@@ -123,6 +123,7 @@ Lưu trữ nguồn `VocabSource` của bài test (có thể là nhiều Folder/V
     * `UNIQUE` constraint trên `(question_id, option_order)`.
     * `UNIQUE` constraint trên `(question_id)` cho cột `is_correct` (nếu DB hỗ trợ partial index) hoặc đảm bảo bằng Logic Code.
 * **Application Level:**
+    * Đảm bảo tên item unique trong cùng parent của cùng user; rule này áp dụng chung giữa `folders.folder_name` và `vocab_sets.vocab_set_name` vì tên đang nằm ở hai bảng dẫn xuất khác nhau.
     * Đảm bảo khi tạo `Option`, luôn có đúng 1 option có `is_correct = true`.
     * Đảm bảo `option_content` của đáp án đúng khớp với `correct_answer` của câu hỏi.
 

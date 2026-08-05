@@ -31,11 +31,14 @@ class OrganizationServiceTests {
     private final ItemRepository itemRepository = Mockito.mock(ItemRepository.class);
     private final FolderRepository folderRepository = Mockito.mock(FolderRepository.class);
     private final VocabSetRepository vocabSetRepository = Mockito.mock(VocabSetRepository.class);
+    private final OrganizationItemNameValidationService organizationItemNameValidationService =
+            Mockito.mock(OrganizationItemNameValidationService.class);
     private final OrganizationService organizationService = new OrganizationService(
             userRepository,
             itemRepository,
             folderRepository,
-            vocabSetRepository);
+            vocabSetRepository,
+            organizationItemNameValidationService);
 
     @AfterEach
     void tearDown() {

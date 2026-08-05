@@ -30,7 +30,7 @@ Mỗi khi thêm Developer Plan mới, cần cập nhật file này với:
 | [`auth_authz/Auth_Authz_DeveloperPlan.md`](auth_authz/Auth_Authz_DeveloperPlan.md)       | Authentication và authorization tối giản      | Đã phê duyệt         | Đã triển khai         | Cấu hình Spring Boot, User, JWT, BCrypt, register/login/refresh/account/logout; không có Roles và Permissions     |
 | [`auth_authz/Auth_UnitTest_DeveloperPlan.md`](auth_authz/Auth_UnitTest_DeveloperPlan.md) | Unit Test cho Authentication và Authorization | Đã phê duyệt         | Đã triển khai         | JUnit test cho `UserService` và HTML report có test case, module và coverage; không test app/repo/`SecurityUtil` |
 | [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md) | Vocabulary Management | Đã phê duyệt `vocabSetId` query param | Đã triển khai `vocabSetId` query param | `POST /api/v1/vocabs?vocabSetId=...` và `POST /api/v1/vocabs/bulk?vocabSetId=...` tạo từ mới rồi gắn vào vocab set |
-| [`organization/Organization_DeveloperPlan.md`](organization/Organization_DeveloperPlan.md) | Organization | Đã phê duyệt add/bulk add | Đã triển khai add/bulk add | `POST /vocab-sets/{id}/vocabs/{vocabId}` trả vocab set/vocab/added; `POST /vocab-sets/{id}/vocabs/bulk` Partial Failure |
+| [`organization/Organization_DeveloperPlan.md`](organization/Organization_DeveloperPlan.md) | Organization | Đã phê duyệt unique sibling name | Đã triển khai unique sibling name | Service-level validation để tên folder/vocab set unique trong cùng parent của cùng user |
 
 ## 4. Tóm tắt từng Developer Plan
 
@@ -149,6 +149,7 @@ POST /api/v1/auth/logout
 - Enum `ItemType`.
 - Repository cho item/folder/vocab set.
 - API phase đầu để tạo folder, tạo vocab set, lấy children, gắn/gỡ vocab vào vocab set.
+- API search item theo tên LIKE và get item by path, chỉ trả item user hiện tại truy cập được.
 - Ownership theo authenticated user hiện tại.
 - Unit test service layer cho Organization.
 
@@ -157,6 +158,8 @@ POST /api/v1/auth/logout
 - Move/rename/delete item.
 - Recursive tree API hoặc recursive CTE lấy vocab từ folder.
 - Bulk import trực tiếp vào vocab set.
+- Tạo/lưu virtual super root trong database.
+- Thêm uniqueness constraint cho tên item trong cùng parent nếu chưa có phê duyệt riêng.
 - Flashcard, Multiple Choice hoặc Testing/Learning.
 - Role, Permission hoặc JWT claims quyền.
 
@@ -165,6 +168,7 @@ POST /api/v1/auth/logout
 - Docs Organization chưa đặc tả endpoint chính thức, nên API trong plan là đề xuất phase đầu cần người dùng phê duyệt.
 - Mapping discriminator `type` trong Class Table Inheritance cần triển khai cẩn thận để không trùng column.
 - Recursive CTE chưa nằm trong scope phase đầu nhưng có thể cần cho Testing/Learning sau này.
+- Path theo tên có thể mơ hồ khi sibling trùng tên; plan đề xuất trả lỗi conflict/validation thay vì chọn ngầm.
 
 ## 5. Developer Plan trong tương lai
 
@@ -228,3 +232,7 @@ Khi tạo plan mới, cần thêm vào bảng ở mục 3 và phần tóm tắt 
 | 2026-08-05 | Cập nhật docs/plan Vocabulary chờ phê duyệt cho `vocabSetId` query param khi tạo vocab hoặc bulk import     | Codex               |
 | 2026-08-05 | Người dùng phê duyệt triển khai `vocabSetId` query param khi tạo vocab hoặc bulk import                    | Người dùng          |
 | 2026-08-05 | Triển khai `vocabSetId` query param khi tạo vocab hoặc bulk import                                         | Codex               |
+| 2026-08-05 | Cập nhật docs/plan Organization chờ phê duyệt cho search item theo tên LIKE, `itemPath`, và get item by path | Codex               |
+| 2026-08-05 | Người dùng phê duyệt và triển khai search item theo tên LIKE, `itemPath`, và get item by path              | Codex               |
+| 2026-08-05 | Cập nhật docs/plan Organization chờ phê duyệt cho unique tên item trong cùng parent                         | Codex               |
+| 2026-08-05 | Người dùng phê duyệt và triển khai unique tên item trong cùng parent bằng service-level validation          | Codex               |

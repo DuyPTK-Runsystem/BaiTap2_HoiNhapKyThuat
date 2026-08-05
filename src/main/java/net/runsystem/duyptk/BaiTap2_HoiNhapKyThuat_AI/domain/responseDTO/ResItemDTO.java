@@ -20,4 +20,5 @@ public class ResItemDTO {
     private String description;
     private Long parentId;
     private Integer vocabCount;
+    private String itemPath;
 }

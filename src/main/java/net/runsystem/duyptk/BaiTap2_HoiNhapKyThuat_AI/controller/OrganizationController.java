@@ -18,6 +18,7 @@ import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqCreat
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResItemDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabSetBulkAddDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabSetVocabDTO;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.organization.OrganizationItemLookupService;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.organization.OrganizationService;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.organization.VocabSetMembershipService;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.annotation.ApiMessage;
@@ -27,6 +28,7 @@ import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.annotation.ApiMessage
 @RequiredArgsConstructor
 public class OrganizationController {
     private final OrganizationService organizationService;
+    private final OrganizationItemLookupService organizationItemLookupService;
     private final VocabSetMembershipService vocabSetMembershipService;
 
     @PostMapping("/folders")
@@ -45,6 +47,18 @@ public class OrganizationController {
     @ApiMessage("Lấy danh sách item con")
     public ResponseEntity<List<ResItemDTO>> getChildren(@RequestParam(required = false) Long parentId) {
         return ResponseEntity.ok(organizationService.getChildren(parentId));
+    }
+
+    @GetMapping("/items/search")
+    @ApiMessage("Tìm kiếm item theo tên")
+    public ResponseEntity<List<ResItemDTO>> searchItems(@RequestParam String name) {
+        return ResponseEntity.ok(organizationItemLookupService.searchItems(name));
+    }
+
+    @GetMapping("/items/by-path")
+    @ApiMessage("Lấy item theo path")
+    public ResponseEntity<ResItemDTO> getItemByPath(@RequestParam String path) {
+        return ResponseEntity.ok(organizationItemLookupService.getItemByPath(path));
     }
 
     @PostMapping("/vocab-sets/{vocabSetId}/vocabs/{vocabId}")
