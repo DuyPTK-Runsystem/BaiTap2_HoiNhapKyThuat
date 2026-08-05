@@ -31,6 +31,7 @@ Mỗi khi thêm Developer Plan mới, cần cập nhật file này với:
 | [`auth_authz/Auth_UnitTest_DeveloperPlan.md`](auth_authz/Auth_UnitTest_DeveloperPlan.md) | Unit Test cho Authentication và Authorization | Đã phê duyệt         | Đã triển khai         | JUnit test cho `UserService` và HTML report có test case, module và coverage; không test app/repo/`SecurityUtil` |
 | [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md) | Vocabulary Management | Đã phê duyệt `vocabSetId` query param | Đã triển khai `vocabSetId` query param | `POST /api/v1/vocabs?vocabSetId=...` và `POST /api/v1/vocabs/bulk?vocabSetId=...` tạo từ mới rồi gắn vào vocab set |
 | [`organization/Organization_DeveloperPlan.md`](organization/Organization_DeveloperPlan.md) | Organization | Đã phê duyệt unique sibling name | Đã triển khai unique sibling name | Service-level validation để tên folder/vocab set unique trong cùng parent của cùng user |
+| [`testing_learning/Testing_Learning_DeveloperPlan.md`](testing_learning/Testing_Learning_DeveloperPlan.md) | Testing & Learning | Đã phê duyệt Phase 1 và Phase 2; Phase 3 chờ phê duyệt | Đã triển khai Phase 1 và Phase 2; chưa triển khai Phase 3 | Entity persistence, recursive source resolution, ownership validation; Phase 2 triển khai `POST /api/v1/tests`; Phase 3 đề xuất get/result/finish test và time remaining |
 
 ## 4. Tóm tắt từng Developer Plan
 
@@ -170,13 +171,41 @@ POST /api/v1/auth/logout
 - Recursive CTE chưa nằm trong scope phase đầu nhưng có thể cần cho Testing/Learning sau này.
 - Path theo tên có thể mơ hồ khi sibling trùng tên; plan đề xuất trả lỗi conflict/validation thay vì chọn ngầm.
 
+### 4.4. Testing & Learning
+
+**File:** [`testing_learning/Testing_Learning_DeveloperPlan.md`](testing_learning/Testing_Learning_DeveloperPlan.md)
+
+**Mục tiêu:**
+
+- Tạo bài kiểm tra Multiple Choice tự động từ Vocab.
+- Hỗ trợ source từ nhiều Folder/VocabSet hoặc toàn bộ database.
+- Sinh câu hỏi theo 5 template, đúng 4 option và một đáp án đúng.
+- Tracking kết quả, xử lý time limit và cung cấp Flashcard động.
+
+**Phạm vi đề xuất:**
+
+- Phase 1: source resolution đệ quy và entity persistence cho Test/Question/Option/TestItem.
+- Phase 2: QuestionFactory, OptionGenerator và API tạo đề.
+- Phase 3: lifecycle, submit/finish, kết quả và time limit.
+- Phase 4: Flashcard không persistence.
+- Unit test service/component bằng JUnit, JaCoCo coverage theo module và HTML report.
+
+**Không bao gồm:**
+
+- Role/Permission, question bank, thay đổi User/Auth, recursive tree API Organization, và migration framework mới nếu chưa được phê duyệt.
+
+**API/database dự kiến:**
+
+- Bảng `tests`, `test_items`, `questions`, `options` theo `Data_Architecture.md`.
+- `POST /api/v1/tests`, `GET /api/v1/tests/{testId}`, submit/finish/result và `POST /api/v1/flashcards`; contract chi tiết chờ phê duyệt.
+
+**Trạng thái:** Phase 1 và Phase 2 đã được phê duyệt và triển khai; Phase 3 đã cập nhật chi tiết và chờ phê duyệt; Phase 4 chưa triển khai.
+
 ## 5. Developer Plan trong tương lai
 
-Chưa có Developer Plan cho các module sau:
+Chưa có Developer Plan riêng cho:
 
-- Testing & Learning.
-- Flashcard.
-- Import `.xlsx`.
+- Import `.xlsx` (đã có nội dung triển khai trong Vocabulary Developer Plan).
 
 Khi tạo plan mới, cần thêm vào bảng ở mục 3 và phần tóm tắt tương ứng ở mục 4.
 
@@ -229,6 +258,9 @@ Khi tạo plan mới, cần thêm vào bảng ở mục 3 và phần tóm tắt 
 | 2026-08-05 | Cập nhật docs/plan chờ phê duyệt cho add vocab response giàu thông tin và bulk add vocab vào vocab set      | Codex               |
 | 2026-08-05 | Người dùng phê duyệt triển khai add/bulk add vocab vào vocab set                                           | Người dùng          |
 | 2026-08-05 | Triển khai add/bulk add vocab vào vocab set với response giàu thông tin và Partial Failure                  | Codex               |
+| 2026-08-05 | Cập nhật Developer Plan Testing & Learning Phase 2 chờ phê duyệt: tạo test, QuestionFactory và OptionGenerator | Codex               |
+| 2026-08-05 | Triển khai Testing & Learning Phase 2: `POST /api/v1/tests`, tạo question/options và unit test             | Codex               |
+| 2026-08-05 | Cập nhật Developer Plan Testing & Learning Phase 3 chờ phê duyệt: get/result/finish test, time remaining và TestResultService | Codex               |
 | 2026-08-05 | Cập nhật docs/plan Vocabulary chờ phê duyệt cho `vocabSetId` query param khi tạo vocab hoặc bulk import     | Codex               |
 | 2026-08-05 | Người dùng phê duyệt triển khai `vocabSetId` query param khi tạo vocab hoặc bulk import                    | Người dùng          |
 | 2026-08-05 | Triển khai `vocabSetId` query param khi tạo vocab hoặc bulk import                                         | Codex               |
@@ -236,3 +268,5 @@ Khi tạo plan mới, cần thêm vào bảng ở mục 3 và phần tóm tắt 
 | 2026-08-05 | Người dùng phê duyệt và triển khai search item theo tên LIKE, `itemPath`, và get item by path              | Codex               |
 | 2026-08-05 | Cập nhật docs/plan Organization chờ phê duyệt cho unique tên item trong cùng parent                         | Codex               |
 | 2026-08-05 | Người dùng phê duyệt và triển khai unique tên item trong cùng parent bằng service-level validation          | Codex               |
+| 2026-08-05 | Tạo Developer Plan Testing & Learning, tách phase Multiple Choice/lifecycle/Flashcard và ghi nhận trạng thái chờ phê duyệt | RunSystem Assistant |
+| 2026-08-05 | Người dùng phê duyệt và triển khai Phase 1 Testing & Learning | RunSystem Assistant |
