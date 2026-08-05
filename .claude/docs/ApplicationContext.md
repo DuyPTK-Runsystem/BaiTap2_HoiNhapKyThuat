@@ -32,3 +32,4 @@ Hệ thống được chia thành các module sau:
 2.  [Vocabulary Management Module](./modules/Vocabulary_Module.md) - Import, quản lý từ vựng và IPA.
 3.  [Organization Module](./modules/Organization_Module.md) - Quản lý Folder và VocabSet (Cấu trúc cây).
 4.  [Testing & Learning Module](./modules/Testing_Module.md) - Tạo bài test, Flashcard và Tracking.
+5.  [Frontend API Guide](./Frontend_API_Guide.md) - Contract API và flow tích hợp cho Frontend.
