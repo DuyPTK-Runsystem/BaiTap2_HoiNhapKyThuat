@@ -163,14 +163,20 @@ public final class TestHtmlReportGenerator {
         if (ORGANIZATION_MODULE.equals(module)) {
             return List.of(
                     BASE_PACKAGE_PREFIX + "/controller/OrganizationController",
+                    BASE_PACKAGE_PREFIX + "/domain/requestDTO/ReqBulkAddVocabToSetDTO",
                     BASE_PACKAGE_PREFIX + "/domain/requestDTO/ReqCreateFolderDTO",
                     BASE_PACKAGE_PREFIX + "/domain/requestDTO/ReqCreateVocabSetDTO",
                     BASE_PACKAGE_PREFIX + "/domain/responseDTO/ResItemDTO",
+                    BASE_PACKAGE_PREFIX + "/domain/responseDTO/ResVocabSetBulkAddDTO",
+                    BASE_PACKAGE_PREFIX + "/domain/responseDTO/ResVocabSetBulkAddItemDTO",
+                    BASE_PACKAGE_PREFIX + "/domain/responseDTO/ResVocabSetSummaryDTO",
+                    BASE_PACKAGE_PREFIX + "/domain/responseDTO/ResVocabSetVocabDTO",
                     BASE_PACKAGE_PREFIX + "/domain/table/Folder",
                     BASE_PACKAGE_PREFIX + "/domain/table/Item",
                     BASE_PACKAGE_PREFIX + "/domain/table/ItemType",
                     BASE_PACKAGE_PREFIX + "/domain/table/VocabSet",
-                    BASE_PACKAGE_PREFIX + "/service/organization/OrganizationService");
+                    BASE_PACKAGE_PREFIX + "/service/organization/OrganizationService",
+                    BASE_PACKAGE_PREFIX + "/service/organization/VocabSetMembershipService");
         }
         return List.of();
     }

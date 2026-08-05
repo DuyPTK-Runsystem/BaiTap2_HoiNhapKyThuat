@@ -2,13 +2,13 @@
 
 ## 1. Trạng thái
 
-- Trạng thái phê duyệt: Đã phê duyệt một phần cho phase `POST /api/v1/folders`, `POST /api/v1/vocab-sets`, `GET /api/v1/items/children`.
-- Trạng thái triển khai: Đã triển khai phase `POST /api/v1/folders`, `POST /api/v1/vocab-sets`, `GET /api/v1/items/children`.
+- Trạng thái phê duyệt: Đã phê duyệt một phần cho phase `POST /api/v1/folders`, `POST /api/v1/vocab-sets`, `GET /api/v1/items/children`, add/bulk add vocab vào vocab set.
+- Trạng thái triển khai: Đã triển khai phase `POST /api/v1/folders`, `POST /api/v1/vocab-sets`, `GET /api/v1/items/children`, add/bulk add vocab vào vocab set.
 - Ngày tạo plan: 2026-08-04.
 - Agent tạo plan: Codex.
 - Ngày cập nhật gần nhất: 2026-08-05.
 - Agent cập nhật gần nhất: Codex.
-- Lý do tạo/cập nhật plan: Đã triển khai `GET /api/v1/items/children` cho root items và direct children theo `parentId`.
+- Lý do tạo/cập nhật plan: Đã triển khai add/bulk add vocab vào vocab set.
 
 ## 2. Mục tiêu
 
@@ -26,6 +26,8 @@ Triển khai nền tảng Organization để quản lý cấu trúc cây học l
   - Mục 1: Entity inheritance model gồm `Item`, `Folder`, `VocabSet`.
   - Mục 2: `Folder -> VocabSet` là quan hệ 1-n; `VocabSet <-> Vocab` là quan hệ n-n qua bảng trung gian.
   - Mục 3: Mỗi `VocabSet` phải có chủ sở hữu `user_id`; hỗ trợ cấu trúc cây vô hạn bằng `parent_id`.
+  - Mục 4.1: Add one vocab to vocab set trả thông tin `VocabSet`, `Vocab`, `added`.
+  - Mục 4.2: Bulk add xử lý nhiều `vocabId` độc lập với Partial Failure.
 - `.claude/docs/Data_Architecture.md`
   - Mục 2.2: Bảng `items`, `folders`, `vocab_sets`; `type` gồm `FOLDER`, `VOCAB_SET`; `user_id` là FK đến `users.user_id`; `parent_id` là FK đến `items.item_id`.
   - Mục 2.3: Bảng `vocab_vocab_set` liên kết `vocabs` và `vocab_sets`.
@@ -66,6 +68,22 @@ Contract đã được người dùng xác nhận:
 - Có `parentId`: `parentId` phải là `Folder` thuộc authenticated user, trả direct children của folder đó.
 - Có thể hiểu `parentId = null` là lấy children của một virtual super root folder, nhưng không tạo virtual root trong database.
 - Không trả recursive tree trong phase này.
+
+### 4.0.2. Scope đã được phê duyệt triển khai tiếp theo
+
+Triển khai tiếp:
+
+- `POST /api/v1/vocab-sets/{vocabSetId}/vocabs/{vocabId}`.
+- `POST /api/v1/vocab-sets/{vocabSetId}/vocabs/bulk`.
+
+Contract:
+
+- Single add chỉ tạo quan hệ n-n giữa `VocabSet` và `Vocab`; không tạo vocab mới.
+- Single add response trả thông tin `VocabSet`, thông tin `Vocab`, và cờ `added`.
+- Bulk add nhận danh sách `vocabIds`.
+- Bulk add xử lý từng `vocabId` độc lập theo Partial Failure.
+- Bulk add response trả summary `total`, `success`, `failed`, thông tin `VocabSet`, và kết quả từng item.
+- Gắn vocab đã tồn tại trong vocab set là success idempotent với `added = false`.
 
 ### 4.1. Entity và repository
 
@@ -316,8 +334,75 @@ Response:
 
 ```json
 {
-  "vocabSetId": 12,
-  "vocabId": 5
+  "vocabSet": {
+    "id": 12,
+    "name": "Common verbs",
+    "description": "Basic daily verbs",
+    "parentId": 11,
+    "vocabCount": 3
+  },
+  "vocab": {
+    "id": 5,
+    "word": "go",
+    "meaning": "di chuyen",
+    "ipa": "gəʊ",
+    "audio_url": "/api/v1/vocabs/audio/go.mp3"
+  },
+  "added": true
+}
+```
+
+### 8.4.1. `POST /api/v1/vocab-sets/{vocabSetId}/vocabs/bulk`
+
+Request:
+
+```json
+{
+  "vocabIds": [5, 6, 7]
+}
+```
+
+Behavior:
+
+- Gắn nhiều vocab đã tồn tại vào vocab set thuộc user hiện tại.
+- Mỗi `vocabId` được xử lý độc lập.
+- Nếu một `vocabId` không tồn tại hoặc không hợp lệ, item đó thất bại nhưng các item hợp lệ vẫn được xử lý.
+- Nếu quan hệ đã tồn tại, item đó success idempotent với `added = false`.
+
+Response:
+
+```json
+{
+  "vocabSet": {
+    "id": 12,
+    "name": "Common verbs",
+    "description": "Basic daily verbs",
+    "parentId": 11,
+    "vocabCount": 5
+  },
+  "total": 3,
+  "success": 2,
+  "failed": 1,
+  "items": [
+    {
+      "vocabId": 5,
+      "success": true,
+      "added": true,
+      "vocab": {
+        "id": 5,
+        "word": "go",
+        "meaning": "di chuyen",
+        "ipa": "gəʊ",
+        "audio_url": "/api/v1/vocabs/audio/go.mp3"
+      }
+    },
+    {
+      "vocabId": 999,
+      "success": false,
+      "added": false,
+      "error": "Vocab không tồn tại"
+    }
+  ]
 }
 ```
 
@@ -352,6 +437,10 @@ Response:
 | `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/domain/requestDTO/ReqCreateVocabSetDTO.java` | Tạo mới | Request tạo vocab set |
 | `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/domain/responseDTO/ResItemDTO.java` | Tạo mới | Response chung cho folder/vocab set |
 | `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/domain/responseDTO/ResVocabSetVocabDTO.java` | Tạo mới | Response thao tác gắn/gỡ vocab |
+| `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/domain/requestDTO/ReqBulkAddVocabToSetDTO.java` | Tạo mới | Request bulk add vocab vào vocab set |
+| `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/domain/responseDTO/ResVocabSetSummaryDTO.java` | Tạo mới | Tóm tắt vocab set trong response add/bulk add |
+| `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/domain/responseDTO/ResVocabSetBulkAddDTO.java` | Tạo mới | Response tổng hợp bulk add |
+| `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/domain/responseDTO/ResVocabSetBulkAddItemDTO.java` | Tạo mới | Response từng item trong bulk add |
 | `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/service/organization/OrganizationService.java` | Tạo mới | Business logic Organization |
 | `src/main/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/controller/OrganizationController.java` | Tạo mới | API Organization |
 | `src/test/java/net/runsystem/duyptk/BaiTap2_HoiNhapKyThuat_AI/service/organization/OrganizationServiceTests.java` | Tạo mới | Unit test service layer |
@@ -372,10 +461,15 @@ Response:
 | `ReqCreateVocabSetDTO.java` | DTO | Fields/validation | `vocabSetName`, `vocabSetDescription`, `parentId` |
 | `ResItemDTO.java` | DTO | Fields/json mapping | `id`, `type`, `name`, `description`, `parentId`, `vocabCount` |
 | `ResVocabSetVocabDTO.java` | DTO | Fields | `vocabSetId`, `vocabId` |
+| `ReqBulkAddVocabToSetDTO.java` | DTO | Fields | Danh sách `vocabIds` |
+| `ResVocabSetSummaryDTO.java` | DTO | Fields | `id`, `name`, `description`, `parentId`, `vocabCount` |
+| `ResVocabSetBulkAddDTO.java` | DTO | Fields | `vocabSet`, `total`, `success`, `failed`, `items` |
+| `ResVocabSetBulkAddItemDTO.java` | DTO | Fields | `vocabId`, `success`, `added`, `vocab`, `error` |
 | `OrganizationService.java` | Service | `createFolder` | Tạo folder với owner/current user và parent folder hợp lệ |
 | `OrganizationService.java` | Service | `createVocabSet` | Tạo vocab set với owner/current user và parent folder hợp lệ |
 | `OrganizationService.java` | Service | `getChildren` | Lấy item con thuộc current user theo parent |
 | `OrganizationService.java` | Service | `addVocabToSet`, `removeVocabFromSet` | Quản lý quan hệ n-n vocab/vocab set |
+| `OrganizationService.java` | Service | `bulkAddVocabsToSet` | Gắn nhiều vocab với Partial Failure |
 | `OrganizationController.java` | Controller | API methods | Expose các endpoint phase đầu |
 | `OrganizationServiceTests.java` | Unit tests | Test methods | Kiểm tra create/list/add/remove và validation ownership |
 | `TestHtmlReportGenerator.java` | Report generator | Module mapping/filter | Thêm module Organization nếu report hiện tại cần map test mới |
