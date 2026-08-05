@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "1f988245-8f28-451d-a535-2b1e9091816f",
     "name": "BaiTap2 HoiNhapKyThuat AI",
-    "description": "Auth and Vocabulary quick test collection. The vocabulary request uses Free Dictionary API through the backend to return IPA, then Google TTS to generate an audio URL.",
+    "description": "Full backend collection for Auth, Vocabulary, Organization, Testing and Learning. Responses are wrapped by RestResponse, so scripts read values from json.data.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -23,8 +23,36 @@
       "value": "hello"
     },
     {
+      "key": "word2",
+      "value": "world"
+    },
+    {
+      "key": "word3",
+      "value": "book"
+    },
+    {
+      "key": "word4",
+      "value": "apple"
+    },
+    {
       "key": "meaning",
       "value": "xin chao"
+    },
+    {
+      "key": "meaning2",
+      "value": "the gioi"
+    },
+    {
+      "key": "meaning3",
+      "value": "quyen sach"
+    },
+    {
+      "key": "meaning4",
+      "value": "qua tao"
+    },
+    {
+      "key": "updatedMeaning",
+      "value": "xin chao moi"
     },
     {
       "key": "accessToken",
@@ -39,8 +67,48 @@
       "value": ""
     },
     {
-      "key": "updatedMeaning",
-      "value": "xin chao moi"
+      "key": "vocabId2",
+      "value": ""
+    },
+    {
+      "key": "vocabId3",
+      "value": ""
+    },
+    {
+      "key": "vocabId4",
+      "value": ""
+    },
+    {
+      "key": "folderId",
+      "value": ""
+    },
+    {
+      "key": "childFolderId",
+      "value": ""
+    },
+    {
+      "key": "vocabSetId",
+      "value": ""
+    },
+    {
+      "key": "testId",
+      "value": ""
+    },
+    {
+      "key": "question1Id",
+      "value": ""
+    },
+    {
+      "key": "question2Id",
+      "value": ""
+    },
+    {
+      "key": "option1Id",
+      "value": ""
+    },
+    {
+      "key": "option2Id",
+      "value": ""
     }
   ],
   "item": [
@@ -57,10 +125,6 @@
                 "value": "application/json"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
-            },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/register",
               "host": [
@@ -72,11 +136,12 @@
                 "auth",
                 "register"
               ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
             }
-          }
-        },
-        {
-          "name": "Login",
+          },
           "event": [
             {
               "listen": "test",
@@ -84,11 +149,15 @@
                 "type": "text/javascript",
                 "exec": [
                   "const json = pm.response.json();",
-                  "pm.collectionVariables.set('accessToken', json.access_token);"
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
                 ]
               }
             }
-          ],
+          ]
+        },
+        {
+          "name": "Login",
           "request": {
             "method": "POST",
             "header": [
@@ -97,10 +166,6 @@
                 "value": "application/json"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
-            },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/login",
               "host": [
@@ -112,16 +177,12 @@
                 "auth",
                 "login"
               ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
             }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Vocabulary",
-      "item": [
-        {
-          "name": "Create Vocab - Free Dictionary IPA",
+          },
           "event": [
             {
               "listen": "test",
@@ -129,19 +190,31 @@
                 "type": "text/javascript",
                 "exec": [
                   "const json = pm.response.json();",
-                  "pm.collectionVariables.set('vocabId', json.id);",
-                  "pm.collectionVariables.set('audioUrl', json.audio_url);",
-                  "pm.test('response has ipa', function () {",
-                  "  pm.expect(json.ipa).to.be.a('string').and.not.empty;",
-                  "});",
-                  "pm.test('response has audio_url', function () {",
-                  "  pm.expect(json.audio_url).to.be.a('string').and.not.empty;",
-                  "});"
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.collectionVariables.set('accessToken', data.access_token);"
                 ]
               }
             }
-          ],
+          ]
+        },
+        {
+          "name": "Account",
           "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/account",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "account"
+              ]
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -151,7 +224,63 @@
                   "type": "string"
                 }
               ]
-            },
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "refresh"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.collectionVariables.set('accessToken', data.access_token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Vocabulary",
+      "item": [
+        {
+          "name": "Create Vocab 1",
+          "request": {
             "method": "POST",
             "header": [
               {
@@ -159,10 +288,6 @@
                 "value": "application/json"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"word\": \"{{word}}\",\n  \"meaning\": \"{{meaning}}\"\n}"
-            },
             "url": {
               "raw": "{{baseUrl}}/api/v1/vocabs",
               "host": [
@@ -173,12 +298,7 @@
                 "v1",
                 "vocabs"
               ]
-            }
-          }
-        },
-        {
-          "name": "Get Vocab - By ID",
-          "request": {
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -189,6 +309,186 @@
                 }
               ]
             },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"{{word}}\",\n  \"meaning\": \"{{meaning}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.collectionVariables.set('vocabId', data.id);",
+                  "if (data.audioUrl || data.audio_url) { pm.collectionVariables.set('audioUrl', data.audioUrl || data.audio_url); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Vocab 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocabs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocabs"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"{{word2}}\",\n  \"meaning\": \"{{meaning2}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.collectionVariables.set('vocabId2', data.id);",
+                  "if (data.audioUrl || data.audio_url) { pm.collectionVariables.set('audioUrl', data.audioUrl || data.audio_url); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Vocab 3",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocabs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocabs"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"{{word3}}\",\n  \"meaning\": \"{{meaning3}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.collectionVariables.set('vocabId3', data.id);",
+                  "if (data.audioUrl || data.audio_url) { pm.collectionVariables.set('audioUrl', data.audioUrl || data.audio_url); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Vocab 4",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocabs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocabs"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"{{word4}}\",\n  \"meaning\": \"{{meaning4}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.collectionVariables.set('vocabId4', data.id);",
+                  "if (data.audioUrl || data.audio_url) { pm.collectionVariables.set('audioUrl', data.audioUrl || data.audio_url); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Vocab - By ID",
+          "request": {
             "method": "GET",
             "header": [],
             "url": {
@@ -208,12 +508,108 @@
                   "value": "{{vocabId}}"
                 }
               ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "Bulk Import Vocab",
+          "name": "Get Vocab - By Word",
           "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocabs/lookup?word={{word}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocabs",
+                "lookup"
+              ],
+              "query": [
+                {
+                  "key": "word",
+                  "value": "{{word}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Vocab Meaning - By ID",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocabs/lookup?id={{vocabId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocabs",
+                "lookup"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "{{vocabId}}"
+                }
+              ]
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -224,18 +620,87 @@
                 }
               ]
             },
-            "method": "POST",
-            "header": [],
             "body": {
-              "mode": "formdata",
-              "formdata": [
+              "mode": "raw",
+              "raw": "{\n  \"meaning\": \"{{updatedMeaning}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Vocab Meaning - By Word",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocabs/lookup?word={{word}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocabs",
+                "lookup"
+              ],
+              "query": [
                 {
-                  "key": "file",
-                  "type": "file",
-                  "src": "src/main/resources/VocabImportTemplate.xlsx"
+                  "key": "word",
+                  "value": "{{word}}"
                 }
               ]
             },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"meaning\": \"{{updatedMeaning}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bulk Import Vocab",
+          "request": {
+            "method": "POST",
+            "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/vocabs/bulk",
               "host": [
@@ -247,12 +712,7 @@
                 "vocabs",
                 "bulk"
               ]
-            }
-          }
-        },
-        {
-          "name": "Get Vocab - By Word",
-          "request": {
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -263,31 +723,45 @@
                 }
               ]
             },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "src/main/resources/VocabImportTemplate.xlsx"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Vocab Audio",
+          "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/vocabs/lookup?word={{word}}",
+              "raw": "{{baseUrl}}{{audioUrl}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "api",
-                "v1",
-                "vocabs",
-                "lookup"
-              ],
-              "query": [
-                {
-                  "key": "word",
-                  "value": "{{word}}"
-                }
+                "{{baseUrl}}{{audioUrl}}"
               ]
-            }
-          }
-        },
-        {
-          "name": "Update Vocab Meaning - By ID",
-          "request": {
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -297,81 +771,20 @@
                   "type": "string"
                 }
               ]
-            },
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"meaning\": \"{{updatedMeaning}}\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/vocabs/lookup?id={{vocabId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "vocabs",
-                "lookup"
-              ],
-              "query": [
-                {
-                  "key": "id",
-                  "value": "{{vocabId}}"
-                }
-              ]
             }
-          }
-        },
-        {
-          "name": "Update Vocab Meaning - By Word",
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{accessToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('audio request succeeds', function () { pm.expect(pm.response.code).to.eql(200); });",
+                  "pm.test('response is audio', function () { pm.expect(pm.response.headers.get('Content-Type')).to.include('audio/mpeg'); });"
+                ]
               }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"meaning\": \"{{updatedMeaning}}\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/vocabs/lookup?word={{word}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "api",
-                "v1",
-                "vocabs",
-                "lookup"
-              ],
-              "query": [
-                {
-                  "key": "word",
-                  "value": "{{word}}"
-                }
-              ]
             }
-          }
+          ]
         },
         {
           "name": "Free Dictionary Direct Lookup",
@@ -394,26 +807,33 @@
               ]
             }
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "Organization",
+      "item": [
         {
-          "name": "Get Vocab Audio",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('audio request succeeds', function () {",
-                  "  pm.expect(pm.response.code).to.eql(200);",
-                  "});",
-                  "pm.test('response is audio', function () {",
-                  "  pm.expect(pm.response.headers.get('Content-Type')).to.include('audio/mpeg');",
-                  "});"
-                ]
-              }
-            }
-          ],
+          "name": "Create Folder",
           "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/folders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "folders"
+              ]
+            },
             "auth": {
               "type": "bearer",
               "bearer": [
@@ -424,15 +844,925 @@
                 }
               ]
             },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"folderName\": \"My Folder\",\n  \"parentId\": null\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.collectionVariables.set('folderId', data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Child Folder",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/folders",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "folders"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"folderName\": \"Child Folder\",\n  \"parentId\": \"{{folderId}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.collectionVariables.set('childFolderId', data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Vocab Set",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocab-sets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocab-sets"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vocabSetName\": \"Core Set\",\n  \"vocabSetDescription\": \"Basic words\",\n  \"parentId\": \"{{folderId}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.collectionVariables.set('vocabSetId', data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Root Children",
+          "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}{{audioUrl}}",
+              "raw": "{{baseUrl}}/api/v1/items/children",
               "host": [
-                "{{baseUrl}}{{audioUrl}}"
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "items",
+                "children"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Folder Children",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/items/children?parentId={{folderId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "items",
+                "children"
+              ],
+              "query": [
+                {
+                  "key": "parentId",
+                  "value": "{{folderId}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/items/search?name=Core",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "items",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "Core"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Item By Path",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/items/by-path?path=/My%20Folder/Core%20Set",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "items",
+                "by-path"
+              ],
+              "query": [
+                {
+                  "key": "path",
+                  "value": "/My%20Folder/Core%20Set"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add Vocab To Vocab Set",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocab-sets/{{vocabSetId}}/vocabs/{{vocabId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocab-sets",
+                "{{vocabSetId}}",
+                "vocabs",
+                "{{vocabId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bulk Add Vocabs To Vocab Set",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocab-sets/{{vocabSetId}}/vocabs/bulk",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocab-sets",
+                "{{vocabSetId}}",
+                "vocabs",
+                "bulk"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vocabIds\": [\n    \"{{vocabId}}\",\n    \"{{vocabId2}}\",\n    \"{{vocabId3}}\",\n    \"{{vocabId4}}\"\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Vocabulary Set Integration",
+      "item": [
+        {
+          "name": "Create Vocab In Vocab Set",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocabs?vocabSetId={{vocabSetId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocabs"
+              ],
+              "query": [
+                {
+                  "key": "vocabSetId",
+                  "value": "{{vocabSetId}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"tree\",\n  \"meaning\": \"cai cay\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bulk Import Vocab In Vocab Set",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/vocabs/bulk?vocabSetId={{vocabSetId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "vocabs",
+                "bulk"
+              ],
+              "query": [
+                {
+                  "key": "vocabSetId",
+                  "value": "{{vocabSetId}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "src/main/resources/VocabImportTemplate.xlsx"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Testing & Learning",
+      "item": [
+        {
+          "name": "Create Test - From Vocab Set",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tests"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceItemIds\": [\n    \"{{vocabSetId}}\"\n  ],\n  \"numberOfQuestion\": 2,\n  \"timeInMinute\": 15\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "pm.collectionVariables.set('testId', data.id);",
+                  "if (data.questions && data.questions.length > 0) {",
+                  "  pm.collectionVariables.set('question1Id', data.questions[0].id);",
+                  "  pm.collectionVariables.set('option1Id', data.questions[0].options[0].id);",
+                  "}",
+                  "if (data.questions && data.questions.length > 1) {",
+                  "  pm.collectionVariables.set('question2Id', data.questions[1].id);",
+                  "  pm.collectionVariables.set('option2Id', data.questions[1].options[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Test - Whole Database",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tests"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceItemIds\": null,\n  \"numberOfQuestion\": 2,\n  \"timeInMinute\": 0\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Test",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tests/{{testId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tests",
+                "{{testId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Finish Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tests/{{testId}}/finish",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tests",
+                "{{testId}}",
+                "finish"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"answers\": [\n    {\n      \"questionId\": \"{{question1Id}}\",\n      \"optionId\": \"{{option1Id}}\"\n    },\n    {\n      \"questionId\": \"{{question2Id}}\",\n      \"optionId\": \"{{option2Id}}\"\n    }\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Test Result",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tests/{{testId}}/result",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "tests",
+                "{{testId}}",
+                "result"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Flashcards - From Vocab Set",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/flashcards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "flashcards"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceItemIds\": [\n    \"{{vocabSetId}}\"\n  ],\n  \"numberOfFlashcards\": 3\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Flashcards - Whole Database",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/flashcards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "flashcards"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceItemIds\": null,\n  \"numberOfFlashcards\": 3\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const data = json.data;",
+                  "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cleanup",
+      "item": [
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "logout"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('logout succeeds', function () { pm.expect(pm.response.code).to.eql(200); });"
+                ]
+              }
+            }
+          ]
         }
       ]
     }

@@ -107,6 +107,16 @@ Lưu trữ nguồn `VocabSource` của bài test (có thể là nhiều Folder/V
 | `is_correct`     | Boolean | Not Null                   | Đánh dấu đáp án đúng |
 | `audio_url`      | String  | Nullable                   |                      |
 
+#### Table: `test_answers`
+Lưu đáp án cuối cùng của người dùng cho từng câu hỏi khi kết thúc bài test.
+| Column               | Type    | Constraints                    | Description                         |
+| :------------------- | :------ | :----------------------------- | :---------------------------------- |
+| `test_answer_id`     | Long    | PK, Auto-increment             |                                     |
+| `test_id`            | Long    | FK (tests.test_id)             | Bài test chứa câu trả lời           |
+| `question_id`        | Long    | FK (questions.question_id)     | Câu hỏi được trả lời                |
+| `selected_option_id` | Long    | FK (options.option_id), Nullable | Option cuối cùng người dùng chọn |
+| `is_correct`         | Boolean | Not Null                       | Kết quả đúng/sai của câu trả lời    |
+
 ---
 
 ## 3. Implementation Notes (Ghi chú triển khai)
@@ -121,11 +131,13 @@ Lưu trữ nguồn `VocabSource` của bài test (có thể là nhiều Folder/V
 * **Database Level:**
     * `ON DELETE CASCADE` cho các quan hệ `test_items`, `questions`, `options` khi một `test` bị xóa.
     * `UNIQUE` constraint trên `(question_id, option_order)`.
+    * `UNIQUE` constraint trên `(test_id, question_id)` cho `test_answers`.
     * `UNIQUE` constraint trên `(question_id)` cho cột `is_correct` (nếu DB hỗ trợ partial index) hoặc đảm bảo bằng Logic Code.
 * **Application Level:**
     * Đảm bảo tên item unique trong cùng parent của cùng user; rule này áp dụng chung giữa `folders.folder_name` và `vocab_sets.vocab_set_name` vì tên đang nằm ở hai bảng dẫn xuất khác nhau.
     * Đảm bảo khi tạo `Option`, luôn có đúng 1 option có `is_correct = true`.
     * Đảm bảo `option_content` của đáp án đúng khớp với `correct_answer` của câu hỏi.
+    * Đảm bảo `selected_option_id` của `test_answers` thuộc đúng `question_id`.
 
 ### 3.3. Performance Optimization
 * Đánh Index cho các cột: `user_id`, `parent_id`, `vocab_id`, `test_id`, `email`.
