@@ -30,7 +30,7 @@ Mỗi khi thêm Developer Plan mới, cần cập nhật file này với:
 | [`auth_authz/Auth_Authz_DeveloperPlan.md`](auth_authz/Auth_Authz_DeveloperPlan.md)       | Authentication và authorization tối giản      | Đã phê duyệt         | Đã triển khai         | Cấu hình Spring Boot, User, JWT, BCrypt, register/login/refresh/account/logout; không có Roles và Permissions     |
 | [`auth_authz/Auth_UnitTest_DeveloperPlan.md`](auth_authz/Auth_UnitTest_DeveloperPlan.md) | Unit Test cho Authentication và Authorization | Đã phê duyệt         | Đã triển khai         | JUnit test cho `UserService` và HTML report có test case, module và coverage; không test app/repo/`SecurityUtil` |
 | [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md) | Vocabulary Management | Đã phê duyệt | Đã triển khai create/get/update/bulk import `.xlsx` | `POST /api/v1/vocabs` dùng JSON request DTO; `GET/PATCH /lookup`; `POST /bulk` import theo `VocabImportTemplate.xlsx`, Partial Failure từng dòng |
-| [`organization/Organization_DeveloperPlan.md`](organization/Organization_DeveloperPlan.md) | Organization | Đã phê duyệt một phần | Đã triển khai phase đầu | Phase đầu: `POST /api/v1/folders`, `POST /api/v1/vocab-sets`; entity `Item`/`Folder`/`VocabSet`, cây `parent_id`, owner theo user hiện tại |
+| [`organization/Organization_DeveloperPlan.md`](organization/Organization_DeveloperPlan.md) | Organization | Đã phê duyệt một phần | Đã triển khai GET children | `GET /api/v1/items/children` trả root items khi không có `parentId` và direct children khi có `parentId`; không recursive |
 
 ## 4. Tóm tắt từng Developer Plan
 
@@ -220,3 +220,5 @@ Khi tạo plan mới, cần thêm vào bảng ở mục 3 và phần tóm tắt 
 | 2026-08-04 | Tạo Developer Plan Organization chờ phê duyệt                                                               | Codex               |
 | 2026-08-04 | Người dùng phê duyệt phase đầu Organization: `POST folder` và `POST vocab set`                              | Người dùng          |
 | 2026-08-04 | Triển khai phase đầu Organization: `POST /api/v1/folders` và `POST /api/v1/vocab-sets`                      | Codex               |
+| 2026-08-05 | Người dùng phê duyệt `GET /api/v1/items/children` cho root items và direct children theo `parentId`         | Người dùng          |
+| 2026-08-05 | Triển khai `GET /api/v1/items/children` cho root items và direct children theo `parentId`                   | Codex               |

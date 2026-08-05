@@ -1,5 +1,6 @@
 package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.organization;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.ItemType;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.User;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.VocabSet;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.FolderRepository;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.ItemRepository;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.UserRepository;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.VocabSetRepository;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.SecurityUtil;
@@ -23,6 +25,7 @@ import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.SecurityUtil;
 @RequiredArgsConstructor
 public class OrganizationService {
     private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
     private final FolderRepository folderRepository;
     private final VocabSetRepository vocabSetRepository;
 
@@ -59,6 +62,21 @@ public class OrganizationService {
                 .build();
 
         return convertToDTO(vocabSetRepository.save(vocabSet));
+    }
+
+    @Transactional(readOnly = true)
+    public List<ResItemDTO> getChildren(Long parentId) {
+        User user = currentUser();
+        if (parentId == null) {
+            return itemRepository.findByUserIdAndParentIsNullOrderByIdAsc(user.getId()).stream()
+                    .map(this::convertToDTO)
+                    .toList();
+        }
+
+        resolveParentFolder(parentId, user.getId());
+        return itemRepository.findByUserIdAndParentIdOrderByIdAsc(user.getId(), parentId).stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
     public ResItemDTO convertToDTO(Item item) {

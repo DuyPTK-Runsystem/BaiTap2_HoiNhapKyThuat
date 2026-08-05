@@ -1,10 +1,14 @@
 package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.controller;
 
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqCreateFolderDTO;
@@ -29,5 +33,11 @@ public class OrganizationController {
     @ApiMessage("Tạo tập từ vựng")
     public ResponseEntity<ResItemDTO> createVocabSet(@RequestBody ReqCreateVocabSetDTO request) {
         return ResponseEntity.ok(organizationService.createVocabSet(request));
+    }
+
+    @GetMapping("/items/children")
+    @ApiMessage("Lấy danh sách item con")
+    public ResponseEntity<List<ResItemDTO>> getChildren(@RequestParam(required = false) Long parentId) {
+        return ResponseEntity.ok(organizationService.getChildren(parentId));
     }
 }

@@ -1,16 +1,16 @@
 package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.organization;
 
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqCreateVocabSetDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResItemDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.Folder;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.ItemType;
@@ -21,12 +21,10 @@ import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.ItemRepository;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.UserRepository;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.VocabSetRepository;
 
-class OrganizationVocabSetServiceTests {
+class OrganizationChildrenServiceTests {
+    private static final Long FOLDER_ID = 10L;
     private static final Long USER_ID = 1L;
-    private static final Long PARENT_ID = 10L;
     private static final String EMAIL = "learner@example.com";
-    private static final String VOCAB_SET_DESCRIPTION = "Basic daily verbs";
-    private static final String VOCAB_SET_NAME = "Common verbs";
 
     private final UserRepository userRepository = Mockito.mock(UserRepository.class);
     private final ItemRepository itemRepository = Mockito.mock(ItemRepository.class);
@@ -44,52 +42,45 @@ class OrganizationVocabSetServiceTests {
     }
 
     @Test
-    void createVocabSetShouldCreateRootVocabSetForCurrentUser() {
+    void shouldReturnRootItemsWhenParentIdIsMissing() {
         mockCurrentUser();
-        Mockito.when(vocabSetRepository.save(ArgumentMatchers.any(VocabSet.class)))
-                .thenAnswer(invocation -> vocabSetWithId(invocation.getArgument(0), 20L));
+        Mockito.when(itemRepository.findByUserIdAndParentIsNullOrderByIdAsc(USER_ID))
+                .thenReturn(List.of(folder(11L, "IELTS", null), vocabSet(12L, "Root verbs", null)));
 
-        ResItemDTO response = organizationService.createVocabSet(ReqCreateVocabSetDTO.builder()
-                .vocabSetName(VOCAB_SET_NAME)
-                .vocabSetDescription(VOCAB_SET_DESCRIPTION)
-                .build());
+        List<ResItemDTO> response = organizationService.getChildren(null);
 
         Assertions.assertThat(response)
-                .extracting(
-                        ResItemDTO::getId,
-                        ResItemDTO::getType,
-                        ResItemDTO::getName,
-                        ResItemDTO::getDescription,
-                        ResItemDTO::getParentId,
-                        ResItemDTO::getVocabCount)
-                .containsExactly(20L, ItemType.VOCAB_SET, VOCAB_SET_NAME, VOCAB_SET_DESCRIPTION, null, 0);
+                .extracting(ResItemDTO::getId, ResItemDTO::getType, ResItemDTO::getParentId)
+                .containsExactly(
+                        Assertions.tuple(11L, ItemType.FOLDER, null),
+                        Assertions.tuple(12L, ItemType.VOCAB_SET, null));
     }
 
     @Test
-    void createVocabSetShouldUseParentFolderWhenParentBelongsToCurrentUser() {
+    void shouldReturnDirectChildrenWhenParentFolderBelongsToCurrentUser() {
         mockCurrentUser();
-        Folder parent = parentFolder();
-        Mockito.when(folderRepository.findByIdAndUserId(PARENT_ID, USER_ID)).thenReturn(Optional.of(parent));
-        Mockito.when(vocabSetRepository.save(ArgumentMatchers.any(VocabSet.class)))
-                .thenAnswer(invocation -> vocabSetWithId(invocation.getArgument(0), 21L));
+        Folder parent = folder(FOLDER_ID, "IELTS", null);
+        Mockito.when(folderRepository.findByIdAndUserId(FOLDER_ID, USER_ID)).thenReturn(Optional.of(parent));
+        Mockito.when(itemRepository.findByUserIdAndParentIdOrderByIdAsc(USER_ID, FOLDER_ID))
+                .thenReturn(List.of(folder(13L, "Listening", parent), vocabSet(14L, "Band 7 words", parent)));
 
-        ResItemDTO response = organizationService.createVocabSet(ReqCreateVocabSetDTO.builder()
-                .vocabSetName(VOCAB_SET_NAME)
-                .parentId(PARENT_ID)
-                .build());
+        List<ResItemDTO> response = organizationService.getChildren(FOLDER_ID);
 
-        Assertions.assertThat(response.getParentId()).isEqualTo(PARENT_ID);
+        Assertions.assertThat(response)
+                .extracting(ResItemDTO::getId, ResItemDTO::getType, ResItemDTO::getParentId)
+                .containsExactly(
+                        Assertions.tuple(13L, ItemType.FOLDER, FOLDER_ID),
+                        Assertions.tuple(14L, ItemType.VOCAB_SET, FOLDER_ID));
     }
 
     @Test
-    void createVocabSetShouldRejectMissingVocabSetName() {
+    void shouldRejectParentThatIsMissingOrNotOwnedByCurrentUser() {
         mockCurrentUser();
+        Mockito.when(folderRepository.findByIdAndUserId(FOLDER_ID, USER_ID)).thenReturn(Optional.empty());
 
-        Assertions.assertThatThrownBy(() -> organizationService.createVocabSet(ReqCreateVocabSetDTO.builder()
-                .vocabSetName(" ")
-                .build()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Tên tập từ vựng không được để trống");
+        Assertions.assertThatThrownBy(() -> organizationService.getChildren(FOLDER_ID))
+                .isInstanceOf(NoSuchElementException.class)
+                .hasMessage("Folder cha không tồn tại hoặc không thuộc người dùng hiện tại");
     }
 
     private void mockCurrentUser() {
@@ -106,16 +97,21 @@ class OrganizationVocabSetServiceTests {
                 .build();
     }
 
-    private Folder parentFolder() {
+    private Folder folder(Long id, String name, Folder parent) {
         return Folder.builder()
-                .id(PARENT_ID)
-                .folderName("Parent")
+                .id(id)
+                .folderName(name)
+                .parent(parent)
                 .user(currentUser())
                 .build();
     }
 
-    private VocabSet vocabSetWithId(VocabSet vocabSet, Long id) {
-        vocabSet.setId(id);
-        return vocabSet;
+    private VocabSet vocabSet(Long id, String name, Folder parent) {
+        return VocabSet.builder()
+                .id(id)
+                .vocabSetName(name)
+                .parent(parent)
+                .user(currentUser())
+                .build();
     }
 }

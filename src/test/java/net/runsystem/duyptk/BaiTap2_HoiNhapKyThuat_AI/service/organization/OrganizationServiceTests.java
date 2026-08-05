@@ -17,6 +17,7 @@ import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.Folder;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.ItemType;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.User;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.FolderRepository;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.ItemRepository;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.UserRepository;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.VocabSetRepository;
 
@@ -27,10 +28,12 @@ class OrganizationServiceTests {
     private static final String FOLDER_NAME = "Unit 1";
 
     private final UserRepository userRepository = Mockito.mock(UserRepository.class);
+    private final ItemRepository itemRepository = Mockito.mock(ItemRepository.class);
     private final FolderRepository folderRepository = Mockito.mock(FolderRepository.class);
     private final VocabSetRepository vocabSetRepository = Mockito.mock(VocabSetRepository.class);
     private final OrganizationService organizationService = new OrganizationService(
             userRepository,
+            itemRepository,
             folderRepository,
             vocabSetRepository);
 

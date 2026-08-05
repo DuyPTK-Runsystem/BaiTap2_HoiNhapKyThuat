@@ -2,13 +2,13 @@
 
 ## 1. Trạng thái
 
-- Trạng thái phê duyệt: Đã phê duyệt một phần cho phase đầu (`POST /api/v1/folders`, `POST /api/v1/vocab-sets`).
-- Trạng thái triển khai: Đã triển khai phase đầu (`POST /api/v1/folders`, `POST /api/v1/vocab-sets`).
+- Trạng thái phê duyệt: Đã phê duyệt một phần cho phase `POST /api/v1/folders`, `POST /api/v1/vocab-sets`, `GET /api/v1/items/children`.
+- Trạng thái triển khai: Đã triển khai phase `POST /api/v1/folders`, `POST /api/v1/vocab-sets`, `GET /api/v1/items/children`.
 - Ngày tạo plan: 2026-08-04.
 - Agent tạo plan: Codex.
-- Ngày cập nhật gần nhất: 2026-08-04.
+- Ngày cập nhật gần nhất: 2026-08-05.
 - Agent cập nhật gần nhất: Codex.
-- Lý do tạo/cập nhật plan: Đã triển khai Organization phase đầu gồm `POST folder` và `POST vocab set`.
+- Lý do tạo/cập nhật plan: Đã triển khai `GET /api/v1/items/children` cho root items và direct children theo `parentId`.
 
 ## 2. Mục tiêu
 
@@ -53,6 +53,19 @@ Chưa triển khai trong phase đầu:
 - `GET /api/v1/items/children`.
 - `POST /api/v1/vocab-sets/{vocabSetId}/vocabs/{vocabId}`.
 - `DELETE /api/v1/vocab-sets/{vocabSetId}/vocabs/{vocabId}`.
+
+### 4.0.1. Scope đã được phê duyệt triển khai tiếp theo
+
+Triển khai tiếp:
+
+- `GET /api/v1/items/children`.
+
+Contract đã được người dùng xác nhận:
+
+- Không có `parentId`: trả tất cả root items của authenticated user, tức các item có `parent_id = null`.
+- Có `parentId`: `parentId` phải là `Folder` thuộc authenticated user, trả direct children của folder đó.
+- Có thể hiểu `parentId = null` là lấy children của một virtual super root folder, nhưng không tạo virtual root trong database.
+- Không trả recursive tree trong phase này.
 
 ### 4.1. Entity và repository
 
