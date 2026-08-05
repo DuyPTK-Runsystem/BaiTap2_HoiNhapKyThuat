@@ -2,8 +2,8 @@
 
 ## 1. Trạng thái
 
-- Trạng thái phê duyệt: Đã phê duyệt Phase 1 và Phase 2; Phase 3 chờ phê duyệt.
-- Trạng thái triển khai: Đã triển khai Phase 1 và Phase 2; chưa triển khai Phase 3.
+- Trạng thái phê duyệt: Đã phê duyệt Phase 1, Phase 2, Phase 3 và Phase 4.
+- Trạng thái triển khai: Đã triển khai Phase 1, Phase 2, Phase 3 và Phase 4.
 - Ngày tạo plan: 2026-08-05.
 - Agent tạo plan: RunSystem Assistant.
 - Phạm vi đề xuất: Testing & Learning, gồm Multiple Choice và Flashcard; triển khai theo phase trong mục 5.
@@ -149,6 +149,7 @@ Bao gồm:
 
 - API lấy đề của một test thuộc authenticated user.
 - API submit câu trả lời hoặc hoàn tất test theo contract được phê duyệt.
+- Lưu final answers của user vào bảng `test_answers`.
 - Cập nhật `correct_answer_count` và `incorrect_answer_count` sau khi kết thúc.
 - Xử lý `time_in_minute`: `null`/`0` là không giới hạn; giá trị dương tạo deadline và từ chối thao tác sau khi hết thời gian.
 - API trả kết quả và trạng thái thời gian còn lại khi phù hợp.
@@ -161,7 +162,7 @@ POST /api/v1/tests/{testId}/finish
 GET  /api/v1/tests/{testId}/result
 ```
 
-Không triển khai `POST /api/v1/tests/{testId}/answers` riêng trong Phase 3 để tránh thêm persistence cho từng lần chọn đáp án khi docs chỉ yêu cầu cập nhật thống kê sau khi kết thúc. Client gửi toàn bộ đáp án trong request `finish`.
+Không triển khai `POST /api/v1/tests/{testId}/answers` riêng trong Phase 3. Client gửi toàn bộ final answers trong request `finish`, BE lưu một bản ghi `TestAnswer` cho từng question tại thời điểm kết thúc bài test.
 
 Request body cho `POST /api/v1/tests/{testId}/finish`:
 
@@ -182,30 +183,33 @@ Response body cho `POST /api/v1/tests/{testId}/finish` và `GET /api/v1/tests/{t
 - `correctAnswerCount`, `incorrectAnswerCount`.
 - `remainingTimeInSeconds`.
 - `finished`.
-- `questions` kèm options để client đối chiếu kết quả.
+- `questions` kèm options và final answer của user để client đối chiếu kết quả.
 
 Quy tắc Phase 3:
 
 - Chỉ owner hiện tại được lấy đề, finish hoặc lấy result.
 - `finish` chỉ nhận các `questionId` thuộc test hiện tại.
 - `optionId` phải thuộc đúng `questionId`.
-- Nếu thiếu câu trả lời cho question trong test, tính câu đó là incorrect để tổng `correct + incorrect = numberOfQuestion`.
+- Nếu thiếu câu trả lời cho question trong test, lưu `TestAnswer.selectedOption = null` và tính câu đó là incorrect để tổng `correct + incorrect = numberOfQuestion`.
 - Nếu có questionId trùng trong request, từ chối với validation error rõ ràng.
 - Nếu test đã finish, không cho finish lại.
 - Với `timeInMinute = null` hoặc `0`, `remainingTimeInSeconds = null` và không giới hạn thời gian.
 - Với `timeInMinute > 0`, server tính remaining time từ thời điểm tạo test; nếu hết giờ thì từ chối `finish` và trả validation error rõ ràng.
+- Mỗi cặp `(test, question)` chỉ có một `TestAnswer`.
 
 Database/entity change cần phê duyệt cho Phase 3:
 
 - Thêm `startedAt` vào entity `Test`, map column `started_at`, để có mốc server-side tính deadline/remaining time.
 - Thêm `finishedAt` vào entity `Test`, map column `finished_at`, để biết test đã kết thúc và chặn finish lại.
-- Không thêm bảng lưu từng câu trả lời vì docs hiện chỉ yêu cầu thống kê đúng/sai sau khi kết thúc.
+- Thêm entity `TestAnswer`, map bảng `test_answers`, lưu final answer theo từng question.
+- Thêm quan hệ cascade từ `Test` sang `TestAnswer`.
+- Thêm unique constraint `(test_id, question_id)` cho `test_answers`.
 - Không thêm enum status riêng để tránh tạo domain concept mới khi `finishedAt != null` đã đủ biểu diễn trạng thái kết thúc.
 
 Không bao gồm trong Phase 3:
 
 - Flashcard.
-- Lưu từng answer/attempt/history vào database.
+- Lưu nhiều lần chọn đáp án, draft answer, attempt history hoặc answer history.
 - Chấm điểm từng phần hoặc scoring ngoài đúng/sai.
 - API submit từng câu riêng lẻ.
 - Thay đổi cách sinh question/options ở Phase 2.
@@ -220,6 +224,51 @@ Bao gồm:
 - Back là word và meaning/audio theo đặc tả.
 - Không tạo hoặc lưu `Test`, `Question`, `Option` cho Flashcard.
 - API tạo/lấy danh sách flashcard trong một request; contract request/response sẽ được chốt trước khi triển khai phase này.
+
+Contract Phase 4 đề xuất để phê duyệt:
+
+```text
+POST /api/v1/flashcards
+```
+
+Request body:
+
+- `sourceItemIds` (`List<Long>`, nullable/rỗng): nguồn Folder/VocabSet; nullable hoặc rỗng để lấy ngẫu nhiên toàn bộ `Vocab`.
+- `numberOfFlashcards` (`Integer`, bắt buộc, min = 1): số flashcard cần trả.
+
+Response body:
+
+- `sourceItemIds`: source đã request.
+- `numberOfFlashcards`: số flashcard trả về.
+- `flashcards`: danh sách flashcard động.
+- Mỗi flashcard gồm:
+  - `vocabId`.
+  - `frontType`: `MEANING` hoặc `AUDIO`.
+  - `frontText`: có giá trị khi `frontType = MEANING`.
+  - `frontAudioUrl`: có giá trị khi `frontType = AUDIO`.
+  - `backWord`.
+  - `backMeaning`.
+  - `backAudioUrl`.
+
+Quy tắc Phase 4:
+
+- Dùng lại `VocabSourceResolver` để kiểm tra ownership, resolve source đệ quy và random fallback.
+- Không lưu `Test`, `Question`, `Option`, `TestAnswer` hoặc bất kỳ flashcard session/progress nào vào database.
+- BE random `frontType` cho từng flashcard giữa `MEANING` và `AUDIO` dựa trên dữ liệu hợp lệ của vocab.
+- Nếu vocab có cả `meaning` và `audioUrl`, chọn ngẫu nhiên một trong hai front type.
+- Nếu vocab chỉ có `meaning`, dùng `frontType = MEANING`.
+- Nếu vocab chỉ có `audioUrl`, dùng `frontType = AUDIO`.
+- Nếu vocab không có cả `meaning` lẫn `audioUrl`, vocab đó không hợp lệ để tạo flashcard.
+- Back luôn trả `word`, `meaning`, `audioUrl` theo dữ liệu hiện có của `Vocab`; field nullable được giữ nullable.
+- Nếu source không đủ vocab hợp lệ cho `numberOfFlashcards`, trả validation error rõ ràng.
+
+Không bao gồm trong Phase 4:
+
+- Lưu flashcard progress/session/history vào database.
+- API update trạng thái học thuộc/chưa thuộc.
+- Spaced repetition hoặc thuật toán ôn tập.
+- Thay đổi Vocabulary provider IPA/audio.
+- Role/Permission hoặc authorization model mới.
 
 ## 6. Phạm vi không thực hiện
 
@@ -251,13 +300,17 @@ Map bảng `questions`, liên kết `Test` và `Vocab`, lưu nội dung, đáp �
 
 Map bảng `options`, liên kết `Question`, lưu order, nội dung, `isCorrect` và audio URL. Database unique `(question_id, option_order)`; integrity duy nhất đáp án đúng được bảo đảm ở application logic nếu database không hỗ trợ partial index.
 
-### 7.5. Component service dự kiến
+### 7.5. `TestAnswer`
+
+Map bảng `test_answers`, liên kết `Test`, `Question` và `Option` cuối cùng người dùng chọn. `selectedOption` nullable để lưu trường hợp người dùng bỏ trống câu hỏi. Database unique `(test_id, question_id)`.
+
+### 7.6. Component service dự kiến
 
 - `VocabSourceResolver`: resolve source, ownership, recursive traversal và random fallback.
 - `QuestionFactory`: dựng câu hỏi theo template.
 - `OptionGenerator`: tạo distractor, random order và kiểm tra invariant.
 - `TestService`: tạo/lấy test và phối hợp các component.
-- `TestResultService`: submit/finish, time limit và tracking.
+- `TestResultService`: finish test, lưu final answers, time limit và tracking.
 - `FlashcardService`: tạo response động, không persistence.
 
 Tên class/package có thể điều chỉnh trong báo cáo trước khi code nếu không thay đổi phạm vi hoặc kiến trúc.
@@ -286,6 +339,7 @@ Các contract chi tiết về loại câu hỏi, cách submit nhiều đáp án,
 
 Contract chi tiết cho Phase 2 được cập nhật tại mục 5, phần "Phase 2: QuestionFactory và tạo đề".
 Contract chi tiết cho Phase 3 được cập nhật tại mục 5, phần "Phase 3: Test lifecycle và tracking".
+Contract chi tiết cho Phase 4 được cập nhật tại mục 5, phần "Phase 4: Flashcard/Learning".
 
 ## 9. Unit test và report dự kiến
 
@@ -338,9 +392,13 @@ File dự kiến riêng cho Phase 2:
 File dự kiến riêng cho Phase 3:
 
 - Chỉnh `src/main/java/.../domain/table/Test.java` để thêm `startedAt` và `finishedAt`.
+- Tạo `src/main/java/.../domain/table/TestAnswer.java` để lưu final answers.
 - Tạo `src/main/java/.../domain/requestDTO/ReqFinishTestDTO.java` cho request finish test.
 - Tạo `src/main/java/.../domain/requestDTO/ReqTestAnswerDTO.java` cho từng câu trả lời.
+- Tạo `src/main/java/.../domain/responseDTO/ResTestAnswerDTO.java` để trả final answer từng câu.
+- Chỉnh `src/main/java/.../domain/responseDTO/ResQuestionDTO.java` để thêm final answer nếu test đã finish.
 - Chỉnh `src/main/java/.../domain/responseDTO/ResTestDTO.java` để thêm `remainingTimeInSeconds` và `finished`.
+- Tạo `src/main/java/.../repository/TestAnswerRepository.java` nếu cần query riêng final answers.
 - Chỉnh `src/main/java/.../repository/TestRepository.java` để thêm query fetch owner/questions/options nếu cần.
 - Chỉnh `src/main/java/.../service/testing/TestService.java` để bổ sung get test/result hoặc tách mapper dùng chung.
 - Tạo `src/main/java/.../service/testing/TestResultService.java` để validate answer, finish test và cập nhật count.
@@ -348,6 +406,17 @@ File dự kiến riêng cho Phase 3:
 - Tạo unit test `TestResultServiceTests`.
 - Chỉnh unit test `TestServiceTests` nếu cần để kiểm tra remaining time trong response.
 - Chỉnh `src/test/.../report/TestHtmlReportGenerator.java` nếu cần bổ sung mapping class Phase 3.
+
+File dự kiến riêng cho Phase 4:
+
+- Tạo `src/main/java/.../domain/requestDTO/ReqCreateFlashcardDTO.java` cho request flashcard.
+- Tạo `src/main/java/.../domain/responseDTO/ResFlashcardDTO.java` cho từng flashcard.
+- Tạo `src/main/java/.../domain/responseDTO/ResFlashcardSessionDTO.java` cho response danh sách flashcard động.
+- Tạo `src/main/java/.../service/testing/FlashcardFrontType.java` làm enum loại mặt trước trong response.
+- Tạo `src/main/java/.../service/testing/FlashcardService.java` để resolve vocab, validate mode và map response.
+- Chỉnh `src/main/java/.../controller/TestController.java` hoặc tạo controller riêng nếu cần để thêm `POST /api/v1/flashcards`.
+- Tạo unit test `FlashcardServiceTests`.
+- Chỉnh `src/test/.../report/TestHtmlReportGenerator.java` nếu cần bổ sung mapping class Phase 4.
 
 ## 11. Rủi ro và quyết định cần xác nhận
 
@@ -368,6 +437,7 @@ File dự kiến riêng cho Phase 3:
 - Mỗi question có đúng 4 option, đúng một option đúng và option đúng khớp correct answer.
 - Cả 5 template sinh đúng nội dung và audio theo docs.
 - Time limit hoạt động đúng với null/0 và giá trị dương.
+- Final answers được lưu vào `test_answers`, kể cả câu bị bỏ trống.
 - Flashcard không ghi `Test`, `Question`, `Option` vào database.
 - Unit tests, Checkstyle, PMD, build và HTML JaCoCo report đạt theo cấu hình project.
 - Không có Role/Permission hoặc thay đổi public endpoint ngoài phạm vi được phê duyệt.
@@ -376,8 +446,8 @@ File dự kiến riêng cho Phase 3:
 
 - Phase 1 đã được người dùng phê duyệt và triển khai.
 - Phase 2 đã được người dùng phê duyệt và triển khai.
-- Phase 3 đã được cập nhật chi tiết và chờ người dùng phê duyệt trước khi code.
-- Phase 4 chờ người dùng xác nhận phạm vi và contract API trước khi code.
+- Phase 3 đã được người dùng phê duyệt và triển khai.
+- Phase 4 đã được người dùng phê duyệt và triển khai.
 
 ## 14. Lịch sử cập nhật
 
@@ -388,3 +458,8 @@ File dự kiến riêng cho Phase 3:
 | 2026-08-05 | Cập nhật chi tiết Phase 2: contract `POST /api/v1/tests`, DTO/response, QuestionFactory, OptionGenerator, TestService, test dự kiến và trạng thái chờ phê duyệt | Codex |
 | 2026-08-05 | Người dùng phê duyệt và triển khai Phase 2: `POST /api/v1/tests`, QuestionFactory, OptionGenerator, TestService, DTO response và unit test | Codex |
 | 2026-08-05 | Cập nhật chi tiết Phase 3 chờ phê duyệt: get test/result, finish test, time remaining, startedAt/finishedAt và TestResultService | Codex |
+| 2026-08-05 | Cập nhật Phase 3 theo yêu cầu người dùng: thêm `TestAnswer` để lưu final answer của user khi finish test | Codex |
+| 2026-08-05 | Người dùng phê duyệt và triển khai Phase 3: get/result/finish test, time remaining, `TestAnswer` lưu final answers và unit test | Codex |
+| 2026-08-05 | Cập nhật chi tiết Phase 4 chờ phê duyệt: `POST /api/v1/flashcards`, front mode meaning/audio, response động và không persistence | Codex |
+| 2026-08-05 | Cập nhật Phase 4 theo yêu cầu người dùng: bỏ `frontMode` request, BE random mặt trước Meaning/Audio theo dữ liệu hợp lệ | Codex |
+| 2026-08-05 | Người dùng phê duyệt và triển khai Phase 4: `POST /api/v1/flashcards`, flashcard động random Meaning/Audio và không persistence | Codex |

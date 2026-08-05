@@ -17,5 +17,7 @@ public class ResTestDTO {
     private Integer timeInMinute;
     private Integer correctAnswerCount;
     private Integer incorrectAnswerCount;
+    private Long remainingTimeInSeconds;
+    private boolean finished;
     private List<ResQuestionDTO> questions;
 }

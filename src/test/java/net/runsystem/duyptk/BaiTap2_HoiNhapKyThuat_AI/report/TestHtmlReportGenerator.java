@@ -184,17 +184,26 @@ public final class TestHtmlReportGenerator {
         if (TESTING_LEARNING_MODULE.equals(module)) {
             return List.of(
                     BASE_PACKAGE_PREFIX + "/controller/TestController",
+                    BASE_PACKAGE_PREFIX + "/domain/requestDTO/ReqCreateFlashcardDTO",
                     BASE_PACKAGE_PREFIX + "/domain/requestDTO/ReqCreateTestDTO",
+                    BASE_PACKAGE_PREFIX + "/domain/responseDTO/ResFlashcardDTO",
+                    BASE_PACKAGE_PREFIX + "/domain/responseDTO/ResFlashcardSessionDTO",
                     BASE_PACKAGE_PREFIX + "/domain/responseDTO/ResOptionDTO",
                     BASE_PACKAGE_PREFIX + "/domain/responseDTO/ResQuestionDTO",
+                    BASE_PACKAGE_PREFIX + "/domain/responseDTO/ResTestAnswerDTO",
                     BASE_PACKAGE_PREFIX + "/domain/responseDTO/ResTestDTO",
                     BASE_PACKAGE_PREFIX + "/domain/table/Test",
+                    BASE_PACKAGE_PREFIX + "/domain/table/TestAnswer",
                     BASE_PACKAGE_PREFIX + "/domain/table/TestItem",
                     BASE_PACKAGE_PREFIX + "/domain/table/Question",
                     BASE_PACKAGE_PREFIX + "/domain/table/Option",
+                    BASE_PACKAGE_PREFIX + "/service/testing/FlashcardFrontType",
+                    BASE_PACKAGE_PREFIX + "/service/testing/FlashcardService",
                     BASE_PACKAGE_PREFIX + "/service/testing/OptionGenerator",
                     BASE_PACKAGE_PREFIX + "/service/testing/QuestionFactory",
                     BASE_PACKAGE_PREFIX + "/service/testing/QuestionType",
+                    BASE_PACKAGE_PREFIX + "/service/testing/TestResponseMapper",
+                    BASE_PACKAGE_PREFIX + "/service/testing/TestResultService",
                     BASE_PACKAGE_PREFIX + "/service/testing/TestService",
                     BASE_PACKAGE_PREFIX + "/service/testing/VocabSourceResolver");
         }

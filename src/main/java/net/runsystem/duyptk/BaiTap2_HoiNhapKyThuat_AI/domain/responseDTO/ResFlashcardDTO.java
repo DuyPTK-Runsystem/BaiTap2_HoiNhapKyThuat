@@ -1,24 +1,24 @@
 package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.testing.FlashcardFrontType;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ResQuestionDTO {
-    private Long id;
+public class ResFlashcardDTO {
     private Long vocabId;
-    private String questionContent;
-    private String correctAnswer;
-    private String audioUrl;
-    private List<ResOptionDTO> options;
-    private ResTestAnswerDTO answer;
+    private FlashcardFrontType frontType;
+    private String frontText;
+    private String frontAudioUrl;
+    private String backWord;
+    private String backMeaning;
+    private String backAudioUrl;
 }

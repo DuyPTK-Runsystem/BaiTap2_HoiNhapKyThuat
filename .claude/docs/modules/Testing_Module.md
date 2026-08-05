@@ -32,6 +32,14 @@ Mỗi câu hỏi sẽ có các tùy chọn đáp án.
 *   `is_correct` (Boolean): Đánh dấu đây có phải đáp án đúng hay không.
 *   `audio_url` (String, nullable): Link audio (nếu câu hỏi yêu cầu nghe).
 
+### 1.4. BM6d: Test Answer (Đáp án cuối cùng của người dùng)
+Lưu đáp án cuối cùng mà người dùng nộp khi kết thúc bài test.
+*   `test_answer_id` (Long, PK): Định danh duy nhất.
+*   `test_id` (Long, FK): Thuộc bài test nào.
+*   `question_id` (Long, FK): Câu hỏi được trả lời.
+*   `selected_option_id` (Long, FK, nullable): Option người dùng chọn.
+*   `is_correct` (Boolean): Kết quả đúng/sai của đáp án đã chọn.
+
 ---
 
 ## 2. Business Rules & Constraints (Quy tắc Nghiệp vụ)
@@ -42,7 +50,14 @@ Mỗi câu hỏi sẽ có các tùy chọn đáp án.
 3.  **Ràng buộc Unique:** Phải đảm bảo tính duy nhất cho cặp `(question_id, option_order)`.
 4.  **Số lượng:** Mỗi câu hỏi phải có đúng 4 tùy chọn (tương ứng với `option_order` từ 1 đến 4).
 
-### 2.2. Quy tắc về Logic Tạo Câu hỏi (Question Generation Factory)
+### 2.2. Quy tắc về Đáp án cuối cùng của người dùng (Test Answer Rules)
+1.  Khi người dùng kết thúc bài test, BE phải lưu đáp án cuối cùng của từng câu hỏi vào `TestAnswer`.
+2.  Mỗi cặp `(test_id, question_id)` chỉ có tối đa một `TestAnswer`.
+3.  `selected_option_id` phải thuộc đúng `question_id` tương ứng.
+4.  Nếu người dùng không gửi đáp án cho một câu hỏi, BE vẫn tạo `TestAnswer` cho câu đó với `selected_option_id = null` và `is_correct = false`.
+5.  Sau khi lưu final answers, BE cập nhật `correct_answer_count` và `incorrect_answer_count` trên `Test`.
+
+### 2.3. Quy tắc về Logic Tạo Câu hỏi (Question Generation Factory)
 Hệ thống phải dựa vào dữ liệu của `Vocab` để "lắp" vào các template sau:
 
 | STT   | Loại câu hỏi               | Nội dung Câu hỏi (`Question.question_content`) | Dữ liệu cho Đáp án (`Option.option_content`)    | Dữ liệu cho Audio |
@@ -56,14 +71,14 @@ Hệ thống phải dựa vào dữ liệu của `Vocab` để "lắp" vào các
 **Lưu ý về hiển thị Audio:**
 *   Nếu trường dữ liệu là `Vocab.audio_url`, hệ thống BE trả về URL, nhưng FE sẽ không hiển thị chuỗi text URL mà sẽ render một trình phát âm thanh (Audio Player).
 
-### 2.3. Quy tắc về Nguồn dữ liệu (VocabSource)
+### 2.4. Quy tắc về Nguồn dữ liệu (VocabSource)
 *   **Nếu `VocabSource` là danh sách `Item` (Folder/VocabSet):**
     *   BE phải thực hiện truy vấn đệ quy (Recursive Query) để thu thập toàn bộ `vocab_id` nằm trong `Item` đó và tất cả các `Item` con của nó.
     *   **Ràng buộc (Type = Kiểm tra):** `number_of_question` $\leq$ Tổng số lượng `vocab_id` thu thập được.
 *   **Nếu `VocabSource = null`:**
     *   Lấy ngẫu nhiên từ toàn bộ bảng `Vocab` trong CSDL.
 
-### 2.4. Quy tắc về Phiên học tập (Flashcard - BM7)
+### 2.5. Quy tắc về Phiên học tập (Flashcard - BM7)
 *   **Khác biệt với Kiểm tra:** Không lưu `Test`, `Question`, hay `Option` vào Database.
 *   **Cấu trúc hiển thị:**
     *   **Mặt trước (Front):** `Meaning` HOẶC `Audio`.

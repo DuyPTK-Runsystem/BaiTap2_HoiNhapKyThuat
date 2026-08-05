@@ -1,5 +1,6 @@
 package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +52,12 @@ public class Test {
     @Column(name = "incorrect_answer_count", nullable = false)
     private Integer incorrectAnswerCount = 0;
 
+    @Column(name = "started_at")
+    private Instant startedAt;
+
+    @Column(name = "finished_at")
+    private Instant finishedAt;
+
     @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     @ToString.Exclude
@@ -60,4 +67,9 @@ public class Test {
     @Builder.Default
     @ToString.Exclude
     private List<Question> questions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @ToString.Exclude
+    private List<TestAnswer> answers = new ArrayList<>();
 }

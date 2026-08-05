@@ -1,5 +1,6 @@
 package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.testing;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -8,8 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqCreateTestDTO;
-import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResOptionDTO;
-import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResQuestionDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResTestDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.Option;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.Question;
@@ -30,6 +29,7 @@ public class TestService {
     private final VocabSourceResolver vocabSourceResolver;
     private final QuestionFactory questionFactory;
     private final OptionGenerator optionGenerator;
+    private final TestResponseMapper testResponseMapper;
 
     @Transactional
     public ResTestDTO create(ReqCreateTestDTO request) {
@@ -43,13 +43,38 @@ public class TestService {
                 .user(user)
                 .numberOfQuestion(numberOfQuestion)
                 .timeInMinute(normalizedTimeInMinute(request.getTimeInMinute()))
+                .startedAt(Instant.now())
                 .build();
 
         for (Vocab vocab : sourceVocabs.subList(0, numberOfQuestion)) {
             addQuestion(test, vocab, sourceVocabs);
         }
 
-        return convertToDTO(testRepository.save(test));
+        return testResponseMapper.convertToDTO(testRepository.save(test));
+    }
+
+    @Transactional(readOnly = true)
+    public ResTestDTO get(Long testId) {
+        return testResponseMapper.convertToDTO(findOwnedTest(testId));
+    }
+
+    @Transactional(readOnly = true)
+    public ResTestDTO result(Long testId) {
+        Test test = findOwnedTest(testId);
+        if (test.getFinishedAt() == null) {
+            throw new IllegalArgumentException("Bài test chưa kết thúc");
+        }
+        return testResponseMapper.convertToDTO(test);
+    }
+
+    /* default */ Test findOwnedTest(Long testId) {
+        if (testId == null || testId < 1) {
+            throw new IllegalArgumentException("Test id phải lớn hơn 0");
+        }
+        User user = currentUser();
+        return testRepository.findByIdAndUserId(testId, user.getId())
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Bài test không tồn tại hoặc không thuộc người dùng hiện tại"));
     }
 
     private void addQuestion(Test test, Vocab vocab, List<Vocab> sourceVocabs) {
@@ -87,39 +112,4 @@ public class TestService {
         return timeInMinute;
     }
 
-    private ResTestDTO convertToDTO(Test test) {
-        return ResTestDTO.builder()
-                .id(test.getId())
-                .numberOfQuestion(test.getNumberOfQuestion())
-                .timeInMinute(test.getTimeInMinute())
-                .correctAnswerCount(test.getCorrectAnswerCount())
-                .incorrectAnswerCount(test.getIncorrectAnswerCount())
-                .questions(test.getQuestions().stream()
-                        .map(this::convertToDTO)
-                        .toList())
-                .build();
-    }
-
-    private ResQuestionDTO convertToDTO(Question question) {
-        return ResQuestionDTO.builder()
-                .id(question.getId())
-                .vocabId(question.getVocab().getId())
-                .questionContent(question.getQuestionContent())
-                .correctAnswer(question.getCorrectAnswer())
-                .audioUrl(question.getAudioUrl())
-                .options(question.getOptions().stream()
-                        .map(this::convertToDTO)
-                        .toList())
-                .build();
-    }
-
-    private ResOptionDTO convertToDTO(Option option) {
-        return ResOptionDTO.builder()
-                .id(option.getId())
-                .optionOrder(option.getOptionOrder())
-                .optionContent(option.getOptionContent())
-                .correct(option.isCorrect())
-                .audioUrl(option.getAudioUrl())
-                .build();
-    }
 }

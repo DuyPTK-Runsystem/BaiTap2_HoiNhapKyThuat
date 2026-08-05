@@ -31,7 +31,7 @@ Mỗi khi thêm Developer Plan mới, cần cập nhật file này với:
 | [`auth_authz/Auth_UnitTest_DeveloperPlan.md`](auth_authz/Auth_UnitTest_DeveloperPlan.md) | Unit Test cho Authentication và Authorization | Đã phê duyệt         | Đã triển khai         | JUnit test cho `UserService` và HTML report có test case, module và coverage; không test app/repo/`SecurityUtil` |
 | [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md) | Vocabulary Management | Đã phê duyệt `vocabSetId` query param | Đã triển khai `vocabSetId` query param | `POST /api/v1/vocabs?vocabSetId=...` và `POST /api/v1/vocabs/bulk?vocabSetId=...` tạo từ mới rồi gắn vào vocab set |
 | [`organization/Organization_DeveloperPlan.md`](organization/Organization_DeveloperPlan.md) | Organization | Đã phê duyệt unique sibling name | Đã triển khai unique sibling name | Service-level validation để tên folder/vocab set unique trong cùng parent của cùng user |
-| [`testing_learning/Testing_Learning_DeveloperPlan.md`](testing_learning/Testing_Learning_DeveloperPlan.md) | Testing & Learning | Đã phê duyệt Phase 1 và Phase 2; Phase 3 chờ phê duyệt | Đã triển khai Phase 1 và Phase 2; chưa triển khai Phase 3 | Entity persistence, recursive source resolution, ownership validation; Phase 2 triển khai `POST /api/v1/tests`; Phase 3 đề xuất get/result/finish test và time remaining |
+| [`testing_learning/Testing_Learning_DeveloperPlan.md`](testing_learning/Testing_Learning_DeveloperPlan.md) | Testing & Learning | Đã phê duyệt Phase 1, Phase 2, Phase 3 và Phase 4 | Đã triển khai Phase 1, Phase 2, Phase 3 và Phase 4 | Entity persistence, recursive source resolution, ownership validation; Phase 2 triển khai `POST /api/v1/tests`; Phase 3 triển khai result/finish; Phase 4 triển khai flashcard động không persistence |
 
 ## 4. Tóm tắt từng Developer Plan
 
@@ -199,7 +199,7 @@ POST /api/v1/auth/logout
 - Bảng `tests`, `test_items`, `questions`, `options` theo `Data_Architecture.md`.
 - `POST /api/v1/tests`, `GET /api/v1/tests/{testId}`, submit/finish/result và `POST /api/v1/flashcards`; contract chi tiết chờ phê duyệt.
 
-**Trạng thái:** Phase 1 và Phase 2 đã được phê duyệt và triển khai; Phase 3 đã cập nhật chi tiết và chờ phê duyệt; Phase 4 chưa triển khai.
+**Trạng thái:** Phase 1, Phase 2, Phase 3 và Phase 4 đã được phê duyệt và triển khai.
 
 ## 5. Developer Plan trong tương lai
 
@@ -261,6 +261,7 @@ Khi tạo plan mới, cần thêm vào bảng ở mục 3 và phần tóm tắt 
 | 2026-08-05 | Cập nhật Developer Plan Testing & Learning Phase 2 chờ phê duyệt: tạo test, QuestionFactory và OptionGenerator | Codex               |
 | 2026-08-05 | Triển khai Testing & Learning Phase 2: `POST /api/v1/tests`, tạo question/options và unit test             | Codex               |
 | 2026-08-05 | Cập nhật Developer Plan Testing & Learning Phase 3 chờ phê duyệt: get/result/finish test, time remaining và TestResultService | Codex               |
+| 2026-08-05 | Cập nhật docs/plan Testing & Learning Phase 3 để lưu final answers của user vào `test_answers`             | Codex               |
 | 2026-08-05 | Cập nhật docs/plan Vocabulary chờ phê duyệt cho `vocabSetId` query param khi tạo vocab hoặc bulk import     | Codex               |
 | 2026-08-05 | Người dùng phê duyệt triển khai `vocabSetId` query param khi tạo vocab hoặc bulk import                    | Người dùng          |
 | 2026-08-05 | Triển khai `vocabSetId` query param khi tạo vocab hoặc bulk import                                         | Codex               |
@@ -270,3 +271,7 @@ Khi tạo plan mới, cần thêm vào bảng ở mục 3 và phần tóm tắt 
 | 2026-08-05 | Người dùng phê duyệt và triển khai unique tên item trong cùng parent bằng service-level validation          | Codex               |
 | 2026-08-05 | Tạo Developer Plan Testing & Learning, tách phase Multiple Choice/lifecycle/Flashcard và ghi nhận trạng thái chờ phê duyệt | RunSystem Assistant |
 | 2026-08-05 | Người dùng phê duyệt và triển khai Phase 1 Testing & Learning | RunSystem Assistant |
+| 2026-08-05 | Người dùng phê duyệt và triển khai Testing & Learning Phase 3: get/result/finish test, time remaining và lưu final answers vào `test_answers` | Codex               |
+| 2026-08-05 | Cập nhật Developer Plan Testing & Learning Phase 4 chờ phê duyệt: flashcard động meaning/audio và không persistence | Codex               |
+| 2026-08-05 | Cập nhật Testing & Learning Phase 4: bỏ `frontMode` request, BE random mặt trước Meaning/Audio theo dữ liệu hợp lệ | Codex               |
+| 2026-08-05 | Người dùng phê duyệt và triển khai Testing & Learning Phase 4: `POST /api/v1/flashcards`, flashcard động random Meaning/Audio và không persistence | Codex               |

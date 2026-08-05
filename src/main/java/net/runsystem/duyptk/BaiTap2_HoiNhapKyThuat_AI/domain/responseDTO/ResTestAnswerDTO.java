@@ -1,7 +1,5 @@
 package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,12 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ResQuestionDTO {
+public class ResTestAnswerDTO {
     private Long id;
-    private Long vocabId;
-    private String questionContent;
-    private String correctAnswer;
-    private String audioUrl;
-    private List<ResOptionDTO> options;
-    private ResTestAnswerDTO answer;
+    private Long questionId;
+    private Long selectedOptionId;
+    private String selectedOptionContent;
+    private boolean correct;
 }

@@ -26,6 +26,7 @@ class TestServiceTests {
     private final VocabSourceResolver vocabSourceResolver = Mockito.mock(VocabSourceResolver.class);
     private final QuestionFactory questionFactory = new QuestionFactory();
     private final OptionGenerator optionGenerator = new OptionGenerator();
+    private final TestResponseMapper testResponseMapper = new TestResponseMapper();
     private final User currentUser = User.builder()
             .id(USER_ID)
             .email(EMAIL)
@@ -36,7 +37,8 @@ class TestServiceTests {
             testRepository,
             vocabSourceResolver,
             questionFactory,
-            optionGenerator);
+            optionGenerator,
+            testResponseMapper);
 
     @AfterEach
     void tearDown() {
