@@ -43,10 +43,10 @@ public class GlobalException {
     })
     public ResponseEntity<Object> handleSecurityException(Exception ex) {
         RestResponse<Object> res = new RestResponse<>();
-        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setStatusCode(HttpStatus.UNAUTHORIZED.value());
         res.setError("Exception about login function occurs...");
-        res.setMessage(ex.getMessage()); // Email hoac mat khau khong dung
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(res);
+        res.setMessage(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(res);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
