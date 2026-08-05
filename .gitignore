@@ -43,3 +43,6 @@ out/
 *.local
 application-local.properties
 application-local.yml
+
+# Google TTS Key
+service-for-tts-key.json

@@ -1,4 +1,4 @@
-package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service;
+package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.auth;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,6 @@ import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqRegis
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResUserDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.User;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.UserRepository;
-import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.error.IdInvalidException;
 
 @Service
 @Validated
@@ -25,7 +24,7 @@ public class UserService {
     @Transactional
     public ResUserDTO register(@Valid ReqRegisterDTO request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IdInvalidException("Email đã tồn tại trong hệ thống");
+            throw new IllegalArgumentException("Email đã tồn tại trong hệ thống");
         }
 
         User user = User.builder()

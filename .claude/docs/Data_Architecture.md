@@ -56,7 +56,7 @@ Bảng gốc chứa các thuộc tính chung của cả Folder và VocabSet.
 | Column      | Type   | Constraints        | Description        |
 | :---------- | :----- | :----------------- | :----------------- |
 | `vocab_id`  | Long   | PK, Auto-increment | Định danh duy nhất |
-| `word`      | String | Not Null           | Từ vựng            |
+| `word`      | String | Not Null, Unique   | Từ vựng            |
 | `meaning`   | String | Nullable           | Nghĩa của từ       |
 | `ipa`       | String | Nullable           | Phiên âm quốc tế   |
 | `audio_url` | String | Nullable           | Link file âm thanh |
@@ -123,6 +123,7 @@ Lưu trữ nguồn `VocabSource` của bài test (có thể là nhiều Folder/V
     * `UNIQUE` constraint trên `(question_id, option_order)`.
     * `UNIQUE` constraint trên `(question_id)` cho cột `is_correct` (nếu DB hỗ trợ partial index) hoặc đảm bảo bằng Logic Code.
 * **Application Level:**
+    * Đảm bảo tên item unique trong cùng parent của cùng user; rule này áp dụng chung giữa `folders.folder_name` và `vocab_sets.vocab_set_name` vì tên đang nằm ở hai bảng dẫn xuất khác nhau.
     * Đảm bảo khi tạo `Option`, luôn có đúng 1 option có `is_correct = true`.
     * Đảm bảo `option_content` của đáp án đúng khớp với `correct_answer` của câu hỏi.
 

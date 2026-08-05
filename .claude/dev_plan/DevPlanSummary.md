@@ -29,6 +29,8 @@ Mỗi khi thêm Developer Plan mới, cần cập nhật file này với:
 | ---------------------------------------------------------------------------------------- | --------------------------------------------- | -------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | [`auth_authz/Auth_Authz_DeveloperPlan.md`](auth_authz/Auth_Authz_DeveloperPlan.md)       | Authentication và authorization tối giản      | Đã phê duyệt         | Đã triển khai         | Cấu hình Spring Boot, User, JWT, BCrypt, register/login/refresh/account/logout; không có Roles và Permissions     |
 | [`auth_authz/Auth_UnitTest_DeveloperPlan.md`](auth_authz/Auth_UnitTest_DeveloperPlan.md) | Unit Test cho Authentication và Authorization | Đã phê duyệt         | Đã triển khai         | JUnit test cho `UserService` và HTML report có test case, module và coverage; không test app/repo/`SecurityUtil` |
+| [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md) | Vocabulary Management | Đã phê duyệt `vocabSetId` query param | Đã triển khai `vocabSetId` query param | `POST /api/v1/vocabs?vocabSetId=...` và `POST /api/v1/vocabs/bulk?vocabSetId=...` tạo từ mới rồi gắn vào vocab set |
+| [`organization/Organization_DeveloperPlan.md`](organization/Organization_DeveloperPlan.md) | Organization | Đã phê duyệt unique sibling name | Đã triển khai unique sibling name | Service-level validation để tên folder/vocab set unique trong cùng parent của cùng user |
 
 ## 4. Tóm tắt từng Developer Plan
 
@@ -91,12 +93,87 @@ POST /api/v1/auth/logout
 - Boilerplate có cấu hình `.anyRequest().permitAll()` cần thay bằng `.anyRequest().authenticated()`.
 - Phải loại bỏ toàn bộ tham chiếu Roles/Permissions.
 
+### 4.2. Vocabulary Management
+
+**File:** [`vocabulary_management/Vocabulary_Management_DeveloperPlan.md`](vocabulary_management/Vocabulary_Management_DeveloperPlan.md)
+
+**Mục tiêu:**
+
+- Triển khai quản lý từ vựng thủ công theo docs.
+- Tạo entity `Vocab` map bảng `vocabs`.
+- Tạo quick API thêm từ `POST /api/v1/vocabs` bằng request params.
+- Chuẩn bị boundary cho automation IPA/audio với dumb provider trước khi tích hợp `hcoles/voices`.
+
+**Bao gồm:**
+
+- `Vocab` entity.
+- `VocabRepository`.
+- Response DTO.
+- `VocabService`.
+- `VocabAutomationService`.
+- `FreeDictionaryVocabAutomationService`.
+- `VocabController`.
+- Unit test service layer.
+- Cập nhật HTML test report module mapping nếu cần.
+
+**Không bao gồm:**
+
+- Bulk import `.xlsx`.
+- Partial Failure implementation cho `.xlsx`.
+- Organization `Item`/`Folder`/`VocabSet`.
+- Quan hệ `vocab_vocab_set`.
+- API lấy danh sách/lấy chi tiết/cập nhật nghĩa trong phase đầu.
+- Flashcard hoặc Testing/Learning.
+- `hcoles/voices` và Oxford không còn là provider chính; Free Dictionary là provider IPA hiện tại.
+
+**Rủi ro chính:**
+
+- Provider chính chuyển sang Free Dictionary API, không cần credentials.
+- Response cần trả `ipa`; không dùng `phoneme` trong Vocabulary process; khi cần audio thì gọi `GoogleTtsService.synthesizeIpa(...)` và trả `audio_url` tới MP3 thật.
+- Docs chưa yêu cầu unique `word`, nên không tự thêm unique.
+- Bulk `.xlsx` và quan hệ VocabSet phụ thuộc plan/module khác.
+
+### 4.3. Organization
+
+**File:** [`organization/Organization_DeveloperPlan.md`](organization/Organization_DeveloperPlan.md)
+
+**Mục tiêu:**
+
+- Triển khai nền tảng Organization theo mô hình `Item` base và `Folder`/`VocabSet` kế thừa.
+- Hỗ trợ cấu trúc cây qua `parent_id`.
+- Hỗ trợ quan hệ n-n giữa `VocabSet` và `Vocab`.
+
+**Bao gồm:**
+
+- Entity `Item`, `Folder`, `VocabSet`.
+- Enum `ItemType`.
+- Repository cho item/folder/vocab set.
+- API phase đầu để tạo folder, tạo vocab set, lấy children, gắn/gỡ vocab vào vocab set.
+- API search item theo tên LIKE và get item by path, chỉ trả item user hiện tại truy cập được.
+- Ownership theo authenticated user hiện tại.
+- Unit test service layer cho Organization.
+
+**Không bao gồm:**
+
+- Move/rename/delete item.
+- Recursive tree API hoặc recursive CTE lấy vocab từ folder.
+- Bulk import trực tiếp vào vocab set.
+- Tạo/lưu virtual super root trong database.
+- Thêm uniqueness constraint cho tên item trong cùng parent nếu chưa có phê duyệt riêng.
+- Flashcard, Multiple Choice hoặc Testing/Learning.
+- Role, Permission hoặc JWT claims quyền.
+
+**Rủi ro chính:**
+
+- Docs Organization chưa đặc tả endpoint chính thức, nên API trong plan là đề xuất phase đầu cần người dùng phê duyệt.
+- Mapping discriminator `type` trong Class Table Inheritance cần triển khai cẩn thận để không trùng column.
+- Recursive CTE chưa nằm trong scope phase đầu nhưng có thể cần cho Testing/Learning sau này.
+- Path theo tên có thể mơ hồ khi sibling trùng tên; plan đề xuất trả lỗi conflict/validation thay vì chọn ngầm.
+
 ## 5. Developer Plan trong tương lai
 
 Chưa có Developer Plan cho các module sau:
 
-- Vocabulary Management.
-- Organization.
 - Testing & Learning.
 - Flashcard.
 - Import `.xlsx`.
@@ -118,3 +195,44 @@ Khi tạo plan mới, cần thêm vào bảng ở mục 3 và phần tóm tắt 
 | 2026-08-03 | Điều chỉnh Unit Test Auth/Authz: thay PDF report bằng HTML report có danh sách test, module và coverage     | Codex               |
 | 2026-08-03 | Điều chỉnh HTML Unit Test report: coverage chỉ filter theo module cần test                                  | Codex               |
 | 2026-08-03 | Cập nhật plan Auth/Authz cho refactor Lombok theo convention boilerplate                                    | Codex               |
+| 2026-08-03 | Tạo Developer Plan Vocabulary Management theo yêu cầu triển khai module                                     | Codex               |
+| 2026-08-04 | Cập nhật docs/plan Vocabulary: dùng hướng provider `hcoles/voices`, triển khai dumb provider/API trước      | Codex               |
+| 2026-08-04 | Thu hẹp quick dumb test Vocabulary còn `POST /api/v1/vocabs` với request params                            | Codex               |
+| 2026-08-04 | Người dùng phê duyệt quick dumb test Vocabulary và cho phép bắt đầu triển khai                              | Người dùng          |
+| 2026-08-04 | Triển khai quick dumb test Vocabulary với `POST /api/v1/vocabs`, dumb IPA/audio provider và unit test       | Codex               |
+| 2026-08-04 | Thêm plan chờ phê duyệt cho real `hcoles/voices`: audio file thật, audio URL thật và phoneme trong response | Codex               |
+| 2026-08-04 | Người dùng phê duyệt tiếp tục test real audio file và phoneme provider sử dụng cho Vocabulary               | Người dùng          |
+| 2026-08-04 | Triển khai real `hcoles/voices` provider cho Vocabulary, trả phoneme và audio URL tới WAV thật              | Codex               |
+| 2026-08-04 | Người dùng yêu cầu chuyển pipeline Vocabulary sang Oxford Dictionaries API                                  | Người dùng          |
+| 2026-08-04 | Cập nhật docs/plan Vocabulary cho Oxford provider, dùng env vars thay vì hard-code credentials              | Codex               |
+| 2026-08-04 | Triển khai Oxford API provider cho Vocabulary và cập nhật Postman collection                                | Codex               |
+| 2026-08-04 | Người dùng yêu cầu chuyển provider Vocabulary sang Free Dictionary API                                      | Người dùng          |
+| 2026-08-04 | Cập nhật docs/plan Vocabulary cho Free Dictionary provider, audio để phase IPA -> voice sau                 | Codex               |
+| 2026-08-04 | Triển khai Free Dictionary API provider cho Vocabulary và cập nhật Postman collection                       | Codex               |
+| 2026-08-04 | Dọn implementation dummy provider dư sau khi Free Dictionary là provider hiện tại                           | Codex               |
+| 2026-08-04 | Cập nhật docs/plan chờ phê duyệt để loại bỏ `phoneme` khỏi toàn bộ Vocabulary process                       | Codex               |
+| 2026-08-04 | Cập nhật docs/plan chờ phê duyệt để sinh audio bằng `GoogleTtsService.synthesizeIpa(...)`                   | Codex               |
+| 2026-08-04 | Triển khai Vocabulary POST: bỏ `phoneme`, sinh audio qua `GoogleTtsService.synthesizeIpa(...)`              | Codex               |
+| 2026-08-04 | Tạo plan chờ phê duyệt để refactor service package thành `auth`, `vocab`, `tts`                             | Codex               |
+| 2026-08-04 | Triển khai refactor service package thành `auth`, `vocab`, `tts`                                            | Codex               |
+| 2026-08-04 | Tạo plan chờ phê duyệt để đổi `POST /api/v1/vocabs` sang JSON request DTO và bỏ `audioUrl` request          | Codex               |
+| 2026-08-04 | Triển khai đổi `POST /api/v1/vocabs` sang JSON request DTO và bỏ `audioUrl` request                         | Codex               |
+| 2026-08-04 | Tạo plan chờ phê duyệt cho get/update vocab theo `id` hoặc `word` và unique constraint cho `word`           | Codex               |
+| 2026-08-04 | Triển khai get/update vocab theo `id` hoặc `word` và unique constraint cho `word`                           | Codex               |
+| 2026-08-04 | Tạo plan chờ phê duyệt cho bulk import `.xlsx` theo `VocabImportTemplate.xlsx`                              | Codex               |
+| 2026-08-04 | Triển khai bulk import `.xlsx` theo `VocabImportTemplate.xlsx` với Partial Failure từng dòng                 | Codex               |
+| 2026-08-04 | Tạo Developer Plan Organization chờ phê duyệt                                                               | Codex               |
+| 2026-08-04 | Người dùng phê duyệt phase đầu Organization: `POST folder` và `POST vocab set`                              | Người dùng          |
+| 2026-08-04 | Triển khai phase đầu Organization: `POST /api/v1/folders` và `POST /api/v1/vocab-sets`                      | Codex               |
+| 2026-08-05 | Người dùng phê duyệt `GET /api/v1/items/children` cho root items và direct children theo `parentId`         | Người dùng          |
+| 2026-08-05 | Triển khai `GET /api/v1/items/children` cho root items và direct children theo `parentId`                   | Codex               |
+| 2026-08-05 | Cập nhật docs/plan chờ phê duyệt cho add vocab response giàu thông tin và bulk add vocab vào vocab set      | Codex               |
+| 2026-08-05 | Người dùng phê duyệt triển khai add/bulk add vocab vào vocab set                                           | Người dùng          |
+| 2026-08-05 | Triển khai add/bulk add vocab vào vocab set với response giàu thông tin và Partial Failure                  | Codex               |
+| 2026-08-05 | Cập nhật docs/plan Vocabulary chờ phê duyệt cho `vocabSetId` query param khi tạo vocab hoặc bulk import     | Codex               |
+| 2026-08-05 | Người dùng phê duyệt triển khai `vocabSetId` query param khi tạo vocab hoặc bulk import                    | Người dùng          |
+| 2026-08-05 | Triển khai `vocabSetId` query param khi tạo vocab hoặc bulk import                                         | Codex               |
+| 2026-08-05 | Cập nhật docs/plan Organization chờ phê duyệt cho search item theo tên LIKE, `itemPath`, và get item by path | Codex               |
+| 2026-08-05 | Người dùng phê duyệt và triển khai search item theo tên LIKE, `itemPath`, và get item by path              | Codex               |
+| 2026-08-05 | Cập nhật docs/plan Organization chờ phê duyệt cho unique tên item trong cùng parent                         | Codex               |
+| 2026-08-05 | Người dùng phê duyệt và triển khai unique tên item trong cùng parent bằng service-level validation          | Codex               |
