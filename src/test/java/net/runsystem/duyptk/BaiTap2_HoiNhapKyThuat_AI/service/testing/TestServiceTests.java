@@ -90,6 +90,20 @@ class TestServiceTests {
     }
 
     @Test
+    void shouldUseQuestionTypeWithEnoughDistractors() {
+        mockCurrentUser();
+        Mockito.when(vocabSourceResolver.resolve(List.of(10L), 4)).thenReturn(vocabsWithoutAudioDistractors());
+        Mockito.when(testRepository.save(Mockito.any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        ResTestDTO result = testService.create(ReqCreateTestDTO.builder()
+                .sourceItemIds(List.of(10L))
+                .numberOfQuestion(1)
+                .build());
+
+        Assertions.assertThat(result.getQuestions().get(0).getOptions()).hasSize(4);
+    }
+
+    @Test
     void shouldRejectInvalidRequest() {
         Assertions.assertThatThrownBy(() -> testService.create(ReqCreateTestDTO.builder()
                         .numberOfQuestion(0)
@@ -112,12 +126,24 @@ class TestServiceTests {
                 vocab(4L, "dog", "con chó"));
     }
 
+    private List<Vocab> vocabsWithoutAudioDistractors() {
+        return List.of(
+                vocab(1L, "apple", "quả táo", "apple.mp3"),
+                vocab(2L, "book", "quyển sách", null),
+                vocab(3L, "cat", "con mèo", null),
+                vocab(4L, "dog", "con chó", null));
+    }
+
     private Vocab vocab(Long id, String word, String meaning) {
+        return vocab(id, word, meaning, word + ".mp3");
+    }
+
+    private Vocab vocab(Long id, String word, String meaning, String audioUrl) {
         return Vocab.builder()
                 .id(id)
                 .word(word)
                 .meaning(meaning)
-                .audioUrl(word + ".mp3")
+                .audioUrl(audioUrl)
                 .build();
     }
 }

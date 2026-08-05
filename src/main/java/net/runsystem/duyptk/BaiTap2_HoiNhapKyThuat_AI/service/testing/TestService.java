@@ -1,6 +1,7 @@
 package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.testing;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -78,12 +79,24 @@ public class TestService {
     }
 
     private void addQuestion(Test test, Vocab vocab, List<Vocab> sourceVocabs) {
-        QuestionFactory.QuestionResult questionResult = questionFactory.create(vocab);
+        QuestionFactory.QuestionResult questionResult = createQuestionResult(vocab, sourceVocabs);
         Question question = questionResult.getQuestion();
         question.setTest(test);
         List<Option> options = optionGenerator.generate(question, questionResult.getQuestionType(), sourceVocabs);
         question.getOptions().addAll(options);
         test.getQuestions().add(question);
+    }
+
+    private QuestionFactory.QuestionResult createQuestionResult(Vocab vocab, List<Vocab> sourceVocabs) {
+        List<QuestionType> supportedTypes = questionFactory.supportedTypes(vocab);
+        Collections.shuffle(supportedTypes);
+        for (QuestionType questionType : supportedTypes) {
+            QuestionFactory.QuestionResult questionResult = questionFactory.create(vocab, questionType);
+            if (optionGenerator.hasEnoughDistractors(questionResult.getQuestion(), questionType, sourceVocabs)) {
+                return questionResult;
+            }
+        }
+        throw new IllegalArgumentException("Không đủ đáp án nhiễu duy nhất để tạo câu hỏi");
     }
 
     private void validateRequest(ReqCreateTestDTO request) {

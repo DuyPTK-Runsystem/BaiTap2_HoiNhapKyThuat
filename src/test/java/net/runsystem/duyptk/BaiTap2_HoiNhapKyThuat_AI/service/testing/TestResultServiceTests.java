@@ -98,6 +98,20 @@ class TestResultServiceTests {
     }
 
     @org.junit.jupiter.api.Test
+    void shouldRejectDuplicateQuestionAnswersWhenFirstOptionIsBlank() {
+        Test test = testEntity(false);
+        mockCurrentUser(test);
+
+        Assertions.assertThatThrownBy(() -> testResultService.finish(TEST_ID, ReqFinishTestDTO.builder()
+                        .answers(List.of(
+                                ReqTestAnswerDTO.builder().questionId(10L).build(),
+                                ReqTestAnswerDTO.builder().questionId(10L).optionId(101L).build()))
+                        .build()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Không được gửi trùng câu trả lời cho cùng một câu hỏi");
+    }
+
+    @org.junit.jupiter.api.Test
     void shouldRejectExpiredTest() {
         Test test = testEntity(true);
         mockCurrentUser(test);

@@ -192,7 +192,7 @@
                   "const json = pm.response.json();",
                   "const data = json.data;",
                   "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
-                  "pm.collectionVariables.set('accessToken', data.accessToken);"
+                  "pm.collectionVariables.set('accessToken', data.access_token);"
                 ]
               }
             }
@@ -267,7 +267,7 @@
                   "const json = pm.response.json();",
                   "const data = json.data;",
                   "pm.test('request succeeds', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
-                  "pm.collectionVariables.set('accessToken', data.accessToken);"
+                  "pm.collectionVariables.set('accessToken', data.access_token);"
                 ]
               }
             }

@@ -21,10 +21,7 @@ public class FlashcardService {
     @Transactional(readOnly = true)
     public ResFlashcardSessionDTO create(ReqCreateFlashcardDTO request) {
         validateRequest(request);
-        List<Vocab> sourceVocabs = vocabSourceResolver.resolve(
-                request.getSourceItemIds(),
-                request.getNumberOfFlashcards());
-        List<ResFlashcardDTO> flashcards = sourceVocabs.stream()
+        List<ResFlashcardDTO> flashcards = vocabSourceResolver.resolveAll(request.getSourceItemIds()).stream()
                 .filter(this::canCreateFlashcard)
                 .limit(request.getNumberOfFlashcards())
                 .map(this::convertToDTO)

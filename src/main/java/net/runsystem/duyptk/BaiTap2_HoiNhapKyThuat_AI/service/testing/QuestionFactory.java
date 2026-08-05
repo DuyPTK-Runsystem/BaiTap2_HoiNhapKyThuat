@@ -36,7 +36,7 @@ public class QuestionFactory {
         return new QuestionResult(question, questionType);
     }
 
-    private List<QuestionType> supportedTypes(Vocab vocab) {
+    /* default */ List<QuestionType> supportedTypes(Vocab vocab) {
         List<QuestionType> supportedTypes = new ArrayList<>();
         for (QuestionType questionType : QuestionType.values()) {
             if (questionType.supports(vocab)) {

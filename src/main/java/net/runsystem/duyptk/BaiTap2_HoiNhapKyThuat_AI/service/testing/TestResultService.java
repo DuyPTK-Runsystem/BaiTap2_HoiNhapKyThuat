@@ -92,8 +92,10 @@ public class TestResultService {
         Set<Long> duplicatedQuestionIds = new HashSet<>();
         for (ReqTestAnswerDTO answer : answers) {
             validateAnswer(answer);
-            if (selectedOptionIdsByQuestionId.put(answer.getQuestionId(), answer.getOptionId()) != null) {
+            if (selectedOptionIdsByQuestionId.containsKey(answer.getQuestionId())) {
                 duplicatedQuestionIds.add(answer.getQuestionId());
+            } else {
+                selectedOptionIdsByQuestionId.put(answer.getQuestionId(), answer.getOptionId());
             }
         }
         if (!duplicatedQuestionIds.isEmpty()) {

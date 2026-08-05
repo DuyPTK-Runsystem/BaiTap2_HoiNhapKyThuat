@@ -20,7 +20,7 @@ class FlashcardServiceTests {
                 .sourceItemIds(List.of(10L))
                 .numberOfFlashcards(2)
                 .build();
-        Mockito.when(vocabSourceResolver.resolve(List.of(10L), 2))
+        Mockito.when(vocabSourceResolver.resolveAll(List.of(10L)))
                 .thenReturn(List.of(
                         vocab(1L, "apple", "quả táo", null),
                         vocab(2L, "book", null, "book.mp3")));
@@ -49,7 +49,7 @@ class FlashcardServiceTests {
 
     @Test
     void shouldRejectWhenValidVocabsAreInsufficient() {
-        Mockito.when(vocabSourceResolver.resolve(null, 1))
+        Mockito.when(vocabSourceResolver.resolveAll(null))
                 .thenReturn(List.of(vocab(1L, "apple", null, null)));
 
         Assertions.assertThatThrownBy(() -> flashcardService.create(ReqCreateFlashcardDTO.builder()
@@ -57,6 +57,21 @@ class FlashcardServiceTests {
                         .build()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Không đủ từ vựng hợp lệ để tạo flashcard");
+    }
+
+    @Test
+    void shouldSkipInvalidVocabsBeforeLimitingFlashcards() {
+        Mockito.when(vocabSourceResolver.resolveAll(null))
+                .thenReturn(List.of(
+                        vocab(1L, "invalid", null, null),
+                        vocab(2L, "apple", "quả táo", null),
+                        vocab(3L, "book", null, "book.mp3")));
+
+        ResFlashcardSessionDTO result = flashcardService.create(ReqCreateFlashcardDTO.builder()
+                .numberOfFlashcards(2)
+                .build());
+
+        Assertions.assertThat(result.getFlashcards()).hasSize(2);
     }
 
     private Vocab vocab(Long id, String word, String meaning, String audioUrl) {

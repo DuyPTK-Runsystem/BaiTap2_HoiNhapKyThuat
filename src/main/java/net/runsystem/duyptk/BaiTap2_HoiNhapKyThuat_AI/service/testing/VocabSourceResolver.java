@@ -30,9 +30,21 @@ public class VocabSourceResolver {
     @Transactional(readOnly = true)
     public List<Vocab> resolve(List<Long> sourceItemIds, int numberOfQuestion) {
         validateQuestionCount(numberOfQuestion);
+        if (sourceItemIds == null || sourceItemIds.isEmpty()) {
+            currentUser();
+            return randomVocabs(numberOfQuestion);
+        }
+        List<Vocab> sourceVocabs = resolveAll(sourceItemIds);
+        return selectVocabs(sourceVocabs, numberOfQuestion);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Vocab> resolveAll(List<Long> sourceItemIds) {
         User user = currentUser();
         if (sourceItemIds == null || sourceItemIds.isEmpty()) {
-            return randomVocabs(numberOfQuestion);
+            List<Vocab> vocabs = new ArrayList<>(vocabRepository.findAll());
+            Collections.shuffle(vocabs);
+            return vocabs;
         }
 
         List<Long> normalizedIds = normalizeSourceIds(sourceItemIds);
@@ -41,8 +53,11 @@ public class VocabSourceResolver {
             throw new NoSuchElementException("Nguồn bài test không tồn tại hoặc không thuộc người dùng hiện tại");
         }
 
-        List<Vocab> sourceVocabs = vocabRepository.findBySourceItemIdsAndUserId(normalizedIds, user.getId());
-        return selectVocabs(sourceVocabs, numberOfQuestion);
+        List<Vocab> sourceVocabs = new ArrayList<>(vocabRepository.findBySourceItemIdsAndUserId(
+                normalizedIds,
+                user.getId()));
+        Collections.shuffle(sourceVocabs);
+        return sourceVocabs;
     }
 
     private User currentUser() {

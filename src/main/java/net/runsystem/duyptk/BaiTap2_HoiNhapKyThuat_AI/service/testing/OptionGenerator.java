@@ -30,6 +30,10 @@ public class OptionGenerator {
         return buildOptions(question, selectedCandidates);
     }
 
+    public boolean hasEnoughDistractors(Question question, QuestionType questionType, List<Vocab> sourceVocabs) {
+        return distractorCandidates(question, questionType, sourceVocabs).size() >= REQUIRED_DISTRACTOR_COUNT;
+    }
+
     @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
     private List<OptionCandidate> distractorCandidates(
             Question question,
