@@ -12,6 +12,7 @@ import { TestResultPage } from './pages/TestResultPage'
 import { TestReviewPage } from './pages/TestReviewPage'
 import { TestTakingPage } from './pages/TestTakingPage'
 import { useAuthSession } from './hooks/useAuthSession'
+import { useEffect } from 'react'
 import { BrowserRouter, Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom'
 import type { AuthSession } from './hooks/useAuthSession'
 
@@ -30,6 +31,7 @@ function LoginRoute({ session }: AuthRouteProps) {
       onSubmit={session.signIn}
       onSwitchToRegister={() => {
         session.clearError()
+        session.clearSuccess()
         navigate('/register')
       }}
     />
@@ -38,6 +40,20 @@ function LoginRoute({ session }: AuthRouteProps) {
 
 function RegisterRoute({ session }: AuthRouteProps) {
   const navigate = useNavigate()
+  const { clearSuccess, successMessage } = session
+
+  useEffect(() => {
+    if (!successMessage) {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      clearSuccess()
+      navigate('/login', { replace: true })
+    }, 3000)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [clearSuccess, navigate, successMessage])
 
   return (
     <RegisterPage
@@ -47,6 +63,7 @@ function RegisterRoute({ session }: AuthRouteProps) {
       onSubmit={session.signUp}
       onSwitchToLogin={() => {
         session.clearError()
+        session.clearSuccess()
         navigate('/login')
       }}
     />

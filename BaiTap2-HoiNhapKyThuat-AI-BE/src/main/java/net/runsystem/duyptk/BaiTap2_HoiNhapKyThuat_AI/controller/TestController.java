@@ -35,21 +35,21 @@ public class TestController {
 
     @GetMapping("/tests/{testId}")
     @ApiMessage("Lấy bài test")
-    public ResponseEntity<ResTestDTO> get(@PathVariable Long testId) {
+    public ResponseEntity<ResTestDTO> get(@PathVariable("testId") Long testId) {
         return ResponseEntity.ok(testService.get(testId));
     }
 
     @PostMapping("/tests/{testId}/finish")
     @ApiMessage("Kết thúc bài test")
     public ResponseEntity<ResTestDTO> finish(
-            @PathVariable Long testId,
+            @PathVariable("testId") Long testId,
             @RequestBody ReqFinishTestDTO request) {
         return ResponseEntity.ok(testResultService.finish(testId, request));
     }
 
     @GetMapping("/tests/{testId}/result")
     @ApiMessage("Lấy kết quả bài test")
-    public ResponseEntity<ResTestDTO> result(@PathVariable Long testId) {
+    public ResponseEntity<ResTestDTO> result(@PathVariable("testId") Long testId) {
         return ResponseEntity.ok(testService.result(testId));
     }
 

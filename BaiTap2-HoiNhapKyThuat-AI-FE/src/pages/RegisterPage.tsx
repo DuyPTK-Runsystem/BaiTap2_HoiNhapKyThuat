@@ -91,7 +91,11 @@ export function RegisterPage({
 
         {passwordMismatch ? <p className="form-warning">Phải khớp với mật khẩu</p> : null}
         {errorMessage ? <p className="form-error">{errorMessage}</p> : null}
-        {successMessage ? <p className="form-success">{successMessage}</p> : null}
+        {successMessage ? (
+          <p className="form-success" role="status">
+            {successMessage}
+          </p>
+        ) : null}
 
         <button type="submit" disabled={submitting || formInvalid}>
           {submitting ? 'Đang đăng ký' : 'Đăng ký'}

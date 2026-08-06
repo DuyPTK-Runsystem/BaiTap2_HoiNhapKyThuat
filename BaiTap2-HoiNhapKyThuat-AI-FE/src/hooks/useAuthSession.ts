@@ -23,6 +23,7 @@ export interface AuthSession extends AuthSessionState {
   signOut: () => Promise<void>
   refresh: () => Promise<void>
   clearError: () => void
+  clearSuccess: () => void
 }
 
 export function useAuthSession(): AuthSession {
@@ -146,8 +147,15 @@ export function useAuthSession(): AuthSession {
 
       try {
         await register(credentials)
-        const session = await login(credentials)
-        setSession(session.access_token, session.user, 'Đăng ký thành công')
+        removeStorageValue(ACCESS_TOKEN_STORAGE_KEY)
+        setState({
+          user: null,
+          accessToken: null,
+          status: 'guest',
+          submitting: false,
+          errorMessage: null,
+          successMessage: 'Đăng ký thành công. Đang chuyển về trang đăng nhập.',
+        })
       } catch (error) {
         setState((current) => ({
           ...current,
@@ -158,7 +166,7 @@ export function useAuthSession(): AuthSession {
         }))
       }
     },
-    [setSession, state.submitting],
+    [state.submitting],
   )
 
   const signOut = useCallback(async () => {
@@ -190,6 +198,10 @@ export function useAuthSession(): AuthSession {
     setState((current) => ({ ...current, errorMessage: null }))
   }, [])
 
+  const clearSuccess = useCallback(() => {
+    setState((current) => ({ ...current, successMessage: null }))
+  }, [])
+
   return {
     ...state,
     isAuthenticated: state.status === 'authenticated' && Boolean(state.accessToken && state.user),
@@ -199,5 +211,6 @@ export function useAuthSession(): AuthSession {
     signOut,
     refresh,
     clearError,
+    clearSuccess,
   }
 }

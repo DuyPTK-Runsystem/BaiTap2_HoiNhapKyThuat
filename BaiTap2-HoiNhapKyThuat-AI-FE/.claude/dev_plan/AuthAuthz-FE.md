@@ -249,3 +249,241 @@ Không có script `test`, `format` hoặc `type-check` riêng trong `package.jso
 - Đã chạy `npm run lint`: Pass.
 - Đã chạy `npm run build`: Pass, bao gồm `tsc -b` và `vite build`.
 - Số vòng lặp code-debug: 0.
+
+## 15. Follow-up Auth Fix - Register Không Tự Động Login
+
+- Ngày lập follow-up: 2026-08-06
+- Trạng thái: Hoàn thành
+- Phạm vi: Chỉ Frontend, không thay đổi Backend, API contract, Postman collection hoặc HTML template.
+
+### 15.1. Vấn đề hiện tại
+
+- `src/hooks/useAuthSession.ts` thực hiện `register(credentials)` rồi tiếp tục gọi `login(credentials)` trong cùng `signUp` flow.
+- Hành vi này khiến đăng ký thành công tự động tạo session, chuyển người dùng vào vùng protected thay vì yêu cầu đăng nhập theo flow tách biệt.
+- `Frontend_API_Guide.md` mô tả Register và Login là hai API riêng; response Register chỉ trả thông tin user, không trả access token.
+
+### 15.2. Mục tiêu sửa chữa
+
+- Sau khi register thành công, không gọi API Login tự động.
+- Giữ người dùng ở guest state và hiển thị thông báo đăng ký thành công.
+- Cho phép người dùng chuyển sang `/login` bằng action hiện có, sau đó tự nhập thông tin để đăng nhập.
+- Giữ nguyên request/response contract và không lưu token sau Register.
+- Bổ sung loading state rõ ràng cho quá trình đăng ký và trạng thái kiểm tra session ban đầu.
+
+### 15.3. Tài liệu và tài nguyên đã đối chiếu
+
+- `.claude/rules/CLAUDE.md` và `../BaiTap2-HoiNhapKyThuat-AI-BE/.claude/rules/CLAUDE.md`.
+- `.claude/workflows/WORKFLOW.md` và `.claude/skills/SKILL.md`.
+- `../BaiTap2-HoiNhapKyThuat-AI-BE/.claude/docs/ApplicationContext.md`.
+- `../BaiTap2-HoiNhapKyThuat-AI-BE/.claude/docs/Frontend_API_Guide.md`, mục 2.2, 2.3, 3.1, 3.2 và 8.1.
+- `../BaiTap2-HoiNhapKyThuat-AI-BE/.claude/docs/modules/Auth_Module.md`.
+- `../BaiTap2-HoiNhapKyThuat-AI-BE/postman/BaiTap2-HoiNhapKyThuat-AI.postman_collection.json`, các request Register và Login.
+- `Html-template/register_page/code.html` và `Html-template/login_page/code.html`.
+- Source hiện tại: `src/hooks/useAuthSession.ts`, `src/pages/RegisterPage.tsx`, `src/pages/LoginPage.tsx`, `src/components/AuthGate.tsx` và `src/App.tsx`.
+
+### 15.4. Phạm vi triển khai
+
+- Sửa `signUp` để chỉ gọi `register`, sau đó đặt state về guest với success message và không gọi `setSession`.
+- Giữ duplicate submission guard thông qua `submitting`.
+- Bổ sung hoặc chuẩn hóa loading state cho Register:
+  - Nút submit hiển thị trạng thái đang đăng ký.
+  - Khóa các input và action chuyển trang trong lúc request đang chạy.
+  - Không cho phép gửi lại form khi đang loading.
+- Giữ loading state kiểm tra session ban đầu trong `AuthGate` khi status là `checking`.
+- Đảm bảo sau khi register thành công, success message được hiển thị trong guest view và không bị biến thành authenticated state.
+- Kiểm tra lại Login flow độc lập: chỉ Login mới lưu access token và chuyển vào protected route.
+
+### 15.5. Phạm vi không thực hiện
+
+- Không gọi thêm API mới.
+- Không thay đổi endpoint, HTTP method, request field hoặc response field.
+- Không thay đổi Backend, Postman collection, HTML template, dependency, route map hoặc authorization model.
+- Không tự động điền hoặc gửi lại password từ Register sang Login.
+
+### 15.6. File dự kiến thay đổi
+
+| File | Loại thay đổi | Vị trí | Nội dung |
+|---|---|---|---|
+| `src/hooks/useAuthSession.ts` | Chỉnh sửa | `signUp` và state transition | Bỏ lời gọi Login sau Register; trả về guest state và success message; giữ loading/duplicate guard |
+| `src/pages/RegisterPage.tsx` | Chỉnh sửa nếu cần | Form submit và hiển thị state | Bảo đảm loading, disabled, success/error state đúng sau Register |
+| `src/pages/LoginPage.tsx` | Chỉnh sửa nếu cần | Form state | Bảo đảm Login vẫn là flow riêng và loading state không bị ảnh hưởng |
+| `src/App.tsx` | Chỉnh sửa nếu cần | `RegisterRoute`/`LoginRoute` | Giữ điều hướng guest giữa Register và Login sau success |
+| `.claude/dev_plan/AuthAuthz-FE.md` | Đã cập nhật | Follow-up section | Ghi nhận nguyên nhân, phạm vi, kế hoạch và tiêu chí hoàn thành |
+| `.claude/dev_plan/DevPlanSummary-FE.md` | Đã cập nhật | Auth & Authz row | Đánh dấu follow-up đã hoàn thành |
+
+### 15.7. API liên quan
+
+| Method | Endpoint | Vai trò trong flow |
+|---|---|---|
+| `POST` | `/api/v1/auth/register` | Tạo tài khoản; đây là API duy nhất được gọi khi submit Register |
+| `POST` | `/api/v1/auth/login` | Chỉ được gọi sau khi người dùng chủ động submit Login; không gọi từ Register flow |
+
+### 15.8. Data flow và trạng thái dự kiến
+
+1. Người dùng submit Register.
+2. `submitting = true`; form và action chuyển Login bị disabled, nút hiển thị loading.
+3. FE gọi `POST /api/v1/auth/register` một lần.
+4. Khi thành công: không lưu token, không gọi Login, đặt trạng thái `guest`, tắt loading và hiển thị success message.
+5. Người dùng chọn `Đăng nhập`, chuyển đến `/login` và chủ động submit Login.
+6. Khi Login thành công: mới lưu access token, đặt authenticated state và chuyển protected route.
+7. Nếu Register thất bại: tắt loading, giữ guest state và hiển thị `ApiError.message` nếu có.
+
+### 15.9. Tiêu chí nghiệm thu
+
+- Network trace của Register chỉ có request `POST /api/v1/auth/register`; không có request Login phát sinh tự động.
+- Register thành công không tạo access token/session và không redirect vào `/library`.
+- Success message hiển thị rõ ràng sau Register.
+- Trong thời gian Register request: nút, input và link chuyển Login bị disabled; không thể duplicate submission.
+- Khi khởi động với token cũ, `AuthGate` vẫn hiển thị loading state trong lúc kiểm tra account/refresh.
+- Login chủ động vẫn hoạt động, có loading/disabled/error state và tạo session đúng contract.
+- Register failure không làm mất session hợp lệ hiện có ngoài phạm vi flow guest hiện tại.
+
+### 15.10. Kiểm tra dự kiến sau implementation
+
+- `npm run lint`.
+- `npm run build` (bao gồm `tsc -b` và production build).
+- Kiểm tra thủ công hoặc test phù hợp cho các case: Register success không Login, Register error, duplicate submit, loading state và Login success.
+- Không có script `test`, `format` hoặc `type-check` riêng trong `package.json` hiện tại.
+
+### 15.11. Rủi ro và lưu ý
+
+- Nếu Backend tự động tạo cookie sau Register, FE vẫn không đọc hoặc dùng cookie đó; hành vi FE vẫn phải chờ Login chủ động theo contract.
+- Success message có thể bị xóa khi người dùng chuyển route; đây là hành vi chấp nhận được nếu không có yêu cầu giữ message xuyên route.
+- Người dùng đã phê duyệt follow-up plan trong phiên làm việc hiện tại; triển khai phải giữ đúng phạm vi đã mô tả.
+
+### 15.12. Kết quả triển khai
+
+- Đã sửa `src/hooks/useAuthSession.ts` để `signUp` chỉ gọi `register(credentials)`.
+- Sau Register thành công, FE xóa access token client nếu có, giữ `status = 'guest'`, không lưu session và hiển thị thông báo `Đăng ký thành công. Vui lòng đăng nhập để tiếp tục.`.
+- Đã giữ nguyên Login flow độc lập: chỉ `signIn` mới gọi `login(credentials)` và lưu access token.
+- Không thay đổi Backend, API contract, Postman collection, HTML template, dependency, route map hoặc authorization model.
+- `npm run lint`: không chạy được qua PowerShell wrapper do execution policy chặn `npm.ps1`.
+- `npm.cmd run lint`: Pass.
+- `npm.cmd run build`: Pass, bao gồm `tsc -b` và `vite build`.
+- Không có script `test`, `format` hoặc `type-check` riêng trong `package.json`; `build` đã bao gồm type-check.
+- Số vòng lặp code-debug: 1.
+
+## 16. Follow-up Auth UX - Register Success Message 3s Và Redirect Login
+
+- Ngày lập follow-up: 2026-08-06
+- Trạng thái: Hoàn thành
+- Phạm vi: Chỉ Frontend, không thay đổi Backend, API contract, Postman collection, HTML template, dependency hoặc authorization model.
+- Ghi chú thay đổi so với section 15: section 15 giữ người dùng ở Register và cho phép tự bấm `Đăng nhập`; follow-up này cập nhật theo yêu cầu mới là tự redirect về `/login` sau khi hiển thị thông báo thành công trong 3 giây.
+
+### 16.1. Yêu cầu mới
+
+- Khi người dùng đăng ký thành công, hiển thị thông báo dạng message hoặc popup trong 3 giây rồi tự tắt.
+- Sau khi đăng ký thành công, tự động redirect về trang Login.
+- Không tự động gọi API Login sau Register.
+
+### 16.2. Tài liệu và tài nguyên đã đối chiếu
+
+- `.claude/rules/CLAUDE.md` và `../BaiTap2-HoiNhapKyThuat-AI-BE/.claude/rules/CLAUDE.md`.
+- `.claude/workflows/WORKFLOW.md` và `.claude/skills/SKILL.md`.
+- `../BaiTap2-HoiNhapKyThuat-AI-BE/.claude/docs/ApplicationContext.md`, mục `User Model`.
+- `../BaiTap2-HoiNhapKyThuat-AI-BE/.claude/docs/Frontend_API_Guide.md`, mục 2.2, 2.3, 3.1, 3.2 và 8.1.
+- `../BaiTap2-HoiNhapKyThuat-AI-BE/.claude/docs/modules/Auth_Module.md`.
+- `../BaiTap2-HoiNhapKyThuat-AI-BE/postman/BaiTap2-HoiNhapKyThuat-AI.postman_collection.json`, Auth requests Register và Login.
+- `Html-template/register_page/code.html` và `Html-template/login_page/code.html`.
+- Source hiện tại: `src/hooks/useAuthSession.ts`, `src/pages/RegisterPage.tsx`, `src/pages/LoginPage.tsx`, `src/App.tsx`, `src/components/AuthGate.tsx`, `src/App.css`.
+
+### 16.3. Kiến trúc hiện tại liên quan
+
+- `src/hooks/useAuthSession.ts` đang sở hữu `successMessage`, `errorMessage`, `submitting`, `status`, `accessToken` và các action `signIn`, `signUp`, `signOut`.
+- `signUp` hiện đã chỉ gọi `POST /api/v1/auth/register`, không gọi Login tự động và không lưu token.
+- `src/App.tsx` có `RegisterRoute` dùng `useNavigate()` và render `RegisterPage`.
+- `src/pages/RegisterPage.tsx` đã render `successMessage` bằng `.form-success`.
+- CSS `.form-success` hiện là inline message nằm trong form, phù hợp lựa chọn `message hiển thị trong 3s` mà không cần thêm dependency hoặc popup component mới.
+
+### 16.4. Phạm vi triển khai
+
+- Dùng inline success message hiện có (`.form-success`) làm thông báo sau Register thay vì tạo popup mới.
+- Bổ sung action xóa success message trong `useAuthSession`, ví dụ `clearSuccess()`, để thông báo tự tắt đúng sau 3 giây.
+- Trong `RegisterRoute`, khi `session.successMessage` xuất hiện:
+  - tạo timer 3 giây;
+  - sau timer, xóa success message;
+  - redirect về `/login` bằng `navigate('/login', { replace: true })`.
+- Cleanup timer khi component unmount hoặc success message thay đổi để tránh stale timeout.
+- Giữ Register form disabled/loading behavior hiện tại trong lúc request đang chạy.
+- Giữ Login flow độc lập: Login chỉ xảy ra khi người dùng submit form Login.
+
+### 16.5. Phạm vi không thực hiện
+
+- Không gọi thêm API mới.
+- Không đổi endpoint, method, request field hoặc response field.
+- Không thay đổi Backend, Postman collection, HTML template, dependency, route map hoặc authorization model.
+- Không tự động điền email/password từ Register sang Login.
+- Không hiển thị token hoặc dữ liệu nhạy cảm.
+
+### 16.6. File dự kiến thay đổi
+
+| File | Loại thay đổi | Vị trí | Nội dung |
+|---|---|---|---|
+| `src/hooks/useAuthSession.ts` | Chỉnh sửa | `AuthSession` interface và state action | Bổ sung action xóa success message, giữ `signUp` không gọi Login |
+| `src/App.tsx` | Chỉnh sửa | `RegisterRoute` | Thêm `useEffect` timer 3 giây để clear message và redirect `/login` |
+| `src/pages/RegisterPage.tsx` | Chỉnh sửa nếu cần | Success message render | Giữ hoặc tinh chỉnh message inline, không đổi validation/API |
+| `.claude/dev_plan/AuthAuthz-FE.md` | Chỉnh sửa | Section 16 | Ghi nhận plan, kết quả sau triển khai |
+| `.claude/dev_plan/DevPlanSummary-FE.md` | Chỉnh sửa | Auth & Authz row | Cập nhật trạng thái follow-up |
+
+### 16.7. API liên quan
+
+| Method | Endpoint | Vai trò |
+|---|---|---|
+| `POST` | `/api/v1/auth/register` | API duy nhất được gọi khi submit Register |
+| `POST` | `/api/v1/auth/login` | Không gọi từ Register; chỉ gọi khi người dùng submit Login |
+
+### 16.8. Data flow dự kiến
+
+1. Người dùng submit Register.
+2. FE khóa form bằng `submitting` và gọi `POST /api/v1/auth/register`.
+3. Register thành công: FE giữ guest state, không lưu token, đặt `successMessage`.
+4. `RegisterPage` hiển thị inline success message.
+5. `RegisterRoute` đếm 3 giây, sau đó clear success message và redirect `/login`.
+6. Login page được hiển thị; người dùng tự submit Login nếu muốn đăng nhập.
+7. Register thất bại: không redirect, hiển thị `errorMessage` từ API nếu có.
+
+### 16.9. Loading, empty, error, disabled và success state
+
+- Loading: giữ `Đang đăng ký` trên submit button.
+- Empty: không áp dụng.
+- Error: lỗi Register vẫn hiển thị trên Register page và không auto redirect.
+- Disabled: input, submit button và link chuyển Login bị disabled khi `submitting`.
+- Success: inline message hiển thị tối đa 3 giây, sau đó tự tắt và redirect.
+
+### 16.10. Tiêu chí nghiệm thu
+
+- Register success chỉ gọi `POST /api/v1/auth/register`, không gọi `POST /api/v1/auth/login`.
+- Success message hiển thị trong khoảng 3 giây.
+- Sau khoảng 3 giây, app tự redirect về `/login`.
+- Success message không còn hiển thị dai dẳng sau redirect.
+- Register error không tự redirect và vẫn hiển thị lỗi.
+- Timer được cleanup khi route/component unmount.
+- Login flow hiện tại không bị ảnh hưởng.
+
+### 16.11. Kiểm tra dự kiến sau implementation
+
+- `npm.cmd run lint`.
+- `npm.cmd run build` (bao gồm `tsc -b` và production build).
+- Ghi nhận rõ `npm run lint` nếu còn bị PowerShell execution policy chặn `npm.ps1`.
+- Không có script `test`, `format` hoặc `type-check` riêng trong `package.json`.
+
+### 16.12. Rủi ro và lưu ý
+
+- Nếu người dùng rời Register page trước khi hết 3 giây, timer phải cleanup và không redirect ngoài ý muốn.
+- Nếu Backend tự set cookie sau Register, FE vẫn không đọc cookie đó và vẫn không tạo authenticated session.
+- Người dùng đã phê duyệt follow-up plan trong phiên làm việc hiện tại; triển khai phải giữ đúng phạm vi đã mô tả.
+
+### 16.13. Kết quả triển khai
+
+- Đã bổ sung `clearSuccess()` trong `useAuthSession` để xóa success message theo timer.
+- Đã cập nhật `signUp` success text thành `Đăng ký thành công. Đang chuyển về trang đăng nhập.`.
+- Đã thêm timer 3 giây trong `RegisterRoute`; sau timer, FE clear success message và redirect `/login` bằng `replace`.
+- Đã cleanup timer khi `RegisterRoute` unmount hoặc message thay đổi.
+- Đã clear success message khi người dùng chuyển thủ công giữa Login/Register để tránh message cũ hiển thị sai route.
+- Đã thêm `role="status"` cho success message trong `RegisterPage`.
+- Không gọi Login tự động sau Register; Login flow vẫn chỉ chạy khi người dùng submit Login.
+- Không thay đổi Backend, API contract, Postman collection, HTML template, dependency, route map hoặc authorization model.
+- `npm.cmd run lint`: Pass, 0 lỗi, 0 warning sau khi sửa dependency warning của `useEffect`.
+- `npm.cmd run build`: Pass, bao gồm `tsc -b` và `vite build`.
+- Không có script `test`, `format` hoặc `type-check` riêng trong `package.json`; `build` đã bao gồm type-check.
+- Số vòng lặp code-debug: 1.

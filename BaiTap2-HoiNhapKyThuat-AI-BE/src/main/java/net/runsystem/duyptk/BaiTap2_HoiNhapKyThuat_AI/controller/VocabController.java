@@ -49,22 +49,22 @@ public class VocabController {
 
     @GetMapping("/lookup")
     @ApiMessage("Lấy chi tiết từ vựng")
-    public ResponseEntity<ResVocabDTO> get(@RequestParam(required = false) Long id,
-            @RequestParam(required = false) String word) {
+    public ResponseEntity<ResVocabDTO> get(@RequestParam(required = false, name = "id") Long id,
+            @RequestParam(required = false, name = "word") String word) {
         return ResponseEntity.ok(vocabService.get(id, word));
     }
 
     @PatchMapping("/lookup")
     @ApiMessage("Cập nhật nghĩa từ vựng")
     public ResponseEntity<ResVocabDTO> update(
-            @RequestParam(required = false) Long id,
-            @RequestParam(required = false) String word,
+            @RequestParam(required = false, name = "id") Long id,
+            @RequestParam(required = false, name = "word") String word,
             @RequestBody ReqUpdateVocabDTO request) {
         return ResponseEntity.ok(vocabService.update(id, word, request));
     }
 
     @GetMapping(value = "/audio/{fileName}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<byte[]> getAudio(@PathVariable String fileName) {
+    public ResponseEntity<byte[]> getAudio(@PathVariable("fileName") String fileName) {
         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf("audio/mpeg"))
                 .body(vocabService.readAudioFile(fileName));

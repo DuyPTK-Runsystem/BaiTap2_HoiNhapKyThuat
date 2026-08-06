@@ -45,34 +45,35 @@ public class OrganizationController {
 
     @GetMapping("/items/children")
     @ApiMessage("Lấy danh sách item con")
-    public ResponseEntity<List<ResItemDTO>> getChildren(@RequestParam(required = false) Long parentId) {
+    public ResponseEntity<List<ResItemDTO>> getChildren(
+            @RequestParam(required = false, name = "parent_id") Long parentId) {
         return ResponseEntity.ok(organizationService.getChildren(parentId));
     }
 
     @GetMapping("/items/search")
     @ApiMessage("Tìm kiếm item theo tên")
-    public ResponseEntity<List<ResItemDTO>> searchItems(@RequestParam String name) {
+    public ResponseEntity<List<ResItemDTO>> searchItems(@RequestParam("name") String name) {
         return ResponseEntity.ok(organizationItemLookupService.searchItems(name));
     }
 
     @GetMapping("/items/by-path")
     @ApiMessage("Lấy item theo path")
-    public ResponseEntity<ResItemDTO> getItemByPath(@RequestParam String path) {
+    public ResponseEntity<ResItemDTO> getItemByPath(@RequestParam("path") String path) {
         return ResponseEntity.ok(organizationItemLookupService.getItemByPath(path));
     }
 
     @PostMapping("/vocab-sets/{vocabSetId}/vocabs/{vocabId}")
     @ApiMessage("Thêm từ vựng vào tập từ vựng")
     public ResponseEntity<ResVocabSetVocabDTO> addVocabToSet(
-            @PathVariable Long vocabSetId,
-            @PathVariable Long vocabId) {
+            @PathVariable("vocabSetId") Long vocabSetId,
+            @PathVariable("vocabId") Long vocabId) {
         return ResponseEntity.ok(vocabSetMembershipService.addVocabToSet(vocabSetId, vocabId));
     }
 
     @PostMapping("/vocab-sets/{vocabSetId}/vocabs/bulk")
     @ApiMessage("Thêm nhiều từ vựng vào tập từ vựng")
     public ResponseEntity<ResVocabSetBulkAddDTO> bulkAddVocabsToSet(
-            @PathVariable Long vocabSetId,
+            @PathVariable("vocabSetId") Long vocabSetId,
             @RequestBody ReqBulkAddVocabToSetDTO request) {
         return ResponseEntity.ok(vocabSetMembershipService.bulkAddVocabsToSet(vocabSetId, request));
     }
