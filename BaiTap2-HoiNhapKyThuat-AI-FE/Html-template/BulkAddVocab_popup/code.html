@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bulk Import Vocabulary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#f4eaff",
+                        "inverse-on-surface": "#ebf1fd",
+                        "surface-container-highest": "#dce3ee",
+                        "on-error": "#ffffff",
+                        "surface": "#f8f9ff",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#44c9fd",
+                        "surface-bright": "#f8f9ff",
+                        "on-surface": "#151c24",
+                        "on-surface-variant": "#424655",
+                        "tertiary-fixed-dim": "#d0bcff",
+                        "secondary-fixed": "#c0e8ff",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "inverse-primary": "#b3c5ff",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#2a313a",
+                        "error": "#ba1a1a",
+                        "background": "#f8f9ff",
+                        "surface-container": "#e8eefa",
+                        "primary": "#004bbf",
+                        "on-background": "#151c24",
+                        "tertiary": "#6500ea",
+                        "tertiary-fixed": "#e9ddff",
+                        "surface-container-high": "#e2e9f4",
+                        "on-secondary-fixed-variant": "#004d66",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#23005c",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-primary-container": "#ebeeff",
+                        "on-primary-fixed": "#001849",
+                        "surface-variant": "#dce3ee",
+                        "primary-fixed": "#dae1ff",
+                        "primary-container": "#0061f2",
+                        "surface-container-low": "#eef4ff",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#006686",
+                        "on-secondary-container": "#00516b",
+                        "secondary-fixed-dim": "#6fd2ff",
+                        "outline": "#737687",
+                        "tertiary-container": "#7e3cff",
+                        "surface-dim": "#d4dae6",
+                        "outline-variant": "#c2c6d8",
+                        "on-tertiary-fixed-variant": "#5600ca",
+                        "surface-tint": "#0055d5",
+                        "on-secondary-fixed": "#001f2b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "1.5rem",
+                        "grid-gutter": "1.5rem",
+                        "inline-gap": "0.75rem",
+                        "container-padding": "2rem",
+                        "card-padding": "1.25rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "label-md": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "label-sm": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["18px", { "lineHeight": "24px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Hanken Grotesk', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen relative antialiased">
+<!-- Background Mock (Dashboard Shell) -->
+<div class="fixed inset-0 z-0 flex pointer-events-none opacity-40">
+<!-- SideNav Mock -->
+<aside class="w-[280px] h-screen bg-surface-container-lowest border-r border-outline-variant shadow-sm flex flex-col p-4 gap-4">
+<div class="text-headline-lg font-headline-lg font-bold text-primary mb-8 mt-2 px-2">Vocab Library</div>
+<div class="bg-surface-container-low text-primary font-bold rounded-lg p-3">Library</div>
+<div class="text-on-surface-variant p-3">Courses</div>
+<div class="text-on-surface-variant p-3">Flashcards</div>
+</aside>
+<!-- Main Content Mock -->
+<main class="flex-1 flex flex-col">
+<header class="h-16 border-b border-outline-variant bg-surface flex items-center justify-between px-8">
+<div class="text-headline-md font-headline-md font-extrabold text-primary">Vocab Library</div>
+</header>
+<div class="p-8 grid grid-cols-3 gap-6">
+<div class="h-40 bg-surface-container-lowest rounded-xl border border-outline-variant"></div>
+<div class="h-40 bg-surface-container-lowest rounded-xl border border-outline-variant"></div>
+<div class="h-40 bg-surface-container-lowest rounded-xl border border-outline-variant"></div>
+</div>
+</main>
+</div>
+<!-- Modal Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-on-surface/40 backdrop-blur-sm p-4">
+<!-- Modal Container -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_8px_24px_rgba(0,0,0,0.08)] border border-outline-variant w-full max-w-2xl flex flex-col max-h-[921px] overflow-hidden">
+<!-- Header -->
+<div class="px-6 py-5 flex items-start justify-between border-b border-surface-variant">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface m-0">Nhập từ vựng hàng loạt</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Import nhiều từ vựng vào bộ từ hiện tại bằng tệp Excel.</p>
+</div>
+<button aria-label="Close modal" class="text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded-full hover:bg-surface-container-high">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Body -->
+<div class="p-6 flex-1 overflow-y-auto flex flex-col gap-6">
+<!-- Set Selection -->
+<div class="flex items-center gap-4">
+<label class="font-label-md text-label-md text-on-surface w-24 flex-shrink-0" for="vocab-set">Bộ từ vựng</label>
+<div class="relative flex-1">
+<select class="w-full appearance-none bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2.5 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-primary-container transition-shadow" id="vocab-set">
+<option>Meeting Vocabulary</option>
+<option>General Business</option>
+<option>Tech Terminology</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+</div>
+</div>
+<!-- Drag & Drop Zone -->
+<div class="border-2 border-dashed border-primary-fixed-dim bg-surface rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-surface-container-low transition-colors group">
+<div class="w-12 h-14 bg-surface-container-highest rounded-sm flex flex-col items-center justify-center mb-4 relative">
+<div class="absolute top-0 right-0 w-4 h-4 bg-surface border-l border-b border-outline-variant rounded-bl-sm"></div>
+<div class="w-6 h-6 bg-[#00ba94] rounded-full flex items-center justify-center mt-2 shadow-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-white text-[16px]" data-icon="arrow_upward">arrow_upward</span>
+</div>
+</div>
+<p class="font-headline-md text-headline-md text-on-surface mb-1">
+                        Kéo &amp; thả tệp vào đây <span class="font-body-md text-body-md font-normal">hoặc</span> <span class="text-primary hover:underline">bấm để chọn tệp</span>
+</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Định dạng hỗ trợ: .xlsx</p>
+</div>
+<!-- Download Template -->
+<div class="flex items-center">
+<a class="inline-flex items-center gap-2 text-primary hover:text-primary-container transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="download">download</span>
+<span class="underline">Tải file mẫu</span>
+</a>
+</div>
+<!-- Selected File -->
+<div class="border border-outline-variant rounded-lg p-4 flex items-center justify-between bg-surface-container-lowest">
+<div class="flex items-center gap-4">
+<div class="w-8 h-10 bg-[#e8f5e9] rounded border border-[#c8e6c9] flex items-center justify-center">
+<span class="text-[#2e7d32] font-bold text-xs">X</span>
+<div class="w-1 h-3 flex flex-col justify-between ml-1">
+<div class="w-full h-[2px] bg-[#2e7d32]/50"></div>
+<div class="w-full h-[2px] bg-[#2e7d32]/50"></div>
+<div class="w-full h-[2px] bg-[#2e7d32]/50"></div>
+</div>
+</div>
+<div>
+<p class="font-body-md text-body-md font-semibold text-on-surface">meeting-vocab-import.xlsx</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">12 KB</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors p-1 rounded-full hover:bg-error-container/50">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Information Box -->
+<div class="bg-surface-container-low rounded-lg p-5 flex items-start gap-4 border border-outline-variant/50">
+<span class="material-symbols-outlined text-primary shrink-0" data-icon="info">info</span>
+<div class="font-body-md text-body-md text-on-surface space-y-2">
+<p><span class="font-semibold">Cột bắt buộc:</span> word, meaning</p>
+<p><span class="font-semibold">Cột tùy chọn:</span> ipa</p>
+<p>Dòng không hợp lệ sẽ bị bỏ qua và hiển thị trong báo cáo.</p>
+<p>Các dòng hợp lệ sẽ được import vào hệ thống.</p>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="px-6 py-4 bg-surface-container-lowest border-t border-surface-variant flex justify-end gap-3 rounded-b-xl">
+<button class="px-5 py-2.5 rounded-lg border border-outline-variant text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors focus:ring-2 focus:ring-outline-variant focus:outline-none">
+                    Hủy
+                </button>
+<button class="px-6 py-2.5 rounded-lg bg-primary-container text-white font-label-md text-label-md hover:bg-primary transition-colors shadow-sm focus:ring-2 focus:ring-primary-container focus:ring-offset-2 focus:outline-none">
+                    Import
+                </button>
+</div>
+</div>
+</div>
+</body></html>

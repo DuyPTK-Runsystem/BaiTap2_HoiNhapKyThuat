@@ -1,0 +1,93 @@
+<!DOCTYPE html><html lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Vocab Library - Login</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Font Awesome for Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style data-purpose="custom-fonts">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f4f7f6;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+<!-- BEGIN: Main Login Card -->
+<main class="bg-white rounded-[2rem] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] w-full max-w-[1100px] p-8 md:p-12" data-purpose="login-container">
+<!-- Header/Logo Area -->
+<header class="flex items-center gap-3 mb-10" data-purpose="brand-logo">
+<div class="flex">
+<!-- Recreated Logo using CSS/SVG for accuracy -->
+<div class="relative w-12 h-12">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M24 40C24 40 10 40 6 36V10C10 14 24 14 24 14" stroke="#007bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+<path d="M24 40C24 40 38 40 42 36V10C38 14 24 14 24 14" stroke="#007bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+<path d="M24 14V40" stroke="#007bff" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+<text fill="#0b1b3d" font-family="Arial" font-size="14" font-weight="bold" x="11" y="26">A</text>
+<text fill="#0b1b3d" font-family="Arial" font-size="14" font-weight="bold" x="29" y="26">Z</text>
+<path d="M4 38L24 44L44 38" stroke="#00b4d8" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"></path>
+</svg>
+</div>
+</div>
+<h1 class="text-xl font-bold text-[#0b1b3d]">Vocab Library</h1>
+</header>
+<div class="flex flex-col lg:flex-row gap-8 lg:gap-12 items-stretch" data-purpose="content-grid">
+<!-- BEGIN: Left Column (Form) -->
+<section class="flex-1 max-w-[450px]" data-purpose="login-form-section">
+<h2 class="text-[2.5rem] font-bold text-[#0b1b3d] mb-8">Login Page</h2>
+<div class="bg-white border border-gray-100 rounded-3xl p-8 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.05)]">
+<form action="#" class="space-y-6" method="POST">
+<!-- Email Input -->
+<div data-purpose="email-field">
+<label class="block text-sm font-semibold text-[#0b1b3d] mb-2" for="email">Email (*)</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<i class="fa-regular fa-envelope text-gray-400"></i>
+</div>
+<input class="block w-full pl-11 pr-4 py-3.5 border border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 focus:ring-[#007bff] focus:border-[#007bff] sm:text-sm transition-colors" id="email" name="email" placeholder="Nhập email của bạn" required="" type="email">
+</div>
+</div>
+<!-- Password Input -->
+<div data-purpose="password-field">
+<label class="block text-sm font-semibold text-[#0b1b3d] mb-2" for="password">Mật khẩu (*)</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<i class="fa-solid fa-lock text-gray-400 text-sm"></i>
+</div>
+<input class="block w-full pl-11 pr-10 py-3.5 border border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 focus:ring-[#007bff] focus:border-[#007bff] sm:text-sm transition-colors" id="password" name="password" placeholder="Nhập mật khẩu của bạn" required="" type="password">
+<div class="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer">
+<i class="fa-regular fa-eye text-gray-400 hover:text-gray-600 transition-colors"></i>
+</div>
+</div>
+</div>
+<!-- Submit Button -->
+<div class="pt-2">
+<button class="w-full flex justify-center py-4 px-4 border border-transparent rounded-xl shadow-sm text-base font-semibold text-white bg-[#0066ff] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors" data-purpose="submit-btn" type="submit">
+                Đăng nhập
+              </button>
+</div>
+<!-- Register Link -->
+<div class="text-center pt-2" data-purpose="register-link">
+<span class="text-gray-600 text-sm">Chưa có tài khoản? </span>
+<a class="font-medium text-[#0066ff] hover:text-blue-500 text-sm underline underline-offset-4" href="#">Đăng ký</a>
+</div>
+</form>
+</div>
+</section>
+<!-- END: Left Column (Form) -->
+<!-- BEGIN: Right Column (Illustration) -->
+<section class="flex-1 hidden lg:block" data-purpose="illustration-section">
+<div class="h-full bg-[#f0f7fd] rounded-[2rem] p-8 flex items-center justify-center relative overflow-hidden">
+<img alt="Vocab Library Illustration with books and flashcards" class="w-full max-w-[500px] h-auto object-contain z-10" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9yW4fXJmC21HpmammhIQxA8WoFFrpLsE8rZWxrE8HIiXhicim0-evQ-mruqnCVSyg5cmOQGA6Gi0ZHuVXuUJbdc0-GMWj19SSS5joVSCcMERBdWCyjDmvMJXnxyWNHfs0hjlsWm3BhQOvg6IFUT2f_FjGWwnaI04YCOXhTGYqhJSCGLcinuqInTMGcZwZiKNZkq10YnSlN_iFMGw_mOWvw5IFC1xrK72tmTyZTS5IL06ucOfNnsPOu8DPjKXljC5-GoM-pTTK7F5N9UI">
+</div>
+</section>
+<!-- END: Right Column (Illustration) -->
+</div>
+</main>
+<!-- END: Main Login Card -->
+
+
+</body></html>

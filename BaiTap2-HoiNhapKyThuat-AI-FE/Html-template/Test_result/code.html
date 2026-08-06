@@ -1,0 +1,378 @@
+<!DOCTYPE html><html lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Kết quả bài kiểm tra - Vocab Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#6fd2ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001f2b",
+                        "surface-tint": "#0055d5",
+                        "on-secondary-fixed-variant": "#004d66",
+                        "tertiary-fixed-dim": "#d0bcff",
+                        "primary-fixed": "#dae1ff",
+                        "outline": "#737687",
+                        "tertiary-container": "#7e3cff",
+                        "on-tertiary-fixed-variant": "#5600ca",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#151c24",
+                        "surface-bright": "#f8f9ff",
+                        "on-secondary-container": "#00516b",
+                        "surface-container": "#e8eefa",
+                        "tertiary": "#6500ea",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#424655",
+                        "surface": "#f8f9ff",
+                        "tertiary-fixed": "#e9ddff",
+                        "on-primary-fixed": "#001849",
+                        "primary-container": "#0061f2",
+                        "on-error-container": "#93000a",
+                        "secondary-container": "#44c9fd",
+                        "on-tertiary-fixed": "#23005c",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#b3c5ff",
+                        "inverse-surface": "#2a313a",
+                        "surface-container-high": "#e2e9f4",
+                        "secondary-fixed": "#c0e8ff",
+                        "on-background": "#151c24",
+                        "outline-variant": "#c2c6d8",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#ebeeff",
+                        "on-tertiary-container": "#f4eaff",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#d4dae6",
+                        "inverse-on-surface": "#ebf1fd",
+                        "background": "#f8f9ff",
+                        "secondary": "#006686",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "surface-variant": "#dce3ee",
+                        "surface-container-highest": "#dce3ee",
+                        "surface-container-low": "#eef4ff",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "primary": "#004bbf"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "grid-gutter": "1.5rem",
+                        "stack-gap": "1.5rem",
+                        "card-padding": "1.25rem",
+                        "inline-gap": "0.75rem",
+                        "container-padding": "2rem"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "label-md": ["Hanken Grotesk"],
+                        "label-sm": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "headline-md": ["18px", { "lineHeight": "24px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .circular-progress {
+            background: conic-gradient(#00ba94 288deg, #e3e6ec 0deg);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen">
+<!-- Header Navigation -->
+<header class="bg-surface dark:bg-background h-16 w-full fixed top-0 z-40 border-b border-outline-variant dark:border-outline flex justify-between items-center px-8">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary text-on-primary rounded flex items-center justify-center font-bold">AZ</div>
+<span class="text-headline-md font-headline-md font-extrabold text-primary dark:text-inverse-primary">Vocab Library</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-all p-2 rounded-full hover:bg-surface-container-low">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="flex items-center gap-2 cursor-pointer border-l border-outline-variant pl-4">
+<img alt="User avatar" class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A small circular avatar of a young professional asian man with short black hair wearing a dark blue shirt." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1lR5CECnGKPAjpKRgER4oBB5IiTrbkuKAbaA3vmBZKE7O3Yk0SBxSrrr2FbrkwrfN18zgH2RitXjo0popYPnPrEnIkYx3s3Fx1P6AApQpohMw6tO0FRgmFHtZm8bZrxCJ_AxKqotYm1aGtfTXOaEfF6CdE4TAqTq0vBh2qO2DhhZfkbI4pjDFIyhPd0aSBaPuDjnlxU0xm_njrWvPA1kEhNJu7Xf4HBVCbl_P8g9d6EIK-8MpVj1KQQ">
+<span class="font-label-md text-label-md text-on-surface">Nguyễn Văn An</span>
+<span class="material-symbols-outlined text-sm text-on-surface-variant" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="pt-20 px-8 pb-12 max-w-7xl mx-auto">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 text-body-sm text-on-surface-variant mb-6">
+<a class="hover:text-primary transition-colors" href="#">Tất cả</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Business English</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Meeting Vocabulary</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-on-surface font-medium">Kết quả bài kiểm tra</span>
+</nav>
+<!-- Top Summary Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-card-padding flex items-center justify-between shadow-sm mb-6">
+<div class="flex items-center gap-6">
+<div class="w-24 h-24 bg-surface-container-low rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-5xl text-primary" data-icon="emoji_events">emoji_events</span>
+</div>
+<div>
+<h1 class="text-headline-lg font-headline-lg text-on-surface mb-2">Hoàn thành bài kiểm tra</h1>
+<p class="text-body-md font-body-md text-on-surface-variant">Bạn đã nộp bài thành công. Dưới đây là kết quả của bạn.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg bg-surface">
+<span class="material-symbols-outlined text-primary" data-icon="help_outline">help_outline</span>
+<span class="font-label-md text-label-md">10 câu hỏi</span>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg bg-surface">
+<span class="material-symbols-outlined text-primary" data-icon="schedule">schedule</span>
+<span class="font-label-md text-label-md">Thời gian làm: 09:36</span>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+<span class="font-label-md text-label-md">Đã nộp</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Left Column: Results & Details -->
+<div class="lg:col-span-2 flex flex-col gap-6">
+<!-- Main Stats Chart -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-card-padding shadow-sm flex flex-col items-center">
+<div class="w-full flex justify-between items-start mb-8">
+<div class="flex-1 flex flex-col items-center">
+<div class="relative w-48 h-48 rounded-full circular-progress flex items-center justify-center shadow-inner">
+<div class="absolute inset-2 bg-surface-container-lowest rounded-full flex flex-col items-center justify-center">
+<span class="text-4xl font-bold text-on-surface">80%</span>
+<span class="text-body-sm text-on-surface-variant">8 / 10 câu đúng</span>
+</div>
+</div>
+</div>
+<div class="flex-1 pl-8 border-l border-outline-variant">
+<h2 class="text-headline-md font-headline-md mb-2">Kết quả tốt!</h2>
+<p class="text-body-sm text-on-surface-variant mb-6">Bạn đã nắm khá chắc nhóm từ vựng này.</p>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 flex flex-col items-center">
+<div class="flex items-center gap-1 text-emerald-700 mb-1">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+<span class="font-label-md">Đúng</span>
+</div>
+<span class="text-2xl font-bold text-emerald-700">8</span>
+</div>
+<div class="bg-rose-50 border border-rose-200 rounded-lg p-3 flex flex-col items-center">
+<div class="flex items-center gap-1 text-rose-700 mb-1">
+<span class="material-symbols-outlined text-sm" data-icon="cancel">cancel</span>
+<span class="font-label-md">Sai</span>
+</div>
+<span class="text-2xl font-bold text-rose-700">2</span>
+</div>
+<div class="bg-surface border border-outline-variant rounded-lg p-3 flex flex-col items-center">
+<div class="flex items-center gap-1 text-on-surface-variant mb-1">
+<span class="material-symbols-outlined text-sm" data-icon="list_alt">list_alt</span>
+<span class="font-label-md">Đã trả lời</span>
+</div>
+<span class="text-2xl font-bold text-on-surface">10</span>
+</div>
+<div class="bg-surface border border-outline-variant rounded-lg p-3 flex flex-col items-center">
+<div class="flex items-center gap-1 text-on-surface-variant mb-1">
+<span class="material-symbols-outlined text-sm" data-icon="remove_circle_outline">remove_circle_outline</span>
+<span class="font-label-md">Bỏ trống</span>
+</div>
+<span class="text-2xl font-bold text-on-surface">0</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Review Table -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-card-padding shadow-sm">
+<h3 class="text-headline-md font-headline-md mb-4 border-b border-outline-variant pb-2">Xem lại câu trả lời</h3>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-label-md font-label-md text-on-surface-variant border-b border-outline-variant">
+<th class="py-3 px-2">Câu</th>
+<th class="py-3 px-2">Từ vựng</th>
+<th class="py-3 px-2">Câu trả lời của bạn</th>
+<th class="py-3 px-2">Đáp án đúng</th>
+<th class="py-3 px-2 text-center">Kết quả</th>
+</tr>
+</thead>
+<tbody class="text-body-sm">
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-2">Câu 1</td>
+<td class="py-3 px-2 font-medium">agenda</td>
+<td class="py-3 px-2 text-on-surface-variant">Danh sách các nội dung cần thảo luận.</td>
+<td class="py-3 px-2 text-on-surface-variant">Danh sách các nội dung cần thảo luận.</td>
+<td class="py-3 px-2 flex justify-center text-emerald-600">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-2">Câu 2</td>
+<td class="py-3 px-2 font-medium">minutes</td>
+<td class="py-3 px-2 text-on-surface-variant">Biên bản cuộc họp.</td>
+<td class="py-3 px-2 text-on-surface-variant">Biên bản cuộc họp.</td>
+<td class="py-3 px-2 flex justify-center text-emerald-600">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-2">Câu 3</td>
+<td class="py-3 px-2 font-medium">deadline</td>
+<td class="py-3 px-2 text-rose-600">Ngân sách.</td>
+<td class="py-3 px-2 text-on-surface-variant">Thời hạn cuối cùng.</td>
+<td class="py-3 px-2 flex justify-center text-rose-600">
+<span class="material-symbols-outlined text-lg" data-icon="cancel">cancel</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-2">Câu 4</td>
+<td class="py-3 px-2 font-medium">budget</td>
+<td class="py-3 px-2 text-on-surface-variant">Ngân sách.</td>
+<td class="py-3 px-2 text-on-surface-variant">Ngân sách.</td>
+<td class="py-3 px-2 flex justify-center text-emerald-600">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-2">Câu 5</td>
+<td class="py-3 px-2 font-medium">stakeholder</td>
+<td class="py-3 px-2 text-on-surface-variant">Bên liên quan.</td>
+<td class="py-3 px-2 text-on-surface-variant">Bên liên quan.</td>
+<td class="py-3 px-2 flex justify-center text-emerald-600">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Bottom Actions -->
+<div class="flex gap-4 mt-2">
+<button class="flex-1 py-3 px-4 border border-outline-variant rounded-lg font-label-md text-on-surface flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="refresh">refresh</span>
+                        Làm lại
+                    </button>
+<button class="flex-1 py-3 px-4 border border-outline-variant rounded-lg font-label-md text-on-surface flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="visibility">visibility</span>
+                        Xem chi tiết
+                    </button>
+<button class="flex-[2] py-3 px-4 bg-primary text-on-primary rounded-lg font-label-md flex items-center justify-center gap-2 hover:bg-primary-fixed-variant transition-colors shadow-sm">
+<span class="material-symbols-outlined text-lg" data-icon="menu_book">menu_book</span>
+                        Quay về bộ từ
+                    </button>
+</div>
+</div>
+<!-- Right Sidebar -->
+<div class="flex flex-col gap-6">
+<!-- Summary Stats -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-card-padding shadow-sm">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="bar_chart">bar_chart</span>
+<h3 class="text-headline-md font-headline-md">Tóm tắt kết quả</h3>
+</div>
+<ul class="space-y-3">
+<li class="flex justify-between items-center py-2 border-b border-outline-variant border-dashed">
+<div class="flex items-center gap-2 text-on-surface-variant text-body-sm">
+<span class="material-symbols-outlined text-sm text-emerald-600" data-icon="data_usage">data_usage</span>
+                                Tỷ lệ đúng
+                            </div>
+<span class="font-bold text-emerald-600 text-body-md">80%</span>
+</li>
+<li class="flex justify-between items-center py-2 border-b border-outline-variant border-dashed">
+<div class="flex items-center gap-2 text-on-surface-variant text-body-sm">
+<span class="material-symbols-outlined text-sm text-orange-500" data-icon="menu_book">menu_book</span>
+                                Cần ôn lại
+                            </div>
+<span class="font-bold text-orange-500 text-body-md">2 từ</span>
+</li>
+<li class="flex justify-between items-center py-2">
+<div class="flex items-center gap-2 text-on-surface-variant text-body-sm">
+<span class="material-symbols-outlined text-sm text-purple-600" data-icon="military_tech">military_tech</span>
+                                Mức độ
+                            </div>
+<span class="font-bold text-purple-600 text-body-md">Khá</span>
+</li>
+</ul>
+</div>
+<!-- Suggestions -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-card-padding shadow-sm">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="lightbulb">lightbulb</span>
+<h3 class="text-headline-md font-headline-md">Gợi ý tiếp theo</h3>
+</div>
+<div class="space-y-2">
+<button class="w-full flex items-center justify-between p-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors text-left">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="style">style</span>
+<span class="text-body-sm font-medium">Học lại bằng flashcard</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors text-left">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-emerald-600" data-icon="refresh">refresh</span>
+<span class="text-body-sm font-medium">Làm lại bài kiểm tra</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">chevron_right</span>
+</button>
+
+</div>
+</div>
+<!-- Words to review -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-card-padding shadow-sm">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="bookmark">bookmark</span>
+<h3 class="text-headline-md font-headline-md">Từ cần ôn tập</h3>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 border border-rose-200 bg-rose-50 rounded-lg">
+<div>
+<span class="font-label-md text-rose-700 block mb-1">deadline</span>
+<span class="text-body-sm text-on-surface-variant">Thời hạn cuối cùng.</span>
+</div>
+<button class="text-primary hover:text-primary-fixed-variant">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+</button>
+</div>
+<div class="flex items-center justify-between p-3 border border-rose-200 bg-rose-50 rounded-lg">
+<div>
+<span class="font-label-md text-rose-700 block mb-1">proposal</span>
+<span class="text-body-sm text-on-surface-variant">Đề xuất, đề nghị.</span>
+</div>
+<button class="text-primary hover:text-primary-fixed-variant">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+
+</body></html>

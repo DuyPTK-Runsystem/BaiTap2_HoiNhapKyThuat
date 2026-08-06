@@ -1,0 +1,157 @@
+<!DOCTYPE html><html lang="vi" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Tạo Bộ Từ Vựng Mới - Vocab Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#dae1ff",
+                        "on-tertiary-container": "#f4eaff",
+                        "secondary-fixed": "#c0e8ff",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "surface-dim": "#d4dae6",
+                        "background": "#f8f9ff",
+                        "on-primary-container": "#ebeeff",
+                        "on-surface-variant": "#424655",
+                        "outline": "#737687",
+                        "tertiary-container": "#7e3cff",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#001849",
+                        "on-tertiary-fixed": "#23005c",
+                        "surface-container-high": "#e2e9f4",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#d0bcff",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed": "#001f2b",
+                        "secondary-container": "#44c9fd",
+                        "tertiary-fixed": "#e9ddff",
+                        "primary": "#004bbf",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#ebf1fd",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#6fd2ff",
+                        "primary-container": "#0061f2",
+                        "surface": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#5600ca",
+                        "surface-variant": "#dce3ee",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-low": "#eef4ff",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#c2c6d8",
+                        "surface-container-highest": "#dce3ee",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "inverse-surface": "#2a313a",
+                        "secondary": "#006686",
+                        "surface-container": "#e8eefa",
+                        "on-secondary-fixed-variant": "#004d66",
+                        "inverse-primary": "#b3c5ff",
+                        "on-secondary-container": "#00516b",
+                        "surface-tint": "#0055d5",
+                        "on-background": "#151c24",
+                        "tertiary": "#6500ea",
+                        "on-surface": "#151c24"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "grid-gutter": "1.5rem",
+                        "card-padding": "1.25rem",
+                        "inline-gap": "0.75rem",
+                        "stack-gap": "1.5rem",
+                        "container-padding": "2rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Hanken Grotesk"],
+                        "label-md": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "body-sm": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "label-sm": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
+                        "headline-md": ["18px", { "lineHeight": "24px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Hanken Grotesk', sans-serif; }
+    </style>
+</head>
+<body class="bg-background min-h-screen text-on-background antialiased flex items-center justify-center p-4">
+<!-- Modal Overlay -->
+<div class="fixed inset-0 bg-on-background/20 backdrop-blur-sm flex items-center justify-center z-50">
+<!-- Modal Container -->
+<div class="bg-surface-container-lowest rounded-xl shadow-lg w-full max-w-[480px] overflow-hidden flex flex-col border border-outline-variant">
+<!-- Modal Header -->
+<div class="flex items-center justify-between p-6 border-b border-outline-variant">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: &quot;FILL&quot; 1;">style</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface m-0">Tạo bộ từ vựng mới</h2>
+</div>
+<button aria-label="Close modal" class="text-on-surface-variant hover:text-on-surface transition-colors rounded-full p-1 hover:bg-surface-container-high" type="button">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Modal Body -->
+<div class="p-6 flex flex-col gap-6 overflow-y-auto max-h-[70vh]">
+<p class="font-body-md text-body-md text-on-surface-variant m-0">
+                    Tạo một bộ từ vựng mới để lưu trữ và luyện tập các từ liên quan.
+                </p>
+<!-- Input: Tên bộ từ vựng -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface" for="vocab-name">Tên bộ từ vựng <span class="text-error">*</span></label>
+<input class="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder:text-outline transition-shadow" id="vocab-name" placeholder="Ví dụ: Tiếng Anh Giao Tiếp Cơ Bản" type="text">
+</div>
+<!-- Textarea: Mô tả chi tiết -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface" for="vocab-desc">Mô tả chi tiết</label>
+<textarea class="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder:text-outline transition-shadow resize-y" id="vocab-desc" placeholder="Nhập mô tả ngắn gọn về nội dung bộ từ vựng..." rows="3"></textarea>
+</div>
+<!-- Dropdown: Thư mục -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface" for="vocab-folder">Thư mục / Danh mục</label>
+<input type="text" id="vocab-folder" value="Chọn thư mục lưu trữ..." disabled="" class="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-low font-body-md text-body-md text-on-surface-variant cursor-not-allowed transition-shadow">
+<div class="flex items-center gap-1.5 mt-1">
+<span class="material-symbols-outlined text-[16px] text-outline">info</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant m-0">Bộ từ vựng này sẽ được tạo trong thư mục đã chọn.</p>
+</div>
+</div>
+<!-- Privacy Settings -->
+
+</div>
+<!-- Modal Footer -->
+<div class="p-6 border-t border-outline-variant flex justify-end gap-3 bg-surface-container-lowest rounded-b-xl">
+<button class="px-6 py-2.5 rounded-lg border border-outline-variant font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors" type="button">
+                    Hủy bỏ
+                </button>
+<button class="px-6 py-2.5 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md shadow-sm hover:bg-primary transition-colors flex items-center gap-2" type="button">
+                    Tạo Bộ Từ
+                </button>
+</div>
+</div>
+</div>
+
+
+</body></html>

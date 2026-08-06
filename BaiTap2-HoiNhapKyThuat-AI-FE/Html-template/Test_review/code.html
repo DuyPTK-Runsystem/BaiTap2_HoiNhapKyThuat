@@ -1,0 +1,384 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Vocab Library - Xem lại câu hỏi</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#7e3cff",
+                    "surface-container-high": "#e2e9f4",
+                    "on-primary-fixed": "#001849",
+                    "secondary-fixed-dim": "#6fd2ff",
+                    "primary-fixed": "#dae1ff",
+                    "on-primary-fixed-variant": "#003fa4",
+                    "on-tertiary-fixed": "#23005c",
+                    "secondary-fixed": "#c0e8ff",
+                    "tertiary-fixed": "#e9ddff",
+                    "on-secondary-fixed-variant": "#004d66",
+                    "error": "#ba1a1a",
+                    "error-container": "#ffdad6",
+                    "outline-variant": "#c2c6d8",
+                    "tertiary": "#6500ea",
+                    "on-secondary": "#ffffff",
+                    "surface-bright": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "primary-container": "#0061f2",
+                    "surface-container-low": "#eef4ff",
+                    "on-error": "#ffffff",
+                    "secondary-container": "#44c9fd",
+                    "tertiary-fixed-dim": "#d0bcff",
+                    "on-surface-variant": "#424655",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary": "#006686",
+                    "on-primary-container": "#ebeeff",
+                    "surface-variant": "#dce3ee",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "on-secondary-fixed": "#001f2b",
+                    "primary": "#004bbf",
+                    "on-tertiary-fixed-variant": "#5600ca",
+                    "inverse-surface": "#2a313a",
+                    "surface-container": "#e8eefa",
+                    "surface-dim": "#d4dae6",
+                    "on-surface": "#151c24",
+                    "surface": "#f8f9ff",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#f4eaff",
+                    "inverse-on-surface": "#ebf1fd",
+                    "background": "#f8f9ff",
+                    "outline": "#737687",
+                    "on-background": "#151c24",
+                    "surface-container-highest": "#dce3ee",
+                    "on-primary": "#ffffff",
+                    "inverse-primary": "#b3c5ff",
+                    "surface-tint": "#0055d5",
+                    "on-secondary-container": "#00516b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "inline-gap": "0.75rem",
+                    "card-padding": "1.25rem",
+                    "grid-gutter": "1.5rem",
+                    "stack-gap": "1.5rem",
+                    "container-padding": "2rem"
+            },
+            "fontFamily": {
+                    "headline-md": ["Hanken Grotesk"],
+                    "label-sm": ["Hanken Grotesk"],
+                    "headline-lg": ["Hanken Grotesk"],
+                    "body-lg": ["Hanken Grotesk"],
+                    "body-md": ["Hanken Grotesk"],
+                    "body-sm": ["Hanken Grotesk"],
+                    "label-md": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "headline-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+                    "label-sm": ["11px", {"lineHeight": "14px", "fontWeight": "500"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Hanken Grotesk', sans-serif; background-color: #f2f5f9; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="bg-[#f2f5f9] text-on-surface h-screen flex overflow-hidden">
+<!-- TopNavBar (Rendered here, but usually it spans top. Since layout is Sidebar + Main, TopNav sits in Main) -->
+<!-- SideNavBar -->
+<aside class="w-[280px] bg-surface-container-low border-r border-outline-variant flex flex-col h-full flex-shrink-0 z-20">
+<div class="p-card-padding flex items-center gap-inline-gap">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-white font-headline-md font-bold">
+                VL
+            </div>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary font-bold">Vocab Library</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Academic Learning</p>
+</div>
+</div>
+<nav class="flex-1 px-md py-sm flex flex-col gap-2 overflow-y-auto">
+<a class="flex items-center gap-sm text-on-surface-variant px-4 py-3 rounded-lg hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">book_2</span>
+<span class="font-label-md text-label-md">Library</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant px-4 py-3 rounded-lg hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-label-md text-label-md">Collections</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant px-4 py-3 rounded-lg hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">style</span>
+<span class="font-label-md text-label-md">Flashcards</span>
+</a>
+<a class="flex items-center gap-sm bg-primary-container text-on-primary-container rounded-lg px-4 py-3 font-bold" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-label-md text-label-md">Progress</span>
+</a>
+</nav>
+<div class="p-card-padding border-t border-outline-variant">
+<button class="w-full bg-primary-container text-white py-2 rounded-lg font-label-md text-label-md flex justify-center items-center gap-2 hover:bg-primary transition-colors">
+<span class="material-symbols-outlined" style="font-size: 18px;">add</span> Add New Word
+            </button>
+</div>
+<div class="px-md pb-md pt-sm flex flex-col gap-1">
+<a class="flex items-center gap-sm text-on-surface-variant px-4 py-2 rounded-lg hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-size: 20px;">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant px-4 py-2 rounded-lg hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-size: 20px;">help</span>
+<span class="font-body-sm text-body-sm">Help</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col h-full overflow-hidden">
+<!-- Top Nav Header -->
+<header class="bg-surface shadow-[0px_4px_20px_rgba(0,0,0,0.05)] h-16 px-xl flex justify-between items-center z-10 flex-shrink-0">
+<!-- Breadcrumbs -->
+<div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+<a class="hover:text-primary" href="#">Tất cả</a>
+<span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
+<a class="hover:text-primary" href="#">Business English</a>
+<span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
+<a class="hover:text-primary" href="#">Meeting Vocabulary</a>
+<span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
+<a class="hover:text-primary" href="#">Kết quả bài kiểm tra</a>
+<span class="material-symbols-outlined" style="font-size: 16px;">chevron_right</span>
+<span class="text-on-surface font-medium">Xem lại câu hỏi</span>
+</div>
+<!-- Profile & Actions -->
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-2 pl-4 border-l border-outline-variant">
+<img class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="A small circular avatar showing a smiling young professional man wearing a collared shirt against a neutral background. High-key modern lighting, corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj91UrI5eNoifUjjYTreuTG0__JK8Mg7TDshUNu83v7G93_4RHoJUdVoVWOfSx1wA6W_h_0A9PkvljONBDJ9iZrMTaEpowX7yXz6jZEVxUUbLFUNXtXmXjVg_bYiBQHGLiSdkIqNvAxejIamUBWW3JkxbfjX__q7U48UACG9h1u4L67vpZiUEJfvVOKQB-jdXGsG03zfDJgudq81Ddhwuu5BRolQfG_zuB7uRf5y3C9QPtYGKHTcjVKQ">
+<span class="font-label-md text-label-md text-on-surface font-medium hidden md:block">Nguyễn Văn An</span>
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 18px;">expand_more</span>
+</div>
+</div>
+</header>
+<!-- Scrollable Content -->
+<main class="flex-1 overflow-y-auto p-container-padding">
+<div class="max-w-7xl mx-auto flex flex-col gap-stack-gap">
+<!-- Page Header Card -->
+<div class="bg-surface rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.03)] p-card-padding flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 bg-surface-container-low rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined filled" style="font-size: 32px;">fact_check</span>
+</div>
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Xem lại câu hỏi</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Kiểm tra lại đáp án của bạn và xem lời giải chi tiết cho từng câu hỏi.</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg bg-surface">
+<span class="material-symbols-outlined text-primary" style="font-size: 20px;">format_list_numbered</span>
+<span class="font-label-md text-label-md">Câu 3 / 10</span>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 border border-error-container rounded-lg bg-[#fff5f5] text-error">
+<span class="material-symbols-outlined" style="font-size: 20px;">cancel</span>
+<span class="font-label-md text-label-md">Kết quả: Sai</span>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 border border-outline-variant rounded-lg bg-surface">
+<span class="material-symbols-outlined text-primary" style="font-size: 20px;">checklist</span>
+<span class="font-label-md text-label-md">Loại: Trắc nghiệm</span>
+</div>
+</div>
+</div>
+<!-- Main Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-grid-gutter">
+<!-- Left Column: Question Details -->
+<div class="lg:col-span-2 flex flex-col gap-stack-gap">
+<div class="bg-surface rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.03)] p-card-padding">
+<div class="flex justify-between items-start mb-6">
+<div class="bg-surface-container-low text-primary px-3 py-1 rounded border border-primary-fixed-dim font-label-md text-label-md">
+                                    Câu 3
+                                </div>
+<div class="flex items-center gap-1 text-error font-label-md text-label-md bg-[#fff5f5] px-2 py-1 rounded border border-error-container">
+<span class="material-symbols-outlined" style="font-size: 16px;">cancel</span> Sai
+                                </div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Chọn nghĩa đúng của từ "deadline".</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">Bạn đã chọn 1 đáp án.</p>
+<!-- Audio Player Placeholder (Optional, just visual) -->
+<div class="flex items-center gap-3 bg-surface-container-low p-3 rounded-lg mb-6 border border-outline-variant w-max">
+<button class="w-8 h-8 rounded-full bg-primary-container text-white flex items-center justify-center hover:bg-primary transition">
+<span class="material-symbols-outlined filled" style="font-size: 18px;">play_arrow</span>
+</button>
+<div class="w-48 h-1 bg-outline-variant rounded-full relative">
+<div class="absolute left-0 top-0 h-full w-0 bg-primary-container rounded-full"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">0:00 / 0:02</span>
+</div>
+<!-- Options -->
+<div class="flex flex-col gap-3 mb-8">
+<!-- Option A (Wrong User Choice) -->
+<div class="flex items-center justify-between p-4 border border-error bg-[#fff5f5] rounded-lg cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded-full border-2 border-error flex items-center justify-center">
+<div class="w-2.5 h-2.5 rounded-full bg-error"></div>
+</div>
+<span class="font-body-md text-body-md font-medium text-on-surface">A. Ngân sách.</span>
+</div>
+<span class="font-label-sm text-label-sm text-error bg-error-container px-2 py-1 rounded">Bạn chọn</span>
+</div>
+<!-- Option B -->
+<div class="flex items-center p-4 border border-outline-variant bg-surface rounded-lg cursor-pointer hover:bg-surface-container-low transition">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center"></div>
+<span class="font-body-md text-body-md text-on-surface">B. Biên bản cuộc họp.</span>
+</div>
+</div>
+<!-- Option C (Correct Answer) -->
+<div class="flex items-center justify-between p-4 border border-[#00ba94] bg-[#f0fdf9] rounded-lg cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded-full border-2 border-[#00ba94] flex items-center justify-center">
+<div class="w-2.5 h-2.5 rounded-full bg-[#00ba94]"></div>
+</div>
+<span class="font-body-md text-body-md font-medium text-[#006652]">C. Thời hạn cuối cùng.</span>
+</div>
+<span class="font-label-sm text-label-sm text-[#006652] bg-[#ccfbf1] px-2 py-1 rounded">Đáp án đúng</span>
+</div>
+<!-- Option D -->
+<div class="flex items-center p-4 border border-outline-variant bg-surface rounded-lg cursor-pointer hover:bg-surface-container-low transition">
+<div class="flex items-center gap-4">
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant flex items-center justify-center"></div>
+<span class="font-body-md text-body-md text-on-surface">D. Đề xuất.</span>
+</div>
+</div>
+</div>
+<!-- Explanation -->
+<div class="bg-surface-container-low border border-primary-fixed-dim rounded-lg p-4 mb-6">
+<div class="flex items-center gap-2 text-primary mb-2">
+<span class="material-symbols-outlined filled" style="font-size: 20px;">info</span>
+<h4 class="font-label-md text-label-md font-bold">Giải thích</h4>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant pl-7">
+<strong>Deadline</strong> là thời hạn cuối cùng để hoàn thành một công việc hoặc nhiệm vụ. Từ này thường được dùng trong công việc, dự án và học tập.
+                                </p>
+</div>
+<!-- Related Vocab -->
+<div>
+
+
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex justify-between items-center bg-surface p-card-padding rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.03)]">
+<button class="flex items-center gap-2 px-6 py-2.5 border border-outline-variant rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition">
+<span class="material-symbols-outlined" style="font-size: 18px;">chevron_left</span> Câu trước
+                            </button>
+<button class="flex items-center gap-2 px-6 py-2.5 bg-primary-container text-white rounded-lg font-label-md text-label-md hover:bg-primary transition shadow-sm">
+<span class="material-symbols-outlined" style="font-size: 18px;">assignment_return</span> Quay lại kết quả
+                            </button>
+<button class="flex items-center gap-2 px-6 py-2.5 border border-outline-variant rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition">
+                                Câu tiếp theo <span class="material-symbols-outlined" style="font-size: 18px;">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Right Column: Sidebar Data -->
+<div class="flex flex-col gap-stack-gap">
+<!-- Question List Grid -->
+<div class="bg-surface rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.03)] p-card-padding">
+<div class="flex items-center gap-2 mb-4 border-b border-outline-variant pb-3">
+<span class="material-symbols-outlined text-primary" style="font-size: 20px;">format_list_bulleted</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Danh sách câu hỏi</h3>
+</div>
+<!-- Legend -->
+<div class="flex items-center gap-4 mb-4 font-label-sm text-label-sm text-on-surface-variant">
+<div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-full bg-[#00ba94]"></div> Đúng</div>
+<div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-full bg-error"></div> Sai</div>
+<div class="flex items-center gap-1"><div class="w-2.5 h-2.5 rounded-full bg-outline-variant"></div> Chưa xem</div>
+</div>
+<div class="grid grid-cols-5 gap-2">
+<button class="aspect-square rounded border border-[#00ba94] bg-[#f0fdf9] text-[#006652] font-label-md text-label-md flex items-center justify-center hover:bg-[#ccfbf1]">1</button>
+<button class="aspect-square rounded border border-[#00ba94] bg-[#f0fdf9] text-[#006652] font-label-md text-label-md flex items-center justify-center hover:bg-[#ccfbf1]">2</button>
+<button class="aspect-square rounded border-2 border-error bg-[#fff5f5] text-error font-label-md text-label-md flex items-center justify-center font-bold">3</button>
+<button class="aspect-square rounded border border-[#00ba94] bg-[#f0fdf9] text-[#006652] font-label-md text-label-md flex items-center justify-center hover:bg-[#ccfbf1]">4</button>
+<button class="aspect-square rounded border border-[#00ba94] bg-[#f0fdf9] text-[#006652] font-label-md text-label-md flex items-center justify-center hover:bg-[#ccfbf1]">5</button>
+<button class="aspect-square rounded border border-error bg-[#fff5f5] text-error font-label-md text-label-md flex items-center justify-center hover:bg-error-container">6</button>
+<button class="aspect-square rounded border border-[#00ba94] bg-[#f0fdf9] text-[#006652] font-label-md text-label-md flex items-center justify-center hover:bg-[#ccfbf1]">7</button>
+<button class="aspect-square rounded border border-[#00ba94] bg-[#f0fdf9] text-[#006652] font-label-md text-label-md flex items-center justify-center hover:bg-[#ccfbf1]">8</button>
+<button class="aspect-square rounded border border-outline-variant bg-surface text-on-surface-variant font-label-md text-label-md flex items-center justify-center hover:bg-surface-container-low">9</button>
+<button class="aspect-square rounded border border-outline-variant bg-surface text-on-surface-variant font-label-md text-label-md flex items-center justify-center hover:bg-surface-container-low">10</button>
+</div>
+</div>
+<!-- Summary Table -->
+<div class="bg-surface rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.03)] p-card-padding">
+<div class="flex items-center gap-2 mb-4 border-b border-outline-variant pb-3">
+<span class="material-symbols-outlined text-primary" style="font-size: 20px;">description</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Tóm tắt câu hỏi</h3>
+</div>
+<div class="flex flex-col border border-outline-variant rounded-lg overflow-hidden">
+<div class="flex justify-between py-2.5 px-3 border-b border-outline-variant bg-surface-container-lowest">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Từ vựng</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">deadline</span>
+</div>
+<div class="flex justify-between py-2.5 px-3 border-b border-outline-variant bg-surface">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Đáp án của bạn</span>
+<span class="font-label-md text-label-md text-error">Ngân sách</span>
+</div>
+<div class="flex justify-between py-2.5 px-3 bg-surface-container-lowest">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Đáp án đúng</span>
+<span class="font-label-md text-label-md text-[#006652]">Thời hạn cuối cùng</span>
+</div>
+</div>
+</div>
+<!-- Study Suggestions -->
+<div class="bg-surface rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.03)] p-card-padding">
+<div class="flex items-center gap-2 mb-4 border-b border-outline-variant pb-3">
+<span class="material-symbols-outlined text-[#f59e0b]" style="font-size: 20px;">lightbulb</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Gợi ý ôn tập</h3>
+</div>
+<div class="flex flex-col gap-2">
+<a class="flex items-center justify-between p-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition group" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">style</span>
+<span class="font-body-md text-body-md text-on-surface">Học lại bằng flashcard</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 18px;">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition group" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error group-hover:scale-110 transition-transform">autorenew</span>
+<span class="font-body-md text-body-md text-on-surface">Ôn các câu sai</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 18px;">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition group" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#00ba94] group-hover:scale-110 transition-transform">task_alt</span>
+<span class="font-body-md text-body-md text-on-surface">Xem lại toàn bộ đáp án</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 18px;">chevron_right</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+
+</body></html>

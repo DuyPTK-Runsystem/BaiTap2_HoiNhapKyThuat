@@ -1,0 +1,135 @@
+<!DOCTYPE html><html lang="vi"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Vocab Library - Register</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style data-purpose="custom-fonts">
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              primary: '#0B57D0',
+              secondary: '#E8F0FE',
+              dark: '#1F2937',
+              gray: '#6B7280',
+              light: '#F3F4F6'
+            },
+            status: {
+              success: '#059669',
+              warning: '#D97706',
+              successBg: '#ECFDF5',
+              warningBg: '#FFFBEB'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4 sm:p-8">
+<!-- BEGIN: MainContainer -->
+<main class="w-full max-w-[1200px] bg-white rounded-3xl shadow-lg p-6 sm:p-10 flex flex-col md:flex-row gap-8 lg:gap-16">
+<!-- BEGIN: Left Column (Form) -->
+<section class="w-full md:w-1/2 flex flex-col justify-center">
+<!-- BEGIN: Header -->
+<header class="mb-8">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 bg-brand-primary text-white font-bold rounded-lg flex items-center justify-center text-xl shadow-sm">
+<span class="mr-1 border-r border-white/50 pr-1">A</span>
+<span class="">Z</span>
+</div>
+<h1 class="text-xl font-bold text-gray-800">Vocab Library</h1>
+</div>
+<h2 class="text-4xl font-extrabold text-gray-900 tracking-tight">Register Page</h2>
+</header>
+<!-- END: Header -->
+<!-- BEGIN: Registration Form -->
+<form class="space-y-6 max-w-md w-full bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+<!-- Email Input -->
+<div>
+<label class="block text-sm font-semibold text-gray-900 mb-2" for="email">Email (*)</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<i class="fa-regular fa-envelope text-gray-400"></i>
+</div>
+<input class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-brand-primary focus:border-brand-primary sm:text-sm placeholder-gray-400" id="email" name="email" placeholder="Nhập email của bạn" required="" type="email">
+</div>
+</div>
+<!-- Password Input -->
+<div>
+<label class="block text-sm font-semibold text-gray-900 mb-2" for="password">Mật khẩu (*)</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<i class="fa-solid fa-lock text-gray-400"></i>
+</div>
+<input class="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-brand-primary focus:border-brand-primary sm:text-sm placeholder-gray-400" id="password" name="password" placeholder="Nhập mật khẩu của bạn" required="" type="password">
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer">
+<i class="fa-regular fa-eye text-gray-400 hover:text-gray-600"></i>
+</div>
+</div>
+</div>
+<!-- Password Requirements Checklist -->
+<div class="bg-status-successBg border border-green-100 rounded-lg p-4 space-y-2">
+<div class="flex items-center text-sm text-gray-700">
+<i class="fa-solid fa-circle-check text-status-success mr-2"></i>
+            Mật khẩu có ít nhất 8 kí tự
+          </div>
+<div class="flex items-center text-sm text-gray-700">
+<i class="fa-solid fa-circle-check text-status-success mr-2"></i>
+            Mật khẩu có kí tự chữ cái
+          </div>
+<div class="flex items-center text-sm text-gray-700">
+<i class="fa-solid fa-circle-check text-status-success mr-2"></i>
+            Mật khẩu có kí tự số
+          </div>
+</div>
+<!-- Re-enter Password Input -->
+<div>
+<label class="block text-sm font-semibold text-gray-900 mb-2" for="confirm_password">Nhập lại mật khẩu (*)</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<i class="fa-solid fa-lock text-gray-400"></i>
+</div>
+<input class="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-brand-primary focus:border-brand-primary sm:text-sm placeholder-gray-400" id="confirm_password" name="confirm_password" placeholder="Nhập lại mật khẩu của bạn" required="" type="password">
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer">
+<i class="fa-regular fa-eye text-gray-400 hover:text-gray-600"></i>
+</div>
+</div>
+</div>
+<!-- Warning Message -->
+<div class="bg-status-warningBg border border-yellow-200 rounded-lg p-3 flex items-center text-sm text-gray-700">
+<i class="fa-solid fa-circle-exclamation text-status-warning mr-2"></i>
+          Phải khớp với mật khẩu
+        </div>
+<!-- Submit Button -->
+<button class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-brand-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary transition-colors" type="submit">
+          Đăng ký
+        </button>
+<!-- Login Link -->
+<div class="text-center mt-4">
+<p class="text-sm text-gray-600">
+            Đã có tài khoản? <a class="font-medium text-brand-primary hover:underline" href="#">Đăng nhập</a>
+</p>
+</div>
+</form>
+<!-- END: Registration Form -->
+</section>
+<!-- END: Left Column (Form) -->
+<!-- BEGIN: Right Column (Illustration) -->
+<section class="hidden md:flex w-full md:w-1/2 items-center justify-center bg-[#F4F9FF] rounded-3xl overflow-hidden p-8 border border-blue-50">
+<img alt="Vocab Library Illustration with books, flashcards and pencil" class="w-full h-auto object-contain max-w-[500px]" data-purpose="hero-illustration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBXIDGPl0_uWTCMIDZNe3JgOmkIICVyQloeuJM7ksI9JRYiSF3gR0M7RPhvEbPZCQpbRbCRNOGgK0NTU3zFbPSZyTP8cv4oBO4-kxAEaSo-66JP5RSGWl8K_NBEyFiEeghRBqGT_aOlWVlelx96fD2G3NaI_g_2PLU3F5vcDJLIzmifW0QWecdKNKHLD9uSbxgIz8j8cYNCki9OFeuFHWrjkHEMeim90yH2ClTBbjMmZ7y9KKaGbx8uSeGQKLhLt1xt73UJfelUhfUWiM">
+</section>
+<!-- END: Right Column (Illustration) -->
+</main>
+<!-- END: MainContainer -->
+
+
+</body></html>

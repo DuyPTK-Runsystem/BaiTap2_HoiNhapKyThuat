@@ -1,0 +1,495 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Vocab Library Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline": "#737687",
+                      "surface-tint": "#0055d5",
+                      "primary-fixed-dim": "#b3c5ff",
+                      "primary-fixed": "#dae1ff",
+                      "inverse-surface": "#2a313a",
+                      "outline-variant": "#c2c6d8",
+                      "on-secondary-fixed-variant": "#004d66",
+                      "surface-container-highest": "#dce3ee",
+                      "surface-container-high": "#e2e9f4",
+                      "surface-bright": "#f8f9ff",
+                      "on-error-container": "#93000a",
+                      "on-error": "#ffffff",
+                      "tertiary-fixed-dim": "#d0bcff",
+                      "inverse-on-surface": "#ebf1fd",
+                      "on-primary-fixed": "#001849",
+                      "secondary": "#006686",
+                      "on-surface": "#151c24",
+                      "tertiary-fixed": "#e9ddff",
+                      "surface": "#f8f9ff",
+                      "on-tertiary-container": "#f4eaff",
+                      "on-primary": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "on-background": "#151c24",
+                      "on-tertiary-fixed-variant": "#5600ca",
+                      "secondary-fixed-dim": "#6fd2ff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary-fixed-variant": "#003fa4",
+                      "on-secondary-fixed": "#001f2b",
+                      "background": "#f8f9ff",
+                      "on-primary-container": "#ebeeff",
+                      "on-tertiary-fixed": "#23005c",
+                      "error": "#ba1a1a",
+                      "surface-container-low": "#eef4ff",
+                      "surface-dim": "#d4dae6",
+                      "primary-container": "#0061f2",
+                      "on-surface-variant": "#424655",
+                      "surface-container": "#e8eefa",
+                      "tertiary-container": "#7e3cff",
+                      "surface-variant": "#dce3ee",
+                      "secondary-container": "#44c9fd",
+                      "tertiary": "#6500ea",
+                      "primary": "#004bbf",
+                      "on-tertiary": "#ffffff",
+                      "inverse-primary": "#b3c5ff",
+                      "on-secondary-container": "#00516b",
+                      "error-container": "#ffdad6",
+                      "secondary-fixed": "#c0e8ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "inline-gap": "0.75rem",
+                      "container-padding": "2rem",
+                      "grid-gutter": "1.5rem",
+                      "card-padding": "1.25rem",
+                      "stack-gap": "1.5rem"
+              },
+              "fontFamily": {
+                      "label-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-sm": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-sm": [
+                              "Hanken Grotesk"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "11px",
+                              {
+                                      "lineHeight": "14px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "18px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body { background-color: #f2f5f9; }
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: #dce3ee; border-radius: 4px; }
+    </style>
+</head>
+<body class="text-on-surface font-body-md min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="bg-surface border-b border-outline-variant flat no shadows flex justify-between items-center px-container-padding h-16 w-full shrink-0 z-10 sticky top-0">
+<div class="flex items-center gap-inline-gap w-[240px]">
+<div class="text-primary text-headline-lg font-headline-lg tracking-tight flex items-center gap-2">
+<span class="material-symbols-outlined rounded bg-primary text-on-primary p-1 text-sm font-bold" style="font-variation-settings: &quot;FILL&quot; 1;">sort_by_alpha</span>
+                Vocab Library
+            </div>
+</div>
+<div class="flex-1 max-w-2xl px-8">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border rounded-lg text-body-md font-body-md focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors border-outline" placeholder="Search vocab sets or folders..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-inline-gap w-[240px] justify-end">
+<button class="w-10 h-10 rounded-full hover:bg-surface-container-high transition-colors flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full hover:bg-surface-container-high transition-colors flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="flex items-center gap-2 cursor-pointer hover:bg-surface-container-high p-1 rounded-lg transition-colors ml-2">
+<img alt="User avatar" class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="A small circular avatar of a professional looking user with a neutral expression, brightly lit against a light blue background." src="https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg">
+<span class="text-body-md font-body-md font-medium">User Name</span>
+<span class="material-symbols-outlined text-outline text-sm">expand_more</span>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Left Sidebar -->
+<aside class="w-[280px] bg-surface-container-low border-r border-outline-variant flex flex-col shrink-0">
+<div class="p-4 flex items-center justify-between border-b border-outline-variant">
+<h2 class="text-headline-md font-headline-md text-on-surface">Folders</h2>
+<button class="text-on-surface-variant hover:bg-surface-container-highest rounded p-1 transition-colors">
+<span class="material-symbols-outlined text-[20px]">keyboard_double_arrow_left</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto sidebar-scroll p-4 flex flex-col gap-1">
+<!-- All -->
+<div class="flex items-center justify-between p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest cursor-pointer transition-colors group">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">folder</span>
+<span class="text-body-md font-body-md">All</span>
+</div>
+<span class="bg-surface-variant text-on-surface-variant text-label-sm font-label-sm px-2 py-0.5 rounded-full">12</span>
+</div>
+<!-- Topic Folders -->
+<div class="ml-4 flex flex-col gap-1 mt-1 border-l border-outline-variant/30 pl-2">
+<div class="flex items-center justify-between p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">folder_open</span>
+<span class="text-body-md font-body-md">Travel</span>
+</div>
+<span class="bg-surface-variant text-on-surface-variant text-label-sm font-label-sm px-2 py-0.5 rounded-full">2</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">folder_shared</span>
+<span class="text-body-md font-body-md">Daily Conversation</span>
+</div>
+<span class="bg-surface-variant text-on-surface-variant text-label-sm font-label-sm px-2 py-0.5 rounded-full">2</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">school</span>
+<span class="text-body-md font-body-md">IELTS</span>
+</div>
+<span class="bg-surface-variant text-on-surface-variant text-label-sm font-label-sm px-2 py-0.5 rounded-full">2</span>
+</div>
+<!-- Active Folder -->
+<div class="flex items-center justify-between p-2 rounded-lg bg-primary-container text-on-primary-container font-bold cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] -ml-5 bg-surface-container-low rounded-full">expand_more</span>
+<span class="material-symbols-outlined text-[20px]">work</span>
+<span class="text-body-md font-body-md">Business English</span>
+</div>
+<span class="bg-primary/20 text-on-primary-container text-label-sm font-label-sm px-2 py-0.5 rounded-full">6</span>
+</div>
+<!-- Subfolders -->
+<div class="ml-6 flex flex-col gap-1 mt-1 border-l border-outline-variant/30 pl-2">
+<div class="flex items-center justify-between p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-highest cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">folder</span>
+<span class="text-body-sm font-body-sm">Meetings</span>
+</div>
+<span class="bg-surface-variant text-on-surface-variant text-label-sm font-label-sm px-1.5 py-0.5 rounded-full">2</span>
+</div>
+<div class="flex items-center justify-between p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-highest cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">folder</span>
+<span class="text-body-sm font-body-sm">Email &amp; Writing</span>
+</div>
+<span class="bg-surface-variant text-on-surface-variant text-label-sm font-label-sm px-1.5 py-0.5 rounded-full">1</span>
+</div>
+<div class="flex items-center justify-between p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-highest cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">folder</span>
+<span class="text-body-sm font-body-sm">Presentations</span>
+</div>
+<span class="bg-surface-variant text-on-surface-variant text-label-sm font-label-sm px-1.5 py-0.5 rounded-full">1</span>
+</div>
+</div>
+</div>
+<div class="my-4 border-t border-outline-variant/50"></div>
+<!-- Trash -->
+
+</div>
+<!-- Upload Area -->
+<div class="p-4 border-t border-outline-variant/50">
+<div class="border-2 border-dashed border-outline-variant rounded-xl p-6 flex flex-col items-center justify-center text-center gap-2 bg-surface hover:bg-surface-container-lowest transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-primary text-[32px] group-hover:-translate-y-1 transition-transform">upload</span>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Drag &amp; drop file here<br>or click to import</p>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto bg-[#f2f5f9] p-8 flex flex-col gap-6">
+<!-- Breadcrumbs & Global Actions -->
+<div class="flex items-center justify-between">
+<div class="flex items-center text-body-sm font-body-sm text-on-surface-variant gap-2">
+<span class="hover:text-primary cursor-pointer transition-colors">All</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="hover:text-primary cursor-pointer transition-colors">Topic Folder</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-on-surface font-medium">Business English</span>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-primary-container text-on-primary text-body-sm font-body-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">create_new_folder</span>
+                        Create Folder
+                    </button>
+<button class="bg-primary-container text-on-primary text-body-sm font-body-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">note_add</span>
+                        Create Vocab Set
+                    </button>
+<button class="bg-[#00ba94] text-white text-body-sm font-body-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#00a382] transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+                        Import File
+                    </button>
+<button class="bg-[#00ba94] text-white text-body-sm font-body-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#00a382] transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">quiz</span>
+                        Create Test
+                    </button>
+</div>
+</div>
+<!-- Content Container -->
+<div class="bg-surface rounded-xl border shadow-[0_4px_12px_rgba(0,0,0,0.03)] flex flex-col border-outline-variant">
+<!-- Header -->
+<div class="p-6 border-b border-outline-variant flex items-center justify-between">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-on-primary shrink-0">
+<span class="material-symbols-outlined text-[24px]">folder</span>
+</div>
+<div>
+<div class="flex items-center gap-3 text-body-md font-body-md font-medium text-on-surface mb-1">
+<span class="">12 items</span>
+<span class="w-1 h-1 bg-outline rounded-full"></span>
+<span class="">8 vocab sets</span>
+<span class="w-1 h-1 bg-outline rounded-full"></span>
+<span class="">4 folders</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Manage your vocabulary sets, study with flashcards, and test your knowledge.</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="bg-surface-container-low text-primary border border-primary-fixed-dim text-body-sm font-body-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined text-[18px]">style</span>
+                            Start Flashcards
+                        </button>
+<button class="bg-surface-container-low text-[#00ba94] border border-[#00ba94]/30 text-body-sm font-body-sm font-medium px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-[#00ba94]/10 transition-colors">
+<span class="material-symbols-outlined text-[18px]">fact_check</span>
+                            Start Test
+                        </button>
+</div>
+</div>
+<!-- Table -->
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant text-label-md font-label-md text-on-surface-variant bg-surface-container-lowest"><th class="p-4 w-12 text-center"><input class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4" type="checkbox"></th><th class="p-4 w-16 text-left">Type</th><th class="p-4 font-semibold text-on-surface text-left"><div class="flex items-center gap-1">Name <span class="material-symbols-outlined text-[14px]">unfold_more</span></div></th><th class="p-4 text-left">Description</th><th class="p-4 text-left"><div class="flex items-center gap-1">Vocab Count <span class="material-symbols-outlined text-[14px]">unfold_more</span></div></th><th class="p-4 text-left"><div class="flex items-center gap-1">Updated At <span class="material-symbols-outlined text-[14px]">unfold_more</span></div></th><th class="p-4 text-left">Actions</th></tr>
+</thead>
+<tbody class="text-body-sm font-body-sm divide-y divide-outline-variant">
+<!-- Folder Row -->
+<tr class="hover:bg-[#f8faff] transition-colors group">
+<td class="p-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" type="checkbox">
+</td>
+<td class="p-4 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">folder</span>
+</td>
+<td class="p-4 font-medium text-on-surface">Travel</td>
+<td class="p-4 text-on-surface-variant">Vocabulary for traveling and tourism.</td>
+<td class="p-4 text-on-surface-variant">—</td>
+<td class="p-4 text-on-surface-variant">04/06/2026 09:23</td>
+<td class="p-4 flex items-center gap-2">
+<button class="px-3 py-1.5 rounded text-primary border border-outline-variant/50 hover:border-primary hover:bg-surface-container-low transition-colors text-label-sm font-label-sm">View</button>
+<button class="px-3 py-1.5 rounded text-on-surface-variant border border-outline-variant/50 hover:text-on-surface hover:bg-surface-container-low transition-colors text-label-sm font-label-sm">Edit</button>
+<button class="px-3 py-1.5 rounded text-on-surface-variant border border-outline-variant/50 hover:text-on-surface hover:bg-surface-container-low transition-colors text-label-sm font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">more_horiz</span> More
+                                    </button>
+</td>
+</tr>
+<!-- Folder Row -->
+<tr class="hover:bg-[#f8faff] transition-colors group">
+<td class="p-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" type="checkbox">
+</td>
+<td class="p-4 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">folder</span>
+</td>
+<td class="p-4 font-medium text-on-surface">Daily Conversation</td>
+<td class="p-4 text-on-surface-variant">Common words and phrases for everyday talk.</td>
+<td class="p-4 text-on-surface-variant">—</td>
+<td class="p-4 text-on-surface-variant">03/06/2026 18:45</td>
+<td class="p-4 flex items-center gap-2">
+<button class="px-3 py-1.5 rounded text-primary border border-outline-variant/50 hover:border-primary hover:bg-surface-container-low transition-colors text-label-sm font-label-sm">View</button>
+<button class="px-3 py-1.5 rounded text-on-surface-variant border border-outline-variant/50 hover:text-on-surface hover:bg-surface-container-low transition-colors text-label-sm font-label-sm">Edit</button>
+<button class="px-3 py-1.5 rounded text-on-surface-variant border border-outline-variant/50 hover:text-on-surface hover:bg-surface-container-low transition-colors text-label-sm font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">more_horiz</span> More
+                                    </button>
+</td>
+</tr>
+<!-- Folder Row -->
+<tr class="hover:bg-[#f8faff] transition-colors group">
+<td class="p-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" type="checkbox">
+</td>
+<td class="p-4 text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">folder</span>
+</td>
+<td class="p-4 font-medium text-on-surface">IELTS</td>
+<td class="p-4 text-on-surface-variant">Vocabulary for IELTS preparation.</td>
+<td class="p-4 text-on-surface-variant">—</td>
+<td class="p-4 text-on-surface-variant">02/06/2026 14:11</td>
+<td class="p-4 flex items-center gap-2">
+<button class="px-3 py-1.5 rounded text-primary border border-outline-variant/50 hover:border-primary hover:bg-surface-container-low transition-colors text-label-sm font-label-sm">View</button>
+<button class="px-3 py-1.5 rounded text-on-surface-variant border border-outline-variant/50 hover:text-on-surface hover:bg-surface-container-low transition-colors text-label-sm font-label-sm">Edit</button>
+<button class="px-3 py-1.5 rounded text-on-surface-variant border border-outline-variant/50 hover:text-on-surface hover:bg-surface-container-low transition-colors text-label-sm font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">more_horiz</span> More
+                                    </button>
+</td>
+</tr>
+<!-- File Row -->
+<tr class="hover:bg-[#f8faff] transition-colors group">
+<td class="p-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" type="checkbox">
+</td>
+<td class="p-4 text-primary/80">
+<span class="material-symbols-outlined text-[20px]">description</span>
+</td>
+<td class="p-4 font-medium text-on-surface">Airport Basics</td>
+<td class="p-4 text-on-surface-variant">Essential words at the airport.</td>
+<td class="p-4 text-on-surface-variant">45</td>
+<td class="p-4 text-on-surface-variant">04/06/2026 09:23</td>
+<td class="p-4 flex items-center gap-2">
+<button class="px-3 py-1.5 rounded text-primary border border-outline-variant/50 hover:border-primary hover:bg-surface-container-low transition-colors text-label-sm font-label-sm">View</button>
+<button class="px-3 py-1.5 rounded text-primary border border-outline-variant/50 hover:border-primary hover:bg-surface-container-low transition-colors text-label-sm font-label-sm">Edit</button>
+<button class="px-3 py-1.5 rounded text-primary border border-outline-variant/50 hover:border-primary hover:bg-surface-container-low transition-colors text-label-sm font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">more_horiz</span> More
+                                    </button>
+<div class="w-[1px] h-4 bg-outline-variant mx-1"></div>
+<button class="px-3 py-1.5 rounded text-[#006686] border border-[#006686]/30 hover:bg-[#006686]/10 transition-colors text-label-sm font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">style</span> Flashcards
+                                    </button>
+<button class="px-3 py-1.5 rounded text-[#00ba94] border border-[#00ba94]/30 hover:bg-[#00ba94]/10 transition-colors text-label-sm font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">fact_check</span> Test
+                                    </button>
+</td>
+</tr>
+<!-- File Row -->
+<tr class="hover:bg-[#f8faff] transition-colors group">
+<td class="p-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" type="checkbox">
+</td>
+<td class="p-4 text-primary/80">
+<span class="material-symbols-outlined text-[20px]">description</span>
+</td>
+<td class="p-4 font-medium text-on-surface">Meeting Vocabulary</td>
+<td class="p-4 text-on-surface-variant">Key terms for meetings and discussions.</td>
+<td class="p-4 text-on-surface-variant">120</td>
+<td class="p-4 text-on-surface-variant">03/06/2026 16:30</td>
+<td class="p-4 flex items-center gap-2">
+<button class="px-3 py-1.5 rounded text-primary border border-outline-variant/50 hover:border-primary hover:bg-surface-container-low transition-colors text-label-sm font-label-sm">View</button>
+<button class="px-3 py-1.5 rounded text-primary border border-outline-variant/50 hover:border-primary hover:bg-surface-container-low transition-colors text-label-sm font-label-sm">Edit</button>
+<button class="px-3 py-1.5 rounded text-primary border border-outline-variant/50 hover:border-primary hover:bg-surface-container-low transition-colors text-label-sm font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">more_horiz</span> More
+                                    </button>
+<div class="w-[1px] h-4 bg-outline-variant mx-1"></div>
+<button class="px-3 py-1.5 rounded text-[#006686] border border-[#006686]/30 hover:bg-[#006686]/10 transition-colors text-label-sm font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">style</span> Flashcards
+                                    </button>
+<button class="px-3 py-1.5 rounded text-[#00ba94] border border-[#00ba94]/30 hover:bg-[#00ba94]/10 transition-colors text-label-sm font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">fact_check</span> Test
+                                    </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="p-4 border-t flex items-center justify-between bg-surface-container-lowest rounded-b-xl text-body-sm font-body-sm text-on-surface-variant border-outline">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="">Rows per page:</span>
+<div class="relative">
+<select class="appearance-none bg-surface border border-outline-variant rounded-md pl-3 pr-8 py-1 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer text-on-surface">
+<option>10</option>
+<option>20</option>
+<option>50</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-[16px] pointer-events-none">expand_more</span>
+</div>
+</div>
+<span class="">1–10 of 12</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/50 text-outline cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-primary text-primary bg-primary-fixed-dim/20 font-medium">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/50 hover:border-primary hover:text-primary transition-colors">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant/50 hover:border-primary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+
+</body></html>
