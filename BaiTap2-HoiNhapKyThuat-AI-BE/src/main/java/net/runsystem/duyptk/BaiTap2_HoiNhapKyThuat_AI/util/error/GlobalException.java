@@ -33,7 +33,7 @@ public class GlobalException {
         RestResponse<Object> restResponse = new RestResponse<>();
         restResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         restResponse.setError("An unexpected Internal server error occurred");
-        restResponse.setMessage(ex.getMessage());
+        restResponse.setMessage("Vui lòng liên hệ với quản trị viên để được hỗ trợ");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(restResponse);
     }
 
