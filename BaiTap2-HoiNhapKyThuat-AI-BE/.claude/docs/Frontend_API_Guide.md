@@ -166,11 +166,14 @@ Response `data` includes vocab fields such as:
   "word": "hello",
   "meaning": "xin chao",
   "ipa": "...",
-  "audioUrl": "/api/v1/vocabs/audio/..."
+  "audioUrl": "/api/v1/vocabs/audio/...",
+  "mastered": false
 }
 ```
 
 If `vocabSetId` is provided, Backend creates vocab and attaches it to that vocab set.
+
+`mastered` is a Boolean learning state. New vocab starts with `mastered = false`.
 
 ### 4.2. Bulk Import Vocab
 
@@ -428,6 +431,8 @@ Rules:
 - `optionId` must belong to the question.
 - Duplicate `questionId` is rejected.
 - Missing question answers are saved as incorrect with `selectedOptionId = null`.
+- If a question is answered correctly, Backend updates that question's vocab to `mastered = true`.
+- Incorrect or missing answers do not change the current `mastered` value.
 - Finished test cannot be finished again.
 - Expired test cannot be finished.
 
@@ -543,6 +548,7 @@ Frontend display notes:
 4. FE tracks local selected option by `questionId`.
 5. FE submits once with `POST /api/v1/tests/{testId}/finish`.
 6. FE renders result from finish response or `GET /api/v1/tests/{testId}/result`.
+7. If the UI displays vocab learning state, FE should refresh vocab data after finish because correct answers may update `mastered`.
 
 ### 8.4. Flashcard flow
 

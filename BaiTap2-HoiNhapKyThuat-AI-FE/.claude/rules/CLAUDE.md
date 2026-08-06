@@ -1,0 +1,1 @@
+Đọc kĩ tại BaiTap2-HoiNhapKyThuat-AI-BE/.claude/rules/CLAUDE.md
