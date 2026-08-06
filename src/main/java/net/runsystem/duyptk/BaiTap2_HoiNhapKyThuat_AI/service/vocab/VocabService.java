@@ -89,6 +89,7 @@ public class VocabService {
                 .meaning(vocab.getMeaning())
                 .ipa(vocab.getIpa())
                 .audioUrl(vocab.getAudioUrl())
+                .mastered(vocab.isMastered())
                 .build();
     }
 

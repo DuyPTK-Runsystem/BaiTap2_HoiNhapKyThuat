@@ -18,4 +18,6 @@ public class ResVocabDTO {
 
     @JsonProperty("audio_url")
     private String audioUrl;
+
+    private boolean mastered;
 }

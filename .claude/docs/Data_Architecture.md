@@ -60,6 +60,7 @@ Bảng gốc chứa các thuộc tính chung của cả Folder và VocabSet.
 | `meaning`   | String | Nullable           | Nghĩa của từ       |
 | `ipa`       | String | Nullable           | Phiên âm quốc tế   |
 | `audio_url` | String | Nullable           | Link file âm thanh |
+| `mastered`  | Boolean | Not Null, Default false | Đã thuộc từ vựng hay chưa |
 
 #### Table: `vocab_vocab_set` (Junction Table)
 Quản lý quan hệ N-N giữa `Vocab` và `VocabSet`.

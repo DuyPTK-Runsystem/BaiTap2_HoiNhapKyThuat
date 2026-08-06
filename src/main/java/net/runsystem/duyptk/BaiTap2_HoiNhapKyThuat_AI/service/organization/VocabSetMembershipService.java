@@ -170,6 +170,7 @@ public class VocabSetMembershipService {
                 .meaning(vocab.getMeaning())
                 .ipa(vocab.getIpa())
                 .audioUrl(vocab.getAudioUrl())
+                .mastered(vocab.isMastered())
                 .build();
     }
 }

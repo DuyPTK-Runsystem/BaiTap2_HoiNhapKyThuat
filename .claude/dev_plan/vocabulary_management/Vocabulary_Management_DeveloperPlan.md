@@ -2,13 +2,13 @@
 
 ## 1. Trạng thái
 
-- Trạng thái phê duyệt: Đã phê duyệt phase tạo vocab kèm `vocabSetId`.
-- Trạng thái triển khai: Đã triển khai create/get/update/bulk import và tạo/bulk import kèm `vocabSetId`.
+- Trạng thái phê duyệt: Đã phê duyệt phase tạo vocab kèm `vocabSetId` và thuộc tính `mastered`.
+- Trạng thái triển khai: Đã triển khai create/get/update/bulk import, tạo/bulk import kèm `vocabSetId` và thuộc tính `mastered`.
 - Ngày tạo plan: 2026-08-03.
 - Agent tạo plan: Codex.
 - Ngày cập nhật gần nhất: 2026-08-05.
 - Agent cập nhật gần nhất: Codex.
-- Lý do tạo/cập nhật plan: Đã triển khai API tạo/bulk import từ mới kèm query param `vocabSetId`.
+- Lý do tạo/cập nhật plan: Đề xuất bổ sung trạng thái `mastered` cho từng vocab.
 
 ## 2. Mục tiêu
 
@@ -50,6 +50,25 @@ Triển khai quick dumb test cho quản lý từ vựng theo tài liệu source-
   - Bước 1, 2, 3 quy định đọc docs, kiểm tra plan, báo cáo trước khi code.
 
 ## 4. Phạm vi thực hiện
+
+### 4.0.1. Scope thuộc tính `mastered` cho Vocab
+
+Đã triển khai:
+
+- Thêm `mastered` kiểu primitive `boolean` vào entity `Vocab`.
+- Map vào cột `mastered` của bảng `vocabs`, `nullable = false`, giá trị mặc định `false` cho vocab mới.
+- Bổ sung `mastered` vào `ResVocabDTO`, từ đó được trả trong các response đang chứa vocab.
+- Không nhận `mastered` từ request tạo/import; vocab mới luôn bắt đầu với `mastered = false`.
+- Không thay đổi rule hiện tại rằng update vocab chỉ sửa `meaning`.
+- Chưa thêm API riêng để cập nhật `mastered`.
+- Bổ sung unit test cho giá trị mặc định và mapping response.
+
+Phạm vi không bao gồm:
+
+- Tracking `mastered` theo từng user nếu vocab là dữ liệu dùng chung.
+- Lịch sử thay đổi, timestamp hoặc tiến độ học chi tiết.
+- Thay đổi API request hiện có ngoài response bổ sung field.
+- Cập nhật `.claude/docs` trước khi scope này được phê duyệt.
 
 ### 4.0. Scope đã được phê duyệt: tạo vocab kèm `vocabSetId`
 
@@ -368,6 +387,7 @@ Sau khi được phê duyệt và triển khai, chạy:
 | 2026-08-05 | Cập nhật plan chờ phê duyệt cho `vocabSetId` query param khi tạo vocab hoặc bulk import | Codex |
 | 2026-08-05 | Người dùng phê duyệt triển khai `vocabSetId` query param khi tạo vocab hoặc bulk import | Người dùng |
 | 2026-08-05 | Triển khai `vocabSetId` query param khi tạo vocab hoặc bulk import | Codex |
+| 2026-08-06 | Người dùng phê duyệt và triển khai thuộc tính `mastered` cho Vocab, response DTO và tài liệu liên quan | RunSystem Assistant |
 
 ## 16. Developer Plan cập nhật: Real `hcoles/voices` Provider
 

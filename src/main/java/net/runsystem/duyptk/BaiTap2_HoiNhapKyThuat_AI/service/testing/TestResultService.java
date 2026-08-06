@@ -45,6 +45,7 @@ public class TestResultService {
             Option selectedOption = selectedOption(question, selectedOptionIdsByQuestionId.get(question.getId()));
             boolean correct = selectedOption != null && selectedOption.isCorrect();
             if (correct) {
+                question.getVocab().setMastered(true);
                 correctAnswerCount++;
             }
             test.getAnswers().add(TestAnswer.builder()

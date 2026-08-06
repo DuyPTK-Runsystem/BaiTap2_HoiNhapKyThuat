@@ -36,4 +36,7 @@ public class Vocab {
 
     @Column(name = "audio_url")
     private String audioUrl;
+
+    @Column(name = "mastered", nullable = false, columnDefinition = "boolean default false")
+    private boolean mastered;
 }

@@ -56,6 +56,8 @@ Lưu đáp án cuối cùng mà người dùng nộp khi kết thúc bài test.
 3.  `selected_option_id` phải thuộc đúng `question_id` tương ứng.
 4.  Nếu người dùng không gửi đáp án cho một câu hỏi, BE vẫn tạo `TestAnswer` cho câu đó với `selected_option_id = null` và `is_correct = false`.
 5.  Sau khi lưu final answers, BE cập nhật `correct_answer_count` và `incorrect_answer_count` trên `Test`.
+6.  Nếu câu trả lời của một `Question` đúng, BE cập nhật `Question.vocab.mastered = true`.
+7.  Nếu câu trả lời sai, BE không thay đổi giá trị hiện tại của `Question.vocab.mastered`.
 
 ### 2.3. Quy tắc về Logic Tạo Câu hỏi (Question Generation Factory)
 Hệ thống phải dựa vào dữ liệu của `Vocab` để "lắp" vào các template sau:
@@ -92,3 +94,9 @@ Hệ thống phải dựa vào dữ liệu của `Vocab` để "lắp" vào các
 - [ ] Implement logic Randomize đáp án (đảm bảo đáp án đúng nằm ở các `option_order` ngẫu nhiên 1-4).
 - [ ] Đảm bảo `is_correct` chỉ có một giá trị `true` mỗi câu.
 - [ ] Xử lý logic `time_in_minute` để trả về thời gian còn lại cho client.
+
+## 4. Lịch sử cập nhật
+
+| Ngày | Nội dung | Người cập nhật |
+|---|---|---|
+| 2026-08-06 | Bổ sung rule: đáp án đúng đánh dấu Vocab tương ứng `mastered = true`; đáp án sai không thay đổi trạng thái | RunSystem Assistant |

@@ -80,7 +80,30 @@ class TestResultServiceTests {
                     || finishedTest.getQuestions().get(1).getAnswer().isCorrect()) {
                 throw new AssertionError("Final answers phải được lưu cho cả câu trả lời và câu bỏ trống");
             }
+            if (!test.getQuestions().get(0).getVocab().isMastered()
+                    || test.getQuestions().get(1).getVocab().isMastered()) {
+                throw new AssertionError("Chỉ vocab của câu trả lời đúng được đánh dấu mastered");
+            }
         });
+    }
+
+    @org.junit.jupiter.api.Test
+    void shouldKeepCurrentMasteredStateWhenAnswerIsIncorrect() {
+        Test test = testEntity(false);
+        test.getQuestions().get(1).getVocab().setMastered(true);
+        mockCurrentUser(test);
+        Mockito.when(testRepository.save(Mockito.any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        testResultService.finish(TEST_ID, ReqFinishTestDTO.builder()
+                .answers(List.of(
+                        ReqTestAnswerDTO.builder().questionId(10L).optionId(101L).build(),
+                        ReqTestAnswerDTO.builder().questionId(11L).optionId(111L).build()))
+                .build());
+
+        Assertions.assertThat(test.getQuestions().stream()
+                        .map(question -> question.getVocab().isMastered())
+                        .toList())
+                .containsExactly(false, true);
     }
 
     @org.junit.jupiter.api.Test

@@ -1,7 +1,8 @@
 # Vocabulary Management Module Specification
 
 ## 1. Entities
-- **Vocab**: `vocab_id`, `word`, `meaning`, `ipa`, `audio_url`.
+- **Vocab**: `vocab_id`, `word`, `meaning`, `ipa`, `audio_url`, `mastered`.
+- `mastered` là Boolean, mặc định `false` khi tạo vocab mới.
 
 ## 2. Functional Requirements
 ### BM1: Manual Import
@@ -69,3 +70,4 @@
 | 2026-08-04 | Bổ sung yêu cầu `word` unique, get/update vocab theo `id` hoặc `word`, update chỉ sửa `meaning` | Codex |
 | 2026-08-04 | Bổ sung yêu cầu bulk import `.xlsx` theo `VocabImportTemplate.xlsx` và Partial Failure theo từng dòng | Codex |
 | 2026-08-05 | Bổ sung yêu cầu `vocabSetId` query param khi tạo vocab hoặc bulk import để gắn từ mới vào vocab set | Codex |
+| 2026-08-06 | Bổ sung thuộc tính `mastered` kiểu Boolean cho từng vocab, mặc định `false` | RunSystem Assistant |

@@ -2,8 +2,8 @@
 
 ## 1. Trạng thái
 
-- Trạng thái phê duyệt: Đã phê duyệt Phase 1, Phase 2, Phase 3 và Phase 4.
-- Trạng thái triển khai: Đã triển khai Phase 1, Phase 2, Phase 3 và Phase 4.
+- Trạng thái phê duyệt: Đã phê duyệt Phase 1, Phase 2, Phase 3, Phase 4 và rule cập nhật `Vocab.mastered`.
+- Trạng thái triển khai: Đã triển khai Phase 1, Phase 2, Phase 3, Phase 4 và rule cập nhật `Vocab.mastered`.
 - Ngày tạo plan: 2026-08-05.
 - Agent tạo plan: RunSystem Assistant.
 - Phạm vi đề xuất: Testing & Learning, gồm Multiple Choice và Flashcard; triển khai theo phase trong mục 5.
@@ -196,6 +196,15 @@ Quy tắc Phase 3:
 - Với `timeInMinute = null` hoặc `0`, `remainingTimeInSeconds = null` và không giới hạn thời gian.
 - Với `timeInMinute > 0`, server tính remaining time từ thời điểm tạo test; nếu hết giờ thì từ chối `finish` và trả validation error rõ ràng.
 - Mỗi cặp `(test, question)` chỉ có một `TestAnswer`.
+
+### Bổ sung đã phê duyệt: cập nhật trạng thái mastered
+
+- Trong `TestResultService.finish()`, khi đáp án được chọn là đúng, cập nhật
+  `question.getVocab().setMastered(true)`.
+- Khi đáp án sai hoặc không trả lời, không thay đổi giá trị hiện tại của `question.getVocab().mastered`.
+- Không reset `mastered` về `false` trong bất kỳ trường hợp nào.
+- Không thêm endpoint hoặc rule nào khác.
+- Bổ sung unit test cho đáp án đúng, đáp án sai và vocab đã mastered.
 
 Database/entity change cần phê duyệt cho Phase 3:
 
@@ -448,6 +457,7 @@ File dự kiến riêng cho Phase 4:
 - Phase 2 đã được người dùng phê duyệt và triển khai.
 - Phase 3 đã được người dùng phê duyệt và triển khai.
 - Phase 4 đã được người dùng phê duyệt và triển khai.
+- Rule cập nhật `Vocab.mastered` khi trả lời đúng đã được người dùng phê duyệt.
 
 ## 14. Lịch sử cập nhật
 
@@ -460,6 +470,8 @@ File dự kiến riêng cho Phase 4:
 | 2026-08-05 | Cập nhật chi tiết Phase 3 chờ phê duyệt: get test/result, finish test, time remaining, startedAt/finishedAt và TestResultService | Codex |
 | 2026-08-05 | Cập nhật Phase 3 theo yêu cầu người dùng: thêm `TestAnswer` để lưu final answer của user khi finish test | Codex |
 | 2026-08-05 | Người dùng phê duyệt và triển khai Phase 3: get/result/finish test, time remaining, `TestAnswer` lưu final answers và unit test | Codex |
+| 2026-08-06 | Ghi nhận rule chờ phê duyệt: đáp án đúng đánh dấu Vocab tương ứng `mastered = true`, đáp án sai không thay đổi trạng thái | RunSystem Assistant |
 | 2026-08-05 | Cập nhật chi tiết Phase 4 chờ phê duyệt: `POST /api/v1/flashcards`, front mode meaning/audio, response động và không persistence | Codex |
 | 2026-08-05 | Cập nhật Phase 4 theo yêu cầu người dùng: bỏ `frontMode` request, BE random mặt trước Meaning/Audio theo dữ liệu hợp lệ | Codex |
 | 2026-08-05 | Người dùng phê duyệt và triển khai Phase 4: `POST /api/v1/flashcards`, flashcard động random Meaning/Audio và không persistence | Codex |
+| 2026-08-06 | Người dùng phê duyệt rule cập nhật `Vocab.mastered`; triển khai trong `TestResultService.finish()` và bổ sung unit test | Codex |

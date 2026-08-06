@@ -33,8 +33,8 @@ class VocabServiceTests {
                 ResVocabDTO response = vocabService.create(createRequest(IPA));
 
                 Assertions.assertThat(response)
-                                .extracting(ResVocabDTO::getIpa, ResVocabDTO::getAudioUrl)
-                                .containsExactly(IPA, AUDIO_URL);
+                                .extracting(ResVocabDTO::getIpa, ResVocabDTO::getAudioUrl, ResVocabDTO::isMastered)
+                                .containsExactly(IPA, AUDIO_URL, false);
         }
 
         @Test
