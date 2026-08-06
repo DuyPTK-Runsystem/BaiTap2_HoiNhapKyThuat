@@ -32,7 +32,7 @@ public class VocabController {
     @ApiMessage("Tạo từ vựng")
     public ResponseEntity<Object> create(
             @RequestBody ReqCreateVocabDTO request,
-            @RequestParam(required = false) Long vocabSetId) {
+            @RequestParam(required = false, name = "vocabSetId") Long vocabSetId) {
         if (vocabSetId != null) {
             return ResponseEntity.ok(vocabService.create(request, vocabSetId));
         }
@@ -43,7 +43,7 @@ public class VocabController {
     @ApiMessage("Import từ vựng từ file .xlsx")
     public ResponseEntity<ResVocabBulkImportDTO> bulkImport(
             @RequestParam("file") MultipartFile file,
-            @RequestParam(required = false) Long vocabSetId) {
+            @RequestParam(required = false, name = "vocabSetId") Long vocabSetId) {
         return ResponseEntity.ok(vocabBulkImportService.importFile(file, vocabSetId));
     }
 

@@ -5,7 +5,7 @@
 - Module/feature: Library Frontend, tương ứng Organization Module Backend
 - Repository thực hiện: `BaiTap2-HoiNhapKyThuat-AI-FE`
 - Ngày lập plan: 2026-08-06
-- Trạng thái: Hoàn thành baseline; follow-up 2026-08-07 chờ phê duyệt
+- Trạng thái: Hoàn thành
 - Phụ thuộc: `ProjectFoundation-FE.md`, `AuthAuthz-FE.md` và `RoutingNavigation-FE.md` đã hoàn thành
 
 ## 2. Mục tiêu
@@ -223,9 +223,9 @@ Không dự kiến xóa file hoặc sửa Backend, Postman và HTML template.
 
 ### 19.1. Trạng thái
 
-- Trạng thái: Chờ phê duyệt.
-- Lý do cần cập nhật plan: yêu cầu hiện tại thay đổi hành vi đã ghi trong section 6.4/17. Baseline trước đó đang dùng API gắn Vocab đã tồn tại vào VocabSet; yêu cầu mới xác nhận hai thao tác `Add Vocab` và `Bulk Add` phải là tạo/import Vocab mới vào VocabSet.
-- Chưa được phép sửa source code cho follow-up này cho đến khi người dùng phê duyệt rõ ràng.
+- Trạng thái: Hoàn thành.
+- Người dùng đã phê duyệt plan và yêu cầu code trong prompt: `approve, code it`.
+- Lý do cập nhật plan: yêu cầu hiện tại thay đổi hành vi đã ghi trong section 6.4/17. Baseline trước đó đang dùng API gắn Vocab đã tồn tại vào VocabSet; yêu cầu mới xác nhận hai thao tác `Add Vocab` và `Bulk Add` phải là tạo/import Vocab mới vào VocabSet.
 
 ### 19.2. Requirement người dùng
 
@@ -384,3 +384,51 @@ Không dự kiến xóa file hoặc sửa Backend, Postman và HTML template.
 - `BulkImportVocabResponse.items` đang là `unknown[]`; nếu cần hiển thị chi tiết item import, phải thêm type guard rõ ràng hoặc chỉ hiển thị `failures`.
 - Click-outside behavior cần tránh đóng/clear khi người dùng đang thao tác trong modal hoặc click vào item/action hợp lệ.
 - Chưa có endpoint list vocab trong VocabSet, nên sau add/import vẫn chỉ refresh summary/tree nếu Backend trả count qua item children.
+
+### 19.15. Kết quả triển khai
+
+- `LibraryPage` đã đổi từ `addVocabToVocabSet`/`bulkAddVocabsToVocabSet` sang `createVocab`/`bulkImportVocabs`.
+- `Add Vocab` đã đổi từ nhập `Vocab ID` sang form tạo vocab mới với `word`, `meaning`, optional `ipa`.
+- `Bulk Add` đã đổi từ textarea danh sách ID sang file input `.xlsx`, gửi multipart `file`.
+- Click ngoài `library-toolbar`, `library-tree-panel`, `library-detail-panel` và `modal-backdrop` sẽ set `selectedItem = null`.
+- Click trong tree, detail, toolbar hoặc modal không clear selection.
+- `VocabSetDetail` chỉ hiển thị result tạo vocab nếu result thuộc đúng VocabSet đang xem.
+- `BulkAddVocabModal` hiển thị summary `total/success/failed` và danh sách `failures` nếu Backend trả về.
+- Đã giữ duplicate submit guard bằng `submitting`.
+- Không sửa Backend, Postman collection hoặc `Html-template`.
+- Không thêm dependency, route, authorization model hoặc API contract mới.
+
+### 19.16. File thực tế đã sửa
+
+| File | Loại thay đổi | Nội dung |
+|---|---|---|
+| `src/pages/LibraryPage.tsx` | Sửa | Đổi API service cho Add/Bulk, đổi handler payload, thêm click outside clear `selectedItem` |
+| `src/features/library/components/AddVocabModal.tsx` | Sửa | Form tạo vocab mới với `word`, `meaning`, optional `ipa` |
+| `src/features/library/components/BulkAddVocabModal.tsx` | Sửa | File input `.xlsx`, validate file, hiển thị bulk import result |
+| `src/features/library/components/VocabSetDetail.tsx` | Sửa | Đổi result type/message sang create vocab in set |
+| `src/App.css` | Sửa | Bổ sung style nhỏ cho file input và file summary |
+| `.claude/dev_plan/organization/Library-FE.md` | Sửa | Cập nhật plan và kết quả follow-up |
+| `.claude/dev_plan/DevPlanSummary-FE.md` | Sửa | Cập nhật trạng thái module Library |
+
+### 19.17. API thực tế đã tích hợp
+
+| Method | Endpoint | Request | Mục đích |
+|---|---|---|---|
+| `POST` | `/api/v1/vocabs?vocabSetId={vocabSetId}` | JSON `{ word, meaning, ipa }` | Tạo vocab mới và gắn vào VocabSet hiện tại |
+| `POST` | `/api/v1/vocabs/bulk?vocabSetId={vocabSetId}` | `multipart/form-data`, field `file` là `.xlsx` | Import vocab mới từ file và gắn dòng hợp lệ vào VocabSet hiện tại |
+
+### 19.18. Kiểm tra đã chạy
+
+- Package manager: `npm` theo `package-lock.json`.
+- `npm.cmd run lint`: Pass, 0 lỗi.
+- `npm.cmd run build`: Pass; script chạy `tsc -b && vite build`, build production thành công.
+- Không có script `test`, `format`, `type-check` riêng trong `package.json`.
+- Không gọi API thật vì không có yêu cầu chạy Backend/integration test trong prompt này.
+
+### 19.19. Warning/Risk sau triển khai
+
+- Chưa có endpoint list vocab trong VocabSet, nên UI vẫn chỉ hiển thị summary/action như baseline.
+- `BulkImportVocabResponse.items` vẫn là `unknown[]`; UI chỉ hiển thị summary và `failures` để tránh dùng `any` hoặc suy diễn contract.
+- Chưa kiểm thử API thật với Backend đang chạy.
+- npm hiển thị notice có version npm mới; không liên quan đến thay đổi hiện tại.
+- Số vòng lặp code-debug: 0.

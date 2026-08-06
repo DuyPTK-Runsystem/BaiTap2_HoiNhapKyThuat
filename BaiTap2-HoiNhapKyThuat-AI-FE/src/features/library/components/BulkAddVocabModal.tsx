@@ -1,21 +1,30 @@
-import { useMemo, useState } from 'react'
-import type { FormEvent } from 'react'
-import type { BulkAddVocabsToSetResponse } from '../../../types/vocabulary'
+import { useState } from 'react'
+import type { ChangeEvent, FormEvent } from 'react'
+import type { BulkImportVocabResponse } from '../../../types/vocabulary'
 
 interface BulkAddVocabModalProps {
   vocabSetName: string
   submitting: boolean
   errorMessage: string | null
-  result: BulkAddVocabsToSetResponse | null
-  onSubmit: (vocabIds: number[]) => Promise<void>
+  result: BulkImportVocabResponse | null
+  onSubmit: (file: File) => Promise<void>
   onClose: () => void
 }
 
-function parseIds(value: string): number[] {
-  return value
-    .split(/[,\s]+/)
-    .map((item) => Number(item.trim()))
-    .filter((item) => Number.isInteger(item) && item > 0)
+function isXlsxFile(file: File): boolean {
+  return file.name.toLowerCase().endsWith('.xlsx')
+}
+
+function formatFileSize(size: number): string {
+  if (size < 1024) {
+    return `${size} B`
+  }
+
+  if (size < 1024 * 1024) {
+    return `${(size / 1024).toFixed(1)} KB`
+  }
+
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`
 }
 
 export function BulkAddVocabModal({
@@ -26,18 +35,35 @@ export function BulkAddVocabModal({
   onSubmit,
   onClose,
 }: BulkAddVocabModalProps) {
-  const [value, setValue] = useState('')
-  const vocabIds = useMemo(() => parseIds(value), [value])
-  const hasRawValue = value.trim().length > 0
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [fileError, setFileError] = useState<string | null>(null)
+  const valid = selectedFile !== null && isXlsxFile(selectedFile)
+
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.currentTarget.files?.[0] ?? null
+
+    setSelectedFile(file)
+    setFileError(file && !isXlsxFile(file) ? 'Chỉ hỗ trợ file .xlsx.' : null)
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (vocabIds.length === 0 || submitting) {
+    if (!selectedFile) {
+      setFileError('Cần chọn file .xlsx để import.')
       return
     }
 
-    await onSubmit(vocabIds)
+    if (!isXlsxFile(selectedFile)) {
+      setFileError('Chỉ hỗ trợ file .xlsx.')
+      return
+    }
+
+    if (submitting) {
+      return
+    }
+
+    await onSubmit(selectedFile)
   }
 
   return (
@@ -50,39 +76,49 @@ export function BulkAddVocabModal({
         <form className="library-form" onSubmit={handleSubmit}>
           <label>
             <span className="field-label">
-              Danh sách Vocab ID <span className="required-mark">(*)</span>
+              File import <span className="required-mark">(*)</span>
             </span>
-            <textarea
-              value={value}
-              onChange={(event) => setValue(event.target.value)}
-              placeholder="Ví dụ: 1, 2, 3"
+            <input
+              className="library-file-input"
+              type="file"
+              accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+              onChange={handleFileChange}
               disabled={submitting}
-              rows={4}
               required
             />
           </label>
-          {hasRawValue && vocabIds.length === 0 ? <p className="form-warning">Cần ít nhất một ID là số nguyên dương.</p> : null}
+          <p className="library-muted">Định dạng hỗ trợ: .xlsx. Cột bắt buộc: word, meaning. Cột tùy chọn: ipa.</p>
+          {selectedFile ? (
+            <div className="library-file-summary" aria-live="polite">
+              <strong>{selectedFile.name}</strong>
+              <span>{formatFileSize(selectedFile.size)}</span>
+            </div>
+          ) : null}
+          {fileError ? <p className="form-warning">{fileError}</p> : null}
           {errorMessage ? <p className="form-error">{errorMessage}</p> : null}
           {result ? (
             <div className="bulk-result">
               <strong>
-                Success {result.success}/{result.total}, Failed {result.failed}
+                Import {result.success}/{result.total} thành công, thất bại {result.failed}
               </strong>
-              <ul>
-                {result.items.map((item) => (
-                  <li key={item.vocabId}>
-                    #{item.vocabId}: {item.success ? (item.added ? 'Đã thêm' : 'Đã tồn tại') : item.error ?? 'Thất bại'}
-                  </li>
-                ))}
-              </ul>
+              {result.failures && result.failures.length > 0 ? (
+                <ul>
+                  {result.failures.map((failure) => (
+                    <li key={`${failure.rowNumber}-${failure.word ?? 'empty'}-${failure.error}`}>
+                      Dòng {failure.rowNumber}
+                      {failure.word ? ` (${failure.word})` : ''}: {failure.error}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
           ) : null}
           <div className="modal-actions">
             <button type="button" className="button-secondary" onClick={onClose} disabled={submitting}>
               Đóng
             </button>
-            <button type="submit" disabled={vocabIds.length === 0 || submitting}>
-              {submitting ? 'Đang thêm' : 'Bulk Add'}
+            <button type="submit" disabled={!valid || submitting}>
+              {submitting ? 'Đang import' : 'Bulk Add'}
             </button>
           </div>
         </form>

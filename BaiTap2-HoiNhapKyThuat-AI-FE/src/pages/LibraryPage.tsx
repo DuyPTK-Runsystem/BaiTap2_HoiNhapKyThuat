@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import type { MouseEvent } from 'react'
 import { useLocation, useOutletContext } from 'react-router-dom'
 import { StatusMessage } from '../components/StatusMessage'
 import { AddVocabModal } from '../features/library/components/AddVocabModal'
@@ -8,14 +9,18 @@ import { CreateVocabSetModal } from '../features/library/components/CreateVocabS
 import { LibraryTree } from '../features/library/components/LibraryTree'
 import { VocabSetDetail } from '../features/library/components/VocabSetDetail'
 import {
-  addVocabToVocabSet,
-  bulkAddVocabsToVocabSet,
   createFolder,
   createVocabSet,
   getChildren,
 } from '../services/organizationService'
-import type { AddVocabToSetResponse, BulkAddVocabsToSetResponse } from '../types/vocabulary'
+import { bulkImportVocabs, createVocab } from '../services/vocabularyService'
 import type { Item } from '../types/organization'
+import type {
+  BulkImportVocabResponse,
+  CreateVocabInSetResponse,
+  CreateVocabRequest,
+  Vocab,
+} from '../types/vocabulary'
 
 interface ProtectedOutletContext {
   accessToken: string | null
@@ -29,6 +34,33 @@ interface LibraryLocationState {
 
 function errorMessageOf(error: unknown, fallback: string): string {
   return error instanceof Error ? error.message : fallback
+}
+
+const selectionBoundarySelector = '.library-toolbar, .library-tree-panel, .library-detail-panel, .modal-backdrop'
+
+function isCreateVocabInSetResponse(value: Vocab | CreateVocabInSetResponse): value is CreateVocabInSetResponse {
+  return 'vocab' in value && 'vocabSet' in value && 'added' in value
+}
+
+function normalizeCreateVocabResult(
+  result: Vocab | CreateVocabInSetResponse,
+  vocabSet: Item,
+): CreateVocabInSetResponse {
+  if (isCreateVocabInSetResponse(result)) {
+    return result
+  }
+
+  return {
+    vocabSet: {
+      id: vocabSet.id,
+      name: vocabSet.name,
+      description: vocabSet.description,
+      parentId: vocabSet.parentId,
+      vocabCount: vocabSet.vocabCount ?? 0,
+    },
+    vocab: result,
+    added: true,
+  }
 }
 
 export function LibraryPage() {
@@ -46,8 +78,8 @@ export function LibraryPage() {
   const [modal, setModal] = useState<LibraryModal>(null)
   const [modalError, setModalError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
-  const [lastAddResult, setLastAddResult] = useState<AddVocabToSetResponse | null>(null)
-  const [bulkResult, setBulkResult] = useState<BulkAddVocabsToSetResponse | null>(null)
+  const [lastAddResult, setLastAddResult] = useState<CreateVocabInSetResponse | null>(null)
+  const [bulkResult, setBulkResult] = useState<BulkImportVocabResponse | null>(null)
 
   const selectedFolder = selectedItem?.type === 'FOLDER' ? selectedItem : null
   const selectedVocabSet = selectedItem?.type === 'VOCAB_SET' ? selectedItem : null
@@ -183,7 +215,19 @@ export function LibraryPage() {
     }
   }
 
-  async function handleAddVocab(vocabId: number) {
+  function handleLibraryMouseDown(event: MouseEvent<HTMLElement>) {
+    if (!(event.target instanceof Element)) {
+      return
+    }
+
+    if (event.target.closest(selectionBoundarySelector)) {
+      return
+    }
+
+    setSelectedItem(null)
+  }
+
+  async function handleAddVocab(request: CreateVocabRequest) {
     if (!accessToken || !selectedVocabSet || submitting) {
       return
     }
@@ -192,19 +236,20 @@ export function LibraryPage() {
     setModalError(null)
 
     try {
-      const result = await addVocabToVocabSet(selectedVocabSet.id, vocabId, accessToken)
-      setLastAddResult(result)
-      setSuccessMessage(`Đã xử lý Vocab #${vocabId}.`)
+      const result = await createVocab(request, accessToken, selectedVocabSet.id)
+      const normalizedResult = normalizeCreateVocabResult(result, selectedVocabSet)
+      setLastAddResult(normalizedResult)
+      setSuccessMessage(`Đã tạo Vocab "${normalizedResult.vocab.word}".`)
       setModal(null)
       await refreshAfterMutation(selectedVocabSet.parentId)
     } catch (error) {
-      setModalError(errorMessageOf(error, 'Không thể thêm Vocab.'))
+      setModalError(errorMessageOf(error, 'Không thể tạo Vocab.'))
     } finally {
       setSubmitting(false)
     }
   }
 
-  async function handleBulkAdd(vocabIds: number[]) {
+  async function handleBulkAdd(file: File) {
     if (!accessToken || !selectedVocabSet || submitting) {
       return
     }
@@ -213,12 +258,12 @@ export function LibraryPage() {
     setModalError(null)
 
     try {
-      const result = await bulkAddVocabsToVocabSet(selectedVocabSet.id, { vocabIds }, accessToken)
+      const result = await bulkImportVocabs(file, accessToken, selectedVocabSet.id)
       setBulkResult(result)
-      setSuccessMessage(`Bulk add: ${result.success}/${result.total} thành công.`)
+      setSuccessMessage(`Bulk import: ${result.success}/${result.total} thành công.`)
       await refreshAfterMutation(selectedVocabSet.parentId)
     } catch (error) {
-      setModalError(errorMessageOf(error, 'Không thể bulk add Vocab.'))
+      setModalError(errorMessageOf(error, 'Không thể bulk import Vocab.'))
     } finally {
       setSubmitting(false)
     }
@@ -243,7 +288,7 @@ export function LibraryPage() {
   }
 
   return (
-    <section className="library-page">
+    <section className="library-page" onMouseDown={handleLibraryMouseDown}>
       <div className="library-toolbar">
         <div>
           <p className="eyebrow">Organization</p>

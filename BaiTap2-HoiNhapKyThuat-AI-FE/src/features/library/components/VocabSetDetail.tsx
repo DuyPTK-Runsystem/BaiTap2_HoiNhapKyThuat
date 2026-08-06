@@ -1,14 +1,16 @@
 import type { Item } from '../../../types/organization'
-import type { AddVocabToSetResponse } from '../../../types/vocabulary'
+import type { CreateVocabInSetResponse } from '../../../types/vocabulary'
 
 interface VocabSetDetailProps {
   item: Item
-  lastAddResult: AddVocabToSetResponse | null
+  lastAddResult: CreateVocabInSetResponse | null
   onOpenAddOne: () => void
   onOpenBulkAdd: () => void
 }
 
 export function VocabSetDetail({ item, lastAddResult, onOpenAddOne, onOpenBulkAdd }: VocabSetDetailProps) {
+  const visibleAddResult = lastAddResult?.vocabSet.id === item.id ? lastAddResult : null
+
   return (
     <section className="library-detail-card">
       <div>
@@ -34,9 +36,10 @@ export function VocabSetDetail({ item, lastAddResult, onOpenAddOne, onOpenBulkAd
           Bulk Add
         </button>
       </div>
-      {lastAddResult ? (
+      {visibleAddResult ? (
         <p className="form-success">
-          Vocab #{lastAddResult.vocab.id} {lastAddResult.added ? 'đã được thêm vào' : 'đã tồn tại trong'} {lastAddResult.vocabSet.name}.
+          Đã tạo Vocab "{visibleAddResult.vocab.word}" {visibleAddResult.added ? 'và gắn vào' : 'nhưng chưa gắn thêm vào'}{' '}
+          {visibleAddResult.vocabSet.name}.
         </p>
       ) : null}
       <p className="library-muted">API hiện chưa công bố endpoint lấy danh sách vocab trong VocabSet, nên màn hình chỉ hiển thị summary và thao tác add.</p>
