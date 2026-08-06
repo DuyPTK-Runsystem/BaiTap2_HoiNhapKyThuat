@@ -69,7 +69,7 @@ function ProtectedShell({ session }: AuthRouteProps) {
   return (
     <AuthGate session={session} access="protected">
       <AppLayout user={session.user} submitting={session.submitting} onLogout={session.signOut}>
-        <Outlet />
+        <Outlet context={{ accessToken: session.accessToken }} />
       </AppLayout>
     </AuthGate>
   )

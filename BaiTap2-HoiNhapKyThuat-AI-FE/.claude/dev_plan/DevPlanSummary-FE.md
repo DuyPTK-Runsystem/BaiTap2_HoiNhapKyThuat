@@ -7,7 +7,7 @@
 | Project Foundation | `.claude/dev_plan/ProjectFoundation-FE.md` | Hoàn thành | 2026-08-06 | Đã dựng nền tảng cấu trúc FE, API client/service/type, auth session và app shell tối thiểu; lint/build pass |
 | Auth & Authz | `.claude/dev_plan/AuthAuthz-FE.md` | Hoàn thành | 2026-08-06 | Đã hoàn thiện login/register/session refresh/logout, authz boundary, follow-up label `(*)`, link cùng dòng và logo; lint/build pass |
 | Routing & Navigation | `.claude/dev_plan/RoutingNavigation-FE.md` | Hoàn thành | 2026-08-06 | Đã triển khai route map và route guards bằng `react-router-dom`; lint/build pass; npm audit còn 2 high severity vulnerabilities |
-| Library / Organization | `.claude/dev_plan/organization/Library-FE.md` | Chờ phê duyệt | 2026-08-06 | Plan cho cây Folder/VocabSet, create, search/path và add Vocab; cần xác nhận contract danh sách VocabSet và mâu thuẫn kiểu `vocabIds` |
+| Library / Organization | `.claude/dev_plan/organization/Library-FE.md` | Hoàn thành | 2026-08-06 | Đã triển khai cây Folder/VocabSet, create, search/path và add Vocab theo API Guide; VocabSet detail chỉ summary/action vì chưa có endpoint danh sách vocab; lint/build pass |
 
 ## Quy ước trạng thái
 

@@ -5,7 +5,7 @@
 - Module/feature: Library Frontend, tương ứng Organization Module Backend
 - Repository thực hiện: `BaiTap2-HoiNhapKyThuat-AI-FE`
 - Ngày lập plan: 2026-08-06
-- Trạng thái: Chờ phê duyệt
+- Trạng thái: Hoàn thành
 - Phụ thuộc: `ProjectFoundation-FE.md`, `AuthAuthz-FE.md` và `RoutingNavigation-FE.md` đã hoàn thành
 
 ## 2. Mục tiêu
@@ -194,5 +194,27 @@ Không dự kiến xóa file hoặc sửa Backend, Postman và HTML template.
 
 ## 16. Trạng thái phê duyệt
 
-- Chờ người dùng xác nhận Development Plan.
-- Chưa được thay đổi source code trước khi được phê duyệt rõ ràng.
+- Hoàn thành theo phạm vi đã được phê duyệt.
+
+## 17. Kết quả triển khai
+
+- `/library` đã load root children bằng `GET /api/v1/items/children`.
+- Folder có thể expand/collapse và load children bằng `GET /api/v1/items/children?parentId={folderId}`.
+- Có selection cho Folder/VocabSet và detail panel tương ứng.
+- Có modal tạo Folder bằng `POST /api/v1/folders`.
+- Có modal tạo VocabSet bằng `POST /api/v1/vocab-sets`.
+- `/library/search` đã tìm item bằng `GET /api/v1/items/search?name={keyword}`.
+- Search result có thể mở bằng `GET /api/v1/items/by-path?path={itemPath}` và điều hướng về `/library`.
+- VocabSet detail hiển thị summary/action; không hiển thị danh sách vocab vì API Guide chưa có endpoint list vocab theo VocabSet.
+- Add one Vocab dùng `POST /api/v1/vocab-sets/{vocabSetId}/vocabs/{vocabId}`.
+- Bulk add dùng `POST /api/v1/vocab-sets/{vocabSetId}/vocabs/bulk` với request `number[]` theo API Guide.
+- Đã xử lý loading, empty, error, success, disabled và duplicate submit guard ở các form/action chính.
+- Đã chạy `npm run lint`: Pass.
+- Đã chạy `npm run build`: Pass, bao gồm `tsc -b` và `vite build`.
+- Số vòng lặp code-debug: 2.
+
+## 18. Warning/Risk sau triển khai
+
+- Chưa test API thật nếu Backend chưa chạy tại `http://localhost:8081`.
+- Không triển khai danh sách vocab trong VocabSet vì thiếu endpoint contract.
+- Không chạy `npm audit fix`; project vẫn có cảnh báo npm audit từ phase routing trước đó.
