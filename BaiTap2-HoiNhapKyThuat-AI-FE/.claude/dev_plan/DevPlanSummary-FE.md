@@ -22,3 +22,11 @@
 - `Frontend_API_Guide.md` là nguồn sự thật chính cho API contract.
 - Postman collection chỉ dùng để đối chiếu request và hỗ trợ kiểm tra.
 - Development Plan Frontend được lưu riêng theo từng module trong `.claude/dev_plan`.
+
+## Lịch sử cập nhật
+
+| Ngày | Module/Feature | Plan | Trạng thái | Ghi chú |
+|---|---|---|---|---|
+| 2026-08-07 | Shared Environment Configuration | `.claude/dev_plan/shared/SharedEnvironment-FE.md` | Chờ phê duyệt | Plan cho `.env.example` dùng chung BE/FE, Vite env và Spring Boot process env; chưa sửa config/source |
+| 2026-08-07 | Separate Environment Files | `.claude/dev_plan/shared/EnvironmentFiles-FE.md` | Chờ phê duyệt | Theo yêu cầu mới: tạo `.env` riêng cho BE và FE, không dùng shared root env |
+| 2026-08-07 | Separate Environment Files | `.claude/dev_plan/shared/EnvironmentFiles-FE.md` | Hoàn thành | Đã tạo env riêng BE/FE, FE đọc `VITE_API_BASE_URL`, lint/build pass; BE cần export `.env` trước khi chạy |
