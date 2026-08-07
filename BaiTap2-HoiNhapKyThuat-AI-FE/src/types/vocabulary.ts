@@ -10,6 +10,18 @@ export interface Vocab {
   mastered: boolean
 }
 
+export interface VocabPaginationMeta {
+  page: number
+  pageSize: number
+  totalPages: number
+  totalItems: number
+}
+
+export interface PaginatedVocabs {
+  meta: VocabPaginationMeta
+  result: Vocab[]
+}
+
 export interface CreateVocabRequest {
   word: string
   meaning: string
@@ -26,18 +38,19 @@ export interface CreateVocabInSetResponse {
   added: boolean
 }
 
-export interface BulkImportFailure {
+export interface BulkImportItem {
   rowNumber: number
-  word?: string | null
-  error: string
+  word: string | null
+  success: boolean
+  vocab?: Vocab
+  error?: string
 }
 
 export interface BulkImportVocabResponse {
-  total: number
-  success: number
-  failed: number
-  items?: unknown[]
-  failures?: BulkImportFailure[]
+  total_rows: number
+  success_count: number
+  failure_count: number
+  items: BulkImportItem[]
 }
 
 export interface AddVocabToSetResponse {

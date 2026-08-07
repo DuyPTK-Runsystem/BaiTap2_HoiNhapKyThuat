@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { MouseEvent } from 'react'
-import { useLocation, useOutletContext } from 'react-router-dom'
+import { useLocation, useNavigate, useOutletContext } from 'react-router-dom'
 import { StatusMessage } from '../components/StatusMessage'
 import { AddVocabModal } from '../features/library/components/AddVocabModal'
 import { BulkAddVocabModal } from '../features/library/components/BulkAddVocabModal'
@@ -65,6 +65,7 @@ function normalizeCreateVocabResult(
 
 export function LibraryPage() {
   const { accessToken } = useOutletContext<ProtectedOutletContext>()
+  const navigate = useNavigate()
   const location = useLocation()
   const locationState = location.state as LibraryLocationState | null
   const [rootItems, setRootItems] = useState<Item[]>([])
@@ -157,6 +158,12 @@ export function LibraryPage() {
 
     if (!isExpanded && !childrenByParentId[folder.id]) {
       void loadFolderChildren(folder.id)
+    }
+  }
+
+  function handleDoubleClickItem(item: Item) {
+    if (item.type === 'VOCAB_SET') {
+      navigate(`/vocab?vocabSetId=${item.id}`)
     }
   }
 
@@ -262,7 +269,7 @@ export function LibraryPage() {
     try {
       const result = await bulkImportVocabs(file, accessToken, selectedVocabSet.id)
       setBulkResult(result)
-      setSuccessMessage(`Bulk import: ${result.success}/${result.total} thành công.`)
+      setSuccessMessage(`Bulk import: ${result.success_count}/${result.total_rows} dòng thành công, ${result.failure_count} dòng thất bại.`)
       await refreshAfterMutation(selectedVocabSet.parentId)
     } catch (error) {
       setModalError(errorMessageOf(error, 'Không thể bulk import Vocab.'))
@@ -280,6 +287,7 @@ export function LibraryPage() {
       loadingFolderIds={loadingFolderIds}
       onToggleFolder={handleToggleFolder}
       onSelectItem={setSelectedItem}
+      onDoubleClickItem={handleDoubleClickItem}
     />
   )
 

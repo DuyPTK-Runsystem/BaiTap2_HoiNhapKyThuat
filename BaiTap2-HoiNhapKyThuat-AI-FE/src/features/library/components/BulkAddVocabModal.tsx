@@ -98,17 +98,22 @@ export function BulkAddVocabModal({
           {errorMessage ? <p className="form-error">{errorMessage}</p> : null}
           {result ? (
             <div className="bulk-result">
-              <strong>
-                Import {result.success}/{result.total} thành công, thất bại {result.failed}
-              </strong>
-              {result.failures && result.failures.length > 0 ? (
+              <strong>Kết quả import</strong>
+              <div className="bulk-result-counts" aria-live="polite">
+                <span>Tổng số dòng: {result.total_rows}</span>
+                <span>Thành công: {result.success_count}</span>
+                <span>Thất bại: {result.failure_count}</span>
+              </div>
+              {result.items.filter((item) => !item.success).length > 0 ? (
                 <ul>
-                  {result.failures.map((failure) => (
-                    <li key={`${failure.rowNumber}-${failure.word ?? 'empty'}-${failure.error}`}>
+                  {result.items
+                    .filter((item) => !item.success)
+                    .map((failure) => (
+                    <li key={`${failure.rowNumber}-${failure.word ?? 'empty'}-${failure.error ?? 'unknown'}`}>
                       Dòng {failure.rowNumber}
-                      {failure.word ? ` (${failure.word})` : ''}: {failure.error}
+                      {failure.word ? ` (${failure.word})` : ''}: {failure.error ?? 'Không rõ lỗi'}
                     </li>
-                  ))}
+                    ))}
                 </ul>
               ) : null}
             </div>

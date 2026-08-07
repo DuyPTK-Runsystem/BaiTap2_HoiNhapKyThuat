@@ -17,6 +17,11 @@ const navigationItems = [
     match: ['/library'],
   },
   {
+    label: 'Vocabulary',
+    to: '/vocab',
+    match: ['/vocab'],
+  },
+  {
     label: 'Study',
     to: '/study/create',
     match: ['/study', '/tests'],
@@ -31,6 +36,7 @@ const navigationItems = [
 const routeTitles: Record<string, { eyebrow: string; title: string }> = {
   '/library': { eyebrow: 'Vocabulary', title: 'Library' },
   '/library/search': { eyebrow: 'Vocabulary', title: 'Search' },
+  '/vocab': { eyebrow: 'Vocabulary', title: 'Vocabulary' },
   '/study/create': { eyebrow: 'Study', title: 'Create Session' },
   '/flashcards/session': { eyebrow: 'Flashcards', title: 'Session' },
 }

@@ -11,6 +11,7 @@ import { StudyCreatePage } from './pages/StudyCreatePage'
 import { TestResultPage } from './pages/TestResultPage'
 import { TestReviewPage } from './pages/TestReviewPage'
 import { TestTakingPage } from './pages/TestTakingPage'
+import { VocabPage } from './pages/VocabPage'
 import { useAuthSession } from './hooks/useAuthSession'
 import { useEffect } from 'react'
 import { BrowserRouter, Navigate, Outlet, Route, Routes, useNavigate } from 'react-router-dom'
@@ -119,6 +120,7 @@ function App() {
         <Route element={<ProtectedShell session={authSession} />}>
           <Route path="/library" element={<LibraryPage />} />
           <Route path="/library/search" element={<LibrarySearchPage />} />
+          <Route path="/vocab" element={<VocabPage />} />
           <Route path="/study/create" element={<StudyCreatePage />} />
           <Route path="/tests/:testId" element={<TestTakingPage />} />
           <Route path="/tests/:testId/result" element={<TestResultPage />} />

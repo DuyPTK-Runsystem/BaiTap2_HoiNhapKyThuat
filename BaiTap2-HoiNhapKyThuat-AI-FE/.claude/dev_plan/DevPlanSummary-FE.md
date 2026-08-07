@@ -30,3 +30,10 @@
 | 2026-08-07 | Shared Environment Configuration | `.claude/dev_plan/shared/SharedEnvironment-FE.md` | Chờ phê duyệt | Plan cho `.env.example` dùng chung BE/FE, Vite env và Spring Boot process env; chưa sửa config/source |
 | 2026-08-07 | Separate Environment Files | `.claude/dev_plan/shared/EnvironmentFiles-FE.md` | Chờ phê duyệt | Theo yêu cầu mới: tạo `.env` riêng cho BE và FE, không dùng shared root env |
 | 2026-08-07 | Separate Environment Files | `.claude/dev_plan/shared/EnvironmentFiles-FE.md` | Hoàn thành | Đã tạo env riêng BE/FE, FE đọc `VITE_API_BASE_URL`, lint/build pass; BE cần export `.env` trước khi chạy |
+| 2026-08-07 | Vocabulary Page `/vocab` | `.claude/dev_plan/vocabulary/VocabPage-FE.md` | Chờ phê duyệt | Thêm tab `Vocabulary`, route protected `/vocab`, bảng Vocab và pagination; cần xác nhận `parentId` hay `vocabSetId` |
+| 2026-08-07 | Vocabulary Page `/vocab` | `.claude/dev_plan/vocabulary/VocabPage-FE.md` | Hoàn thành | Đã dùng `vocabSetId`, thêm route/tab, bảng Vocab, audio và pagination; lint/build pass |
+| 2026-08-07 | Vocabulary source panel & Library double-click | `.claude/dev_plan/vocabulary/VocabPage-FE.md` | Chờ phê duyệt | Thêm folder panel, `See all vocabulary`, lọc theo VocabSet và double-click VocabSet mở `/vocab?vocabSetId={id}` |
+| 2026-08-07 | Vocabulary source panel & Library double-click | `.claude/dev_plan/vocabulary/VocabPage-FE.md` | Hoàn thành | Đã thêm panel Folder, chế độ xem all/filtered và double-click VocabSet; lint/build pass |
+| 2026-08-07 | Authenticated Vocabulary Audio | `.claude/dev_plan/vocabulary/VocabPage-FE.md` | Hoàn thành | Audio fetch gửi Bearer token, dùng Blob URL và cleanup; lint/build pass |
+| 2026-08-07 | Bulk Import Result Counts | `.claude/dev_plan/vocabulary/VocabPage-FE.md` | Hoàn thành | Map đúng `totalRows/successCount/failureCount`, hiển thị số dòng thành công/thất bại và lỗi từng dòng |
+| 2026-08-07 | Bulk Import Snake Case Fix | `.claude/dev_plan/vocabulary/VocabPage-FE.md` | Hoàn thành | Sửa mapping count theo response thực tế `total_rows/success_count/failure_count` |

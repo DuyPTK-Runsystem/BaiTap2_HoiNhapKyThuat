@@ -6,8 +6,10 @@ interface LibraryTreeProps {
   expandedFolderIds: Set<number>
   selectedItemId: number | null
   loadingFolderIds: Set<number>
+  selectionDisabled?: boolean
   onToggleFolder: (folder: Item) => void
   onSelectItem: (item: Item) => void
+  onDoubleClickItem?: (item: Item) => void
 }
 
 function itemMeta(item: Item): string {
@@ -31,8 +33,10 @@ function TreeBranch({
   expandedFolderIds,
   selectedItemId,
   loadingFolderIds,
+  selectionDisabled = false,
   onToggleFolder,
   onSelectItem,
+  onDoubleClickItem,
   ancestorIds,
 }: TreeBranchProps) {
   if (items.length === 0) {
@@ -55,6 +59,7 @@ function TreeBranch({
                 <button
                   className="tree-toggle"
                   type="button"
+                  disabled={selectionDisabled}
                   onClick={() => onToggleFolder(item)}
                   aria-label={expanded ? 'Thu gọn folder' : 'Mở rộng folder'}
                 >
@@ -66,7 +71,9 @@ function TreeBranch({
               <button
                 className={selectedItemId === item.id ? 'tree-item is-selected' : 'tree-item'}
                 type="button"
+                disabled={selectionDisabled}
                 onClick={() => onSelectItem(item)}
+                onDoubleClick={() => onDoubleClickItem?.(item)}
               >
                 <strong>{item.name}</strong>
                 <span>{itemMeta(item)}</span>

@@ -4,9 +4,17 @@ import type {
   BulkImportVocabResponse,
   CreateVocabInSetResponse,
   CreateVocabRequest,
+  PaginatedVocabs,
   UpdateVocabMeaningRequest,
   Vocab,
 } from '../types/vocabulary'
+
+export function getVocabs(vocabSetId: number | undefined, page: number, size: number, token: string): Promise<PaginatedVocabs> {
+  return apiRequest<PaginatedVocabs>('/api/v1/vocabs', {
+    query: { vocabSetId, page, size },
+    token,
+  })
+}
 
 export function createVocab(
   request: CreateVocabRequest,
@@ -79,4 +87,28 @@ export function updateVocabMeaningByWord(
 
 export function getAudioUrl(audioPath: string | null | undefined): string | null {
   return buildAssetUrl(audioPath)
+}
+
+export async function fetchAudioBlob(
+  audioPath: string,
+  token: string,
+  signal?: AbortSignal,
+): Promise<Blob> {
+  const audioUrl = buildAssetUrl(audioPath)
+
+  if (!audioUrl) {
+    throw new Error('Audio URL không hợp lệ.')
+  }
+
+  const response = await fetch(audioUrl, {
+    headers: { Authorization: `Bearer ${token}` },
+    credentials: 'include',
+    signal,
+  })
+
+  if (!response.ok) {
+    throw new Error('Không thể tải audio.')
+  }
+
+  return response.blob()
 }

@@ -459,3 +459,16 @@ Không dự kiến xóa file hoặc sửa Backend, Postman và HTML template.
 - `npm run build`: Pass; `tsc -b` và `vite build` thành công.
 - `git diff --check`: Pass.
 - Số vòng lặp code-debug follow-up: 1.
+
+## 21. Follow-up - Double-click VocabSet mở `/vocab`
+
+- Khi người dùng double-click item có `type = VOCAB_SET` trong Library tree, Frontend điều hướng tới `/vocab?vocabSetId={id}`.
+- Double-click Folder không điều hướng; click đơn, expand/collapse và selection hiện tại giữ nguyên.
+- Dự kiến sửa `src/features/library/components/LibraryTree.tsx` để phát callback double-click và `src/pages/LibraryPage.tsx` để điều hướng.
+- Chờ người dùng phê duyệt follow-up trước khi code.
+
+## 22. Kết quả triển khai follow-up
+
+- `LibraryTree` đã hỗ trợ callback double-click cho item.
+- Double-click `VOCAB_SET` trong `/library` điều hướng tới `/vocab?vocabSetId={id}`.
+- Double-click Folder không điều hướng; single-click và expand/collapse giữ nguyên.
