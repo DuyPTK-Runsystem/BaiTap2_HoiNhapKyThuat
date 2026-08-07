@@ -1,6 +1,9 @@
 package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.controller;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,10 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.turkraft.springfilter.boot.Filter;
+
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqCreateVocabDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqUpdateVocabDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabBulkImportDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabDTO;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResultPaginationDTO;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.Vocab;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.vocab.VocabBulkImportService;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.vocab.VocabService;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.util.annotation.ApiMessage;
@@ -68,5 +75,16 @@ public class VocabController {
         return ResponseEntity.ok()
                 .contentType(MediaType.valueOf("audio/mpeg"))
                 .body(vocabService.readAudioFile(fileName));
+    }
+
+    @GetMapping(value = "")
+    public ResponseEntity<ResultPaginationDTO> getAll(
+            @RequestParam(required = false, name = "vocabSetId") Long vocabSetId,
+            @Filter Specification<Vocab> specification,
+            Pageable pageable) {
+        if (vocabSetId != null) {
+            return ResponseEntity.ok(vocabService.getAll(vocabSetId, specification, pageable));
+        }
+        return ResponseEntity.ok(vocabService.getAll(specification, pageable));
     }
 }

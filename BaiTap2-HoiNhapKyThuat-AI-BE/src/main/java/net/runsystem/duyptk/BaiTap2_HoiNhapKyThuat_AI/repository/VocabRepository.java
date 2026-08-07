@@ -3,14 +3,18 @@ package net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResultPaginationDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.Vocab;
 
-public interface VocabRepository extends JpaRepository<Vocab, Long> {
+public interface VocabRepository extends JpaRepository<Vocab, Long>, JpaSpecificationExecutor<Vocab> {
     @Query(value = """
             WITH RECURSIVE item_tree AS (
                 SELECT item_id, type, user_id
@@ -38,4 +42,15 @@ public interface VocabRepository extends JpaRepository<Vocab, Long> {
     boolean existsByWord(String word);
 
     Optional<Vocab> findByWord(String word);
+
+    // Page<Vocab> findAllByVocabSetId(Long vocabSetId, Specification<Vocab>
+    // specification, Pageable pageable);
+
+    @Query("""
+            SELECT v
+            FROM VocabSet vs
+            JOIN vs.vocabs v
+            WHERE vs.id = :vocabSetId
+            """)
+    List<Vocab> findByVocabSetId(@Param("vocabSetId") Long vocabSetId);
 }

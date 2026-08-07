@@ -4,12 +4,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.externalDTO.VocabAutomationResult;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqCreateVocabDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.requestDTO.ReqUpdateVocabDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResVocabSetVocabDTO;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.responseDTO.ResultPaginationDTO;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.Vocab;
+import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.domain.table.VocabSet;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.repository.VocabRepository;
 import net.runsystem.duyptk.BaiTap2_HoiNhapKyThuat_AI.service.organization.VocabSetMembershipService;
 
@@ -64,6 +74,51 @@ public class VocabService {
     @Transactional(readOnly = true)
     public ResVocabDTO get(Long id, String word) {
         return convertToDTO(vocabLookupService.findByIdOrWord(id, word));
+    }
+
+    public static Specification<Vocab> belongsToVocabSet(Long vocabSetId) {
+        return (root, query, cb) -> {
+            Subquery<Long> subquery = query.subquery(Long.class);
+
+            Root<VocabSet> vocabSetRoot = subquery.from(VocabSet.class);
+            Join<VocabSet, Vocab> vocabJoin = vocabSetRoot.join("vocabs");
+
+            subquery.select(vocabJoin.get("id"))
+                    .where(cb.equal(vocabSetRoot.get("id"), vocabSetId));
+
+            return root.get("id").in(subquery);
+        };
+    }
+
+    public ResultPaginationDTO getAll(Specification<Vocab> specification, Pageable pageable) {
+        Page<Vocab> vocabs = vocabRepository.findAll(specification, pageable);
+        ResultPaginationDTO result = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta()
+                .builder()
+                .page(pageable.getPageNumber() + 1)
+                .pageSize(pageable.getPageSize())
+                .totalPages(vocabs.getTotalPages())
+                .totalItems(vocabs.getTotalElements())
+                .build();
+        result.setMeta(meta);
+        result.setResult(vocabs.getContent());
+        return result;
+    }
+
+    public ResultPaginationDTO getAll(Long vocabSetId, Specification<Vocab> specification, Pageable pageable) {
+        Specification<Vocab> finalSpec = belongsToVocabSet(vocabSetId).and(specification);
+        Page<Vocab> vocabs = vocabRepository.findAll(finalSpec, pageable);
+        ResultPaginationDTO result = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta()
+                .builder()
+                .page(pageable.getPageNumber() + 1)
+                .pageSize(pageable.getPageSize())
+                .totalPages(vocabs.getTotalPages())
+                .totalItems(vocabs.getTotalElements())
+                .build();
+        result.setMeta(meta);
+        result.setResult(vocabs.getContent());
+        return result;
     }
 
     @Transactional
