@@ -46,7 +46,7 @@ public class OrganizationController {
     @GetMapping("/items/children")
     @ApiMessage("Lấy danh sách item con")
     public ResponseEntity<List<ResItemDTO>> getChildren(
-            @RequestParam(required = false, name = "parent_id") Long parentId) {
+            @RequestParam(required = false, name = "parentId") Long parentId) {
         return ResponseEntity.ok(organizationService.getChildren(parentId));
     }
 

@@ -7,7 +7,7 @@
 | Project Foundation | `.claude/dev_plan/ProjectFoundation-FE.md` | Hoàn thành | 2026-08-06 | Đã dựng nền tảng cấu trúc FE, API client/service/type, auth session và app shell tối thiểu; lint/build pass |
 | Auth & Authz | `.claude/dev_plan/AuthAuthz-FE.md` | Hoàn thành | 2026-08-06 | Baseline đã hoàn thành; follow-up Register success message 3s và redirect Login đã hoàn thành; lint/build pass |
 | Routing & Navigation | `.claude/dev_plan/RoutingNavigation-FE.md` | Hoàn thành | 2026-08-06 | Đã triển khai route map và route guards bằng `react-router-dom`; lint/build pass; npm audit còn 2 high severity vulnerabilities |
-| Library / Organization | `.claude/dev_plan/organization/Library-FE.md` | Hoàn thành | 2026-08-07 | Follow-up đã hoàn thành: click ngoài vùng chọn set `selectedItem = null`, `Add Vocab`/`Bulk Add` dùng create/bulk import vocab mới qua `/api/v1/vocabs?...`; lint/build pass |
+| Library / Organization | `.claude/dev_plan/organization/Library-FE.md` | Hoàn thành | 2026-08-07 | Đã sửa crash khi toggle Folder bằng cách loại side effect khỏi state updater và chặn đệ quy vòng; lint/build pass |
 
 ## Quy ước trạng thái
 

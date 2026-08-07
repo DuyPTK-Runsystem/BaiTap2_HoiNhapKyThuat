@@ -432,3 +432,30 @@ Không dự kiến xóa file hoặc sửa Backend, Postman và HTML template.
 - Chưa kiểm thử API thật với Backend đang chạy.
 - npm hiển thị notice có version npm mới; không liên quan đến thay đổi hiện tại.
 - Số vòng lặp code-debug: 0.
+
+## 20. Follow-up 2026-08-07 - Crash khi toggle Folder
+
+### 20.1. Nguyên nhân
+
+- `handleToggleFolder` gọi `loadFolderChildren` bên trong state updater của `setExpandedFolderIds`; đây là side effect trong updater và có thể bị gọi lặp trong React Strict Mode.
+- `LibraryTree` không có guard khi dữ liệu children tạo thành vòng lặp item, khiến render đệ quy không dừng khi Folder được mở rộng.
+
+### 20.2. Thay đổi
+
+- Tách việc gọi API load children ra ngoài state updater, chỉ gọi khi Folder chuyển từ collapsed sang expanded và chưa có dữ liệu cache.
+- Bổ sung `ancestorIds` cho `TreeBranch` để không tiếp tục render khi gặp item ID đã xuất hiện trên cùng nhánh.
+- Không thay đổi API, route, authorization hoặc business behavior.
+
+### 20.3. File thực tế đã sửa
+
+| File | Loại thay đổi | Nội dung |
+|---|---|---|
+| `src/pages/LibraryPage.tsx` | Sửa | Loại bỏ side effect khỏi state updater của Folder toggle |
+| `src/features/library/components/LibraryTree.tsx` | Sửa | Thêm cycle guard cho render cây đệ quy |
+
+### 20.4. Kiểm tra
+
+- `npm run lint`: Pass, 0 lỗi.
+- `npm run build`: Pass; `tsc -b` và `vite build` thành công.
+- `git diff --check`: Pass.
+- Số vòng lặp code-debug follow-up: 1.

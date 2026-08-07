@@ -18,9 +18,10 @@ function itemMeta(item: Item): string {
   return `${item.vocabCount ?? 0} vocab`
 }
 
-interface TreeBranchProps extends LibraryTreeProps {
+interface TreeBranchProps extends Omit<LibraryTreeProps, 'rootItems'> {
   items: Item[]
   depth: number
+  ancestorIds: Set<number>
 }
 
 function TreeBranch({
@@ -32,7 +33,7 @@ function TreeBranch({
   loadingFolderIds,
   onToggleFolder,
   onSelectItem,
-  rootItems,
+  ancestorIds,
 }: TreeBranchProps) {
   if (items.length === 0) {
     return null
@@ -41,9 +42,11 @@ function TreeBranch({
   return (
     <ul className="library-tree-list">
       {items.map((item) => {
+        const hasCycle = ancestorIds.has(item.id)
         const expanded = expandedFolderIds.has(item.id)
         const loading = loadingFolderIds.has(item.id)
         const children = childrenByParentId[item.id] ?? []
+        const nextAncestorIds = new Set(ancestorIds).add(item.id)
 
         return (
           <li key={item.id}>
@@ -69,11 +72,11 @@ function TreeBranch({
                 <span>{itemMeta(item)}</span>
               </button>
             </div>
-            {expanded ? (
+            {expanded && !hasCycle ? (
               <TreeBranch
-                rootItems={rootItems}
                 items={children}
                 depth={depth + 1}
+                ancestorIds={nextAncestorIds}
                 childrenByParentId={childrenByParentId}
                 expandedFolderIds={expandedFolderIds}
                 selectedItemId={selectedItemId}
@@ -94,5 +97,5 @@ export function LibraryTree(props: LibraryTreeProps) {
     return <p className="library-muted">Chưa có Folder hoặc VocabSet ở root.</p>
   }
 
-  return <TreeBranch {...props} items={props.rootItems} depth={0} />
+  return <TreeBranch {...props} items={props.rootItems} depth={0} ancestorIds={new Set()} />
 }

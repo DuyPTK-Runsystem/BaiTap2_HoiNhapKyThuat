@@ -141,21 +141,23 @@ export function LibraryPage() {
   }, [locationState?.selectedItem])
 
   function handleToggleFolder(folder: Item) {
+    const isExpanded = expandedFolderIds.has(folder.id)
+
     setExpandedFolderIds((current) => {
       const next = new Set(current)
 
-      if (next.has(folder.id)) {
+      if (isExpanded) {
         next.delete(folder.id)
       } else {
         next.add(folder.id)
-
-        if (!childrenByParentId[folder.id]) {
-          void loadFolderChildren(folder.id)
-        }
       }
 
       return next
     })
+
+    if (!isExpanded && !childrenByParentId[folder.id]) {
+      void loadFolderChildren(folder.id)
+    }
   }
 
   function openModal(nextModal: LibraryModal) {
